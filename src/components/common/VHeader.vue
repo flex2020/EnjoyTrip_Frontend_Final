@@ -10,7 +10,7 @@ const props = defineProps({
   background: String,
 });
 
-const menuClass = computed(() => props.background == 'white' ? 'menu-white' : 'menu');
+const menuClass = computed(() => (props.background == "white" ? "menu-white" : "menu"));
 </script>
 
 <template>
@@ -18,12 +18,20 @@ const menuClass = computed(() => props.background == 'white' ? 'menu-white' : 'm
     <router-link :to="{ name: 'main' }" id="nav-logo">
       <img src="/src/assets/img/navlog.png" />
     </router-link>
-    <div id="menu-box">
-      <router-link :to="{ name: 'review' }" :class="menuClass">여행 후기</router-link>
-      <router-link :to="{ name: 'chat' }" :class="menuClass">메이트 채팅</router-link>
-      <router-link :to="{ name: 'match' }" :class="menuClass">여행 메이트 찾기</router-link>
-      <router-link :to="{ name: 'plan' }" :class="menuClass">나만의 여행 계획</router-link>
-      <div :class="menuClass" id="profile">
+    <div id="trip-menu-container">
+      <router-link :to="{ name: 'review' }" :class="menuClass" class="trip-menu"
+        >여행 후기</router-link
+      >
+      <router-link :to="{ name: 'chat' }" :class="menuClass" class="trip-menu"
+        >메이트 채팅</router-link
+      >
+      <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
+        >여행 메이트 찾기</router-link
+      >
+      <router-link :to="{ name: 'plan' }" :class="menuClass" class="trip-menu"
+        >나만의 여행 계획</router-link
+      >
+      <div :class="menuClass" class="trip-menu" id="profile" @click="memberOption">
         <img src="/src/assets/img/profileEX.png" />
       </div>
     </div>
