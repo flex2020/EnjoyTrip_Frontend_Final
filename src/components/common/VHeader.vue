@@ -1,23 +1,29 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const isActive = ref(false);
 const memberOption = () => {
   isActive.value = !isActive.value;
 };
+
+const props = defineProps({
+  background: String,
+});
+
+const menuClass = computed(() => props.background == 'white' ? 'menu-white' : 'menu');
 </script>
 
 <template>
-  <header>
+  <header :class="background == 'white' ? 'header-white' : ''">
     <router-link :to="{ name: 'main' }" id="nav-logo">
       <img src="/src/assets/img/navlog.png" />
     </router-link>
-    <div id="trip-menu-container">
-      <router-link :to="{ name: 'review' }" class="trip-menu">여행 후기</router-link>
-      <router-link :to="{ name: 'chat' }" class="trip-menu">메이트 채팅</router-link>
-      <router-link :to="{ name: 'match' }" class="trip-menu">여행 메이트 찾기</router-link>
-      <router-link :to="{ name: 'plan' }" class="trip-menu">나만의 여행 계획</router-link>
-      <div class="trip-menu" id="profile" @click="memberOption">
+    <div id="menu-box">
+      <router-link :to="{ name: 'review' }" :class="menuClass">여행 후기</router-link>
+      <router-link :to="{ name: 'chat' }" :class="menuClass">메이트 채팅</router-link>
+      <router-link :to="{ name: 'match' }" :class="menuClass">여행 메이트 찾기</router-link>
+      <router-link :to="{ name: 'plan' }" :class="menuClass">나만의 여행 계획</router-link>
+      <div :class="menuClass" id="profile">
         <img src="/src/assets/img/profileEX.png" />
       </div>
     </div>
@@ -49,6 +55,11 @@ header {
   align-items: center;
   height: 80px;
   position: fixed;
+  z-index: 10;
+}
+
+.header-white {
+  background-color: white;
 }
 
 #trip-menu-container {
@@ -60,8 +71,15 @@ header {
 .trip-menu {
   margin-left: 15px;
   text-decoration: none;
-  color: white;
   font-weight: bold;
+  color: white;
+}
+
+.menu-white {
+  margin-left: 15px;
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
 }
 
 #profile {
