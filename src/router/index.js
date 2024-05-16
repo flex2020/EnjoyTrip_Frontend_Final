@@ -19,7 +19,7 @@ const router = createRouter({
       component: ReviewView
     },
     {
-      path: '/chat',
+      path: '/chat/:matchId',
       name: 'chat',
       component: ChatView 
     },

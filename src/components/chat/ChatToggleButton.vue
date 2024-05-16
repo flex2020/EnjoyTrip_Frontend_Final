@@ -5,7 +5,7 @@ const props = defineProps({
   toggle: Boolean,
 });
 
-const imageSrc = computed(() => props.toggle ? '/src/assets/img/fontawesome/arrow-left-solid.svg' : '/src/assets/img/fontawesome/comments-solid.svg');
+const imageSrc = computed(() => props.toggle ? '/src/assets/img/fontawesome/arrow-left-solid-white.svg' : '/src/assets/img/fontawesome/comments-solid-white.svg');
 </script>
 
 <template>
@@ -18,21 +18,22 @@ const imageSrc = computed(() => props.toggle ? '/src/assets/img/fontawesome/arro
 
 <style scoped>
 .toggle-area {
-  position: relative;
+  position: absolute;
   top: 10px;
-  left: 360px;
-  width: 35px;
-  height: 35px;
+  left: 385px;
+  width: 45px;
+  height: 45px;
   z-index: 10;
 }
 
 .toggle-area button {
-  background-color: white;
+  background-color: var(--brand-color);
   border-radius: 50%;
-  border: 1px solid black;
+  border: none;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
   width: inherit;
   height: inherit;
-  padding: 2px;
+  padding: 9px;
   cursor: pointer;
 }
 
