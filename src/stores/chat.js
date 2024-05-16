@@ -4,6 +4,7 @@ import chatApi from '@/api/chat';
 
 export const useChatStore = defineStore('chatStore', () => {
   const chatText = ref('');
+  const messages = ref([]);
   let userIdx = 0;
   function sendChat() {
     chatApi.setType('chat');
@@ -20,8 +21,13 @@ export const useChatStore = defineStore('chatStore', () => {
       chatApi.setUsername('노의빈');
       chatApi.sendChat();
       chatText.value = '';
+      messages.value = [];
     });
   }
 
-  return { chatText, sendChat, joinChat }
+  function addChatItem(message) {
+    messages.value.push(message);
+  }
+
+  return { chatText, messages, sendChat, joinChat, addChatItem }
 })

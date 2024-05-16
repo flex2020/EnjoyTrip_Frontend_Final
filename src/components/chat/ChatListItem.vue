@@ -1,5 +1,7 @@
 <script setup>
-
+defineProps({
+  chat: Object,
+});
 </script>
 
 <template>
@@ -9,10 +11,10 @@
     </div>
     <div style="width: 100%;">
       <div class="chat-list-item-name">
-        닉네임
+        {{ chat.username }}
       </div>
       <div class="chat-list-item-content">
-        채팅 내용 채팅 내용
+        {{ chat.content }}
       </div>
     </div>
   </div>
