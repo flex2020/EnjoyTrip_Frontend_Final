@@ -9,7 +9,7 @@ const chatStore = useChatStore();
 
 <template>
   <div class="chat-list-area">
-    <ChatListItem v-for="chat in chatStore.chatList"/>
+    <ChatListItem v-for="chat in chatStore.messages" :chat="chat"/>
   </div>
 </template>
 

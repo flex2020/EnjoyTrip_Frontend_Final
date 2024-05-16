@@ -1,14 +1,15 @@
-// api/chat.js
+import { useChatStore } from "@/stores/chat";
 class ChatApi {
+  
   constructor() {
     this.socket = null;
     this.isConnected = false;
-    this.messages = [];
     this.type = '';
     this.username = '';
     this.content = '';
     this.matchId = -1;
     this.userIdx = -1;
+    this.chatStore = null;
   }
 
   connect() {
@@ -18,6 +19,7 @@ class ChatApi {
       this.socket.onopen = () => {
         this.isConnected = true;
         console.log('WebSocket connection established');
+        this.chatStore = useChatStore();
         resolve();
       };
 
@@ -42,6 +44,7 @@ class ChatApi {
   onMessage(message) {
     //alert('메시지 수신');
     console.log(message);
+    this.chatStore.addChatItem(message);
   }
 
   sendMessage(message) {
