@@ -102,7 +102,7 @@ header {
 
 #member-menu-container {
   position: absolute;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.75);
   width: 200px;
   height: 300px;
   border-radius: 15px;
@@ -112,6 +112,7 @@ header {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  z-index: 10;
 }
 
 #member-menu-container div {
