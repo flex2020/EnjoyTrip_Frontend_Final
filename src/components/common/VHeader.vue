@@ -63,11 +63,12 @@ header {
   align-items: center;
   height: 80px;
   position: fixed;
-  z-index: 10;
+  z-index: 100000;
 }
 
 .header-white {
   background-color: white;
+  box-shadow: 0 4px 4px rgba(0,0,0,0.19);
 }
 
 #trip-menu-container {
