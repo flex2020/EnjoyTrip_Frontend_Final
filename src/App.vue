@@ -1,10 +1,9 @@
 <script setup>
-import HomeView from "@/views/HomeView.vue";
+import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <HomeView />
-  <div>app 입니다.</div>
+  <router-view></router-view>
 </template>
 
 <style scoped></style>
