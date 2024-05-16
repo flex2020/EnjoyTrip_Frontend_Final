@@ -1,5 +1,11 @@
 <script setup>
-import { computed } from "vue";
+import { ref, computed } from "vue";
+
+const isActive = ref(false);
+const memberOption = () => {
+  isActive.value = !isActive.value;
+};
+
 const props = defineProps({
   background: String,
 });
@@ -22,6 +28,12 @@ const menuClass = computed(() => props.background == 'white' ? 'menu-white' : 'm
       </div>
     </div>
   </header>
+  <div id="member-menu-container" v-show="isActive">
+    <div>회원가입</div>
+    <div>로그인</div>
+    <div>로그아웃</div>
+    <div>마이페이지</div>
+  </div>
 </template>
 
 <style scoped>
@@ -50,13 +62,13 @@ header {
   background-color: white;
 }
 
-#menu-box {
+#trip-menu-container {
   display: flex;
   align-items: center;
   margin-right: 50px;
 }
 
-.menu {
+.trip-menu {
   margin-left: 15px;
   text-decoration: none;
   font-weight: bold;
@@ -78,5 +90,27 @@ header {
 #profile img {
   width: 100%;
   height: 100%;
+}
+
+#member-menu-container {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.6);
+  width: 200px;
+  height: 300px;
+  border-radius: 15px;
+  top: 100px;
+  right: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+#member-menu-container div {
+  text-align: center;
+  width: 100px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  padding-bottom: 10px;
+  font-weight: bold;
 }
 </style>
