@@ -41,7 +41,7 @@ const markerToggle = (attraction) => {
       </template>
       
       <!-- 커스텀 마커 -->
-      <KakaoMapMarker :lat="tripPlan.latitude" :lng="tripPlan.longitude" v-for="tripPlan in tripStore.tripPlanList" :key="tripPlan.contentId"
+      <KakaoMapMarker :lat="tripPlan.latitude" :lng="tripPlan.longitude" v-for="tripPlan in tripStore.tabItems[tripStore.currentTab]" :key="tripPlan.contentId"
         :clickable="true" @onClickKakaoMapMarker="markerToggle(tripPlan)"
         :order="tripStore.checkIncludes(tripPlan) ? getMarkerNumber(tripStore.getTripPlanIndex(tripPlan)) : '' "
         order-bottom-margin="38px"
@@ -55,7 +55,7 @@ const markerToggle = (attraction) => {
           <VMarkerInfo :attraction="tripPlan" />
         </template>
       </KakaoMapMarker>
-      <KakaoMapPolyline :latLngList="tripStore.tripPlanLatLngList" />
+      <KakaoMapPolyline :latLngList="tripStore.tabItemsLatLng[tripStore.currentTab]" />
     </KakaoMap>
   </div>
 </template>
