@@ -1,7 +1,7 @@
 <script setup>
 import { ref, defineComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Axios } from "/src/api/http-commons";
+import { Axios } from "/src/api/http-common";
 
 const http = Axios();
 
