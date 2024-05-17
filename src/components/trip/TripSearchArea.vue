@@ -1,16 +1,32 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { getSidoList, getGugunList } from "@/api/trip";
+import { getSidoList, getGugunList, getMatchCourse } from "@/api/trip";
 import { useTripStore } from "@/stores/trip";
 import TripSearchInput from "@/components/trip/TripSearchInput.vue";
 import TripPlanList from "@/components/trip/TripPlanList.vue"
+import TripPlanTabArea from "@/components/trip/TripPlanTabArea.vue"
+import TripButtonArea from "@/components/trip/TripButtonArea.vue"
+import { useRoute } from "vue-router";
 
 const sidoList = ref([]);
 const gugunList = ref([]);
 const tripStore = useTripStore();
+const route = useRoute();
 
 onMounted(async () => {
   sidoList.value = await getSidoList();
+  const matchCourse = await getMatchCourse(route.params.matchId);
+  console.log(matchCourse);
+  tripStore.tabItems.push(matchCourse);
+  for (let i=0; i<matchCourse.length; i++) {
+    const item = matchCourse[i];
+    tripStore.tabItemsLatLng[tripStore.currentTab].push({
+      lat: item.latitude,
+      lng: item.longitude,
+      contentId: item.contentId,
+    })
+  }
+  console.log(tripStore.tabItemsLatLng)
 });
 
 const changeSidoHandler = async () => {
@@ -32,7 +48,9 @@ const changeSidoHandler = async () => {
       </select>
       <TripSearchInput />
     </div>
+    <TripPlanTabArea />
     <TripPlanList />
+    <TripButtonArea />
   </div>
 </template>
 

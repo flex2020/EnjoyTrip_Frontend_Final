@@ -25,4 +25,10 @@ async function getAttractionSearchResults(sido, gugun, keyword, page) {
   return data;
 }
 
-export { getAttractionSearchResults, getSidoList, getGugunList };
+async function getMatchCourse(matchId) {
+  const response = await http.get(`/match/${matchId}`);
+  const data = await response.data;
+  return data;
+}
+
+export { getAttractionSearchResults, getSidoList, getGugunList, getMatchCourse };
