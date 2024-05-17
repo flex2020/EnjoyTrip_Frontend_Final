@@ -21,13 +21,18 @@ export const useChatStore = defineStore('chatStore', () => {
       chatApi.setUsername('노의빈');
       chatApi.sendChat();
       chatText.value = '';
-      messages.value = [];
     });
+  }
+
+  function resetMessages() {
+    console.log('messages = ' + messages.value);
+    messages.value = [];
+    console.log('reset messages = ' + messages.value);
   }
 
   function addChatItem(message) {
     messages.value.push(message);
   }
 
-  return { chatText, messages, sendChat, joinChat, addChatItem }
+  return { chatText, messages, sendChat, joinChat, addChatItem, resetMessages }
 })
