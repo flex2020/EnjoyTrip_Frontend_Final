@@ -14,11 +14,6 @@ const router = createRouter({
       component: MainView
     },
     {
-      path: '/review',
-      name: 'review',
-      component: ReviewView
-    },
-    {
       path: '/chat/:matchId',
       name: 'chat',
       component: ChatView 
@@ -32,6 +27,24 @@ const router = createRouter({
       path: '/plan',
       name: 'plan',
       component: PlanView
+    },
+    {
+      path: "/review",
+      name: "review",
+      component: () => import("@/views/ReviewView.vue"),
+      redirect: { name: "review-list" },  
+      children: [
+        {
+          path: "list",
+          name: "review-list",
+          component: () => import("@/components/review/VReviewList.vue"),
+        },
+        {
+          path: "write",
+          name: "review-write",
+          component: () => import("@/components/review/VReviewWrite.vue"),
+        },
+      ],
     },
   ]
 })

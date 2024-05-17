@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, defineComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Axios } from "/src/api/http-commons";
 
@@ -27,6 +27,32 @@ const reviewWrite = () => {
     })
     .catch((e) => console.log(e));
 };
+
+// import { QuillEditor } from "@vueup/vue-quill";
+// import "@vueup/vue-quill/dist/vue-quill.snow.css";
+// import ImageUploader from "quill-image-uploader";
+
+// // QuillEditor 설정
+// const modules = {
+//   imageUploader: {
+//     upload: (file) => {
+//       return new Promise((resolve, reject) => {
+//         const formData = new FormData();
+//         formData.append("image", file);
+
+//         Axios.post("/upload-image", formData)
+//           .then((res) => {
+//             console.log(res);
+//             resolve(res.data.url);
+//           })
+//           .catch((err) => {
+//             reject("Upload failed");
+//             console.error("Error:", err);
+//           });
+//       });
+//     },
+//   },
+// };
 </script>
 
 <template>
@@ -40,15 +66,15 @@ const reviewWrite = () => {
       <label>완료한 여행</label>
       <label class="red-star">*</label>
       <select v-model="review_article.matchId">
-        <option>하이</option>
+        <option :value="0">하이</option>
       </select>
 
       <label>공개범위</label>
       <label class="red-star">*</label>
       <select v-model="review_article.scope">
-        <option>나만보기</option>
-        <option>팔로워만</option>
-        <option>전체공개</option>
+        <option :value="0">나만보기</option>
+        <option :value="1">팔로워만</option>
+        <option :value="2">전체공개</option>
       </select>
     </div>
 
@@ -61,7 +87,13 @@ const reviewWrite = () => {
 
   <div id="quill-editor-box">
     <div id="quill-editor-container">
-      <QuillEditor v-model="review_article.content" />
+      <QuillEditor
+        v-model:content="review_article.content"
+        contentType="html"
+        theme="snow"
+        :modules="modules"
+        toolbar="minimal"
+      />
     </div>
   </div>
 
