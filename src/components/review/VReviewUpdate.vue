@@ -4,10 +4,10 @@ import VReviewFormItem from "@/components/review/item/VReviewFormItem.vue";
 
 <template>
   <div id="head-image">
-    <div>여행 후기 작성</div>
-    <div>좋았던 여행 후기를 공유해보세요</div>
+    <div>여행 후기 수정</div>
+    <div>여행 후기를 수정해보세요</div>
   </div>
-  <VReviewFormItem type="write" />
+  <VReviewFormItem type="update" />
 </template>
 
 <style scoped>

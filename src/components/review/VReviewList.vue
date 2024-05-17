@@ -10,7 +10,7 @@ const router = useRouter();
 
 const reviews = ref([]);
 const currentPage = ref(1);
-const totalPage = ref(0);
+const totalPageCount = ref(0);
 const { VITE_ARTICLE_LIST_SIZE } = import.meta.env;
 const param = ref({
   pgno: currentPage.value,
@@ -20,15 +20,25 @@ const param = ref({
 onMounted(async () => {
   const response = await getReviewList();
   reviews.value = await response.reviews;
-  console.log(response.reviews);
+  // console.log(response.reviews);
+  // console.log(totalPageCount.value);
 });
 
 const getReviewList = async () => {
-  const response = await http.get("/review");
+  const response = await http.get("/review", { params: param.value });
   const data = response.data.resdata;
   currentPage.value = data.currentPage;
-  totalPage.value = data.totalPageCount;
+  totalPageCount.value = data.totalPageCount;
   return data;
+};
+
+const currentPageAdd = async () => {
+  param.value.pgno++;
+  const response = await getReviewList();
+  for (let i = 0; i < response.reviews.length; i++) {
+    reviews.value.push(response.reviews[i]);
+  }
+  console.log(reviews.value);
 };
 </script>
 
@@ -41,6 +51,7 @@ const getReviewList = async () => {
 
     <div id="review-list-function">
       <div id="review-list-select-container">
+        <router-link :to="{ name: 'review-update' }"> 게시글 수정 </router-link>
         <select>
           <option value="">전체보기</option>
           <option value="">팔로잉한 사람</option>
@@ -61,7 +72,12 @@ const getReviewList = async () => {
       </router-link>
     </div>
 
-    <VReviewListItem :reviews="reviews" />
+    <VReviewListItem
+      :reviews="reviews"
+      :currentPage="currentPage"
+      :totalPageCount="totalPageCount"
+      @currentPageAdd="currentPageAdd"
+    />
   </div>
 </template>
 

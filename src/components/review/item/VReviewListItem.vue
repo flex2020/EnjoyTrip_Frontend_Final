@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 defineProps({ reviews: Object });
 </script>
 
@@ -26,6 +26,7 @@ defineProps({ reviews: Object });
 <style scoped>
 #review-list-item-container {
   display: flex;
+  flex-flow: wrap;
   justify-content: space-between;
 }
 
@@ -34,6 +35,8 @@ defineProps({ reviews: Object });
   height: 350px;
   background-color: gray;
   border-radius: 20px;
+  margin-bottom: 34px;
+
 }
 
 .review-list-item {
@@ -76,5 +79,157 @@ defineProps({ reviews: Object });
 
 .review-list-item-info div:first-child {
   margin-bottom: 5px;
+}
+</style> -->
+
+<template>
+  <div id="review-list-item-container">
+    <div class="review-list-item" v-for="review in reviews" :key="review.reviewId">
+      <div class="review-list-item-intro">
+        <div>{{ review.reviewTitle }}</div>
+        <div v-html="review.content"></div>
+      </div>
+      <div class="review-list-item-info">
+        <div>
+          <img src="@/assets/img/fontawesome/heart-solid.svg" />
+          <div>{{ review.likeCount }}</div>
+        </div>
+        <div>
+          <img src="@/assets/img/fontawesome/eye-solid.svg" />
+          <div>1/6</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="loading" class="loading">마지막 페이지 입니다.</div>
+  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">맨 위로</button>
+</template>
+
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { defineEmits, defineProps } from 'vue';
+
+const emit = defineEmits(['loadMoreReviews']);
+
+// Define props
+const props = defineProps({ reviews: Object, currentPage: Number, totalPageCount: Number });
+
+// Reactive state for loading
+const loading = ref(false);
+const showScrollTopButton = ref(false);
+
+// Function to check if user has scrolled to the bottom
+const isBottomOfPage = () => {
+  return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+};
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// Function to handle scroll event
+const handleScroll = () => {
+  if (window.scrollY > 200) {
+    showScrollTopButton.value = true;
+  } else if (window.scrollY <= 200) {
+    showScrollTopButton.value = false;
+  }
+
+
+  if (isBottomOfPage() && props.currentPage < props.totalPageCount) {
+    // console.log(props.currentPage);
+    emit('currentPageAdd');
+
+    // // Simulate loading more content
+    // setTimeout(() => {
+    //   loading.value = false;
+    // }, 2000); // Adjust the delay as needed
+  } else if (isBottomOfPage() && props.currentPage >= props.totalPageCount) {
+    loading.value = true;
+  }
+};
+
+// Add and remove scroll event listener
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+</script>
+
+<style scoped>
+#review-list-item-container {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: space-between;
+}
+
+#review-list-item-container > div {
+  width: 30%;
+  height: 350px;
+  background-color: gray;
+  border-radius: 20px;
+  margin-bottom: 34px;
+}
+
+.review-list-item {
+  display: flex;
+  padding: 20px;
+  justify-content: space-between;
+  align-items: flex-end;
+  color: white;
+}
+
+.review-list-item-intro {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-list-item-intro div:first-child {
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.review-list-item-info {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.review-list-item-info div {
+  display: flex;
+  align-items: center;
+}
+
+.review-list-item-info img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.review-list-item-info div:first-child {
+  margin-bottom: 5px;
+}
+
+.loading {
+  width: 100%;
+  text-align: center;
+  font-size: 1.5em;
+  color: white;
+  background-color: gray;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 34px;
+}
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
 }
 </style>
