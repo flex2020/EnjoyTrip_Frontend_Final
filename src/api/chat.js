@@ -55,6 +55,12 @@ class ChatApi {
     }
   }
 
+  disconnect() {
+    if (this.socket) {
+      this.socket.close();
+    }
+  }
+
   setType(type) {
     this.type = type;
   }

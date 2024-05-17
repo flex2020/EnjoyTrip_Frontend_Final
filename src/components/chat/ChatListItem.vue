@@ -9,7 +9,7 @@ defineProps({
     <div class="chat-list-item-profile">
       <img src="/src/assets/img/sample_img.jpg"/>
     </div>
-    <div style="width: 100%;">
+    <div style="width: 80%;">
       <div class="chat-list-item-name">
         {{ chat.username }}
       </div>
@@ -25,7 +25,7 @@ defineProps({
   display: flex;
   align-items: center;
   padding: 5px;
-  width: 75%;
+  max-width: 100%;
   min-height: 80px;
 }
 

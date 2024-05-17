@@ -12,6 +12,7 @@ const chatToggle = ref(false);
 const route = useRoute();
 
 onMounted(() => {
+  chatStore.resetMessages();
   chatStore.joinChat(route.params.matchId);
 })
 
