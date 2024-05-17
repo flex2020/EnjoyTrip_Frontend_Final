@@ -22,7 +22,10 @@ const menuClass = computed(() => (props.background == "white" ? "menu-white" : "
       <router-link :to="{ name: 'review' }" :class="menuClass" class="trip-menu"
         >여행 후기</router-link
       >
-      <router-link :to="{ name: 'chat', params:{matchId: 1} }" :class="menuClass" class="trip-menu"
+      <router-link
+        :to="{ name: 'chat', params: { matchId: 1 } }"
+        :class="menuClass"
+        class="trip-menu"
         >메이트 채팅</router-link
       >
       <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
@@ -68,7 +71,7 @@ header {
 
 .header-white {
   background-color: white;
-  box-shadow: 0 4px 4px rgba(0,0,0,0.19);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.19);
 }
 
 #trip-menu-container {
