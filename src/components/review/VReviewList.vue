@@ -4,7 +4,6 @@ import { useRouter } from "vue-router";
 import VReviewListItem from "@/components/review/item/VReviewListItem.vue";
 import { Axios } from "/src/api/http-common";
 
-
 const http = Axios();
 
 const router = useRouter();
@@ -40,7 +39,7 @@ const currentPageAdd = async () => {
     reviews.value.push(response.reviews[i]);
   }
   console.log(reviews.value);
-}
+};
 </script>
 
 <template>
@@ -52,6 +51,7 @@ const currentPageAdd = async () => {
 
     <div id="review-list-function">
       <div id="review-list-select-container">
+        <router-link :to="{ name: 'review-update' }"> 게시글 수정 </router-link>
         <select>
           <option value="">전체보기</option>
           <option value="">팔로잉한 사람</option>
@@ -72,7 +72,12 @@ const currentPageAdd = async () => {
       </router-link>
     </div>
 
-    <VReviewListItem :reviews="reviews" :currentPage="currentPage" :totalPageCount="totalPageCount" @currentPageAdd="currentPageAdd"/>
+    <VReviewListItem
+      :reviews="reviews"
+      :currentPage="currentPage"
+      :totalPageCount="totalPageCount"
+      @currentPageAdd="currentPageAdd"
+    />
   </div>
 </template>
 

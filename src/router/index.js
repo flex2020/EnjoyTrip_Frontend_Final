@@ -44,6 +44,11 @@ const router = createRouter({
           name: "review-write",
           component: () => import("@/components/review/VReviewWrite.vue"),
         },
+        {
+          path: "update",
+          name: "review-update",
+          component: () => import("@/components/review/VReviewUpdate.vue"),
+        },
       ],
     },
   ]

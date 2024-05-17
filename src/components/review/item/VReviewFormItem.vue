@@ -8,6 +8,10 @@ const http = Axios();
 const router = useRouter();
 const route = useRoute();
 
+const props = defineProps({ type: String });
+
+const isUseId = ref(false);
+
 const review_article = ref({
   matchId: 0,
   memberId: 0,
@@ -26,33 +30,11 @@ const reviewWrite = () => {
       console.log(response.data);
     })
     .catch((e) => console.log(e));
-};
+}
 
-// import { QuillEditor } from "@vueup/vue-quill";
-// import "@vueup/vue-quill/dist/vue-quill.snow.css";
-// import ImageUploader from "quill-image-uploader";
-
-// // QuillEditor 설정
-// const modules = {
-//   imageUploader: {
-//     upload: (file) => {
-//       return new Promise((resolve, reject) => {
-//         const formData = new FormData();
-//         formData.append("image", file);
-
-//         Axios.post("/upload-image", formData)
-//           .then((res) => {
-//             console.log(res);
-//             resolve(res.data.url);
-//           })
-//           .catch((err) => {
-//             reject("Upload failed");
-//             console.error("Error:", err);
-//           });
-//       });
-//     },
-//   },
-// };
+function reviewUpdate() {
+  
+}
 </script>
 
 <template>
