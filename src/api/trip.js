@@ -1,4 +1,4 @@
-import { Axios } from "@/api/http-commons.js";
+import { Axios } from "@/api/http-common.js";
 import { useTripStore } from "@/stores/trip";
 // import store from "@/store/trip.js";
 

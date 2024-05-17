@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import VReviewListItem from "@/components/review/item/VReviewListItem.vue";
-import { Axios } from "/src/api/http-commons";
+import { Axios } from "/src/api/http-common";
 
 const http = Axios();
 
