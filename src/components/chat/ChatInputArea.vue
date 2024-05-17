@@ -40,6 +40,9 @@ const chatStore = useChatStore();
 .chat-input-area button {
   width: 15%;
   height: 30px;
+  background-color: white;
+  border-radius: 7px;
+  border: 1px solid var(--brand-color);
   cursor: pointer;
 }
 </style>

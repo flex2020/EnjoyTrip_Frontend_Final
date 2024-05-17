@@ -37,4 +37,8 @@ const imageSrc = computed(() => props.toggle ? '/src/assets/img/fontawesome/arro
   cursor: pointer;
 }
 
+.toggle-area button:focus {
+  outline: none;
+}
+
 </style>

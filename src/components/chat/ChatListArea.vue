@@ -1,5 +1,6 @@
 <script setup>
 import ChatListItem from "@/components/chat/ChatListItem.vue";
+import ChatNoticeItem from "@/components/chat/ChatNoticeItem.vue";
 import { useChatStore } from "@/stores/chat";
 
 const chatStore = useChatStore();
@@ -9,7 +10,11 @@ const chatStore = useChatStore();
 
 <template>
   <div class="chat-list-area">
-    <ChatListItem v-for="chat in chatStore.messages" :chat="chat"/>
+    <template v-for="chat in chatStore.messages">
+      <ChatListItem v-if="chat.type == 'chat'" :chat="chat" :key="chat.idx"/>
+      <ChatNoticeItem v-if="chat.type == 'notice'" :chat="chat" :key="chat.idx" />
+    </template>
+    
   </div>
 </template>
 
@@ -19,7 +24,6 @@ const chatStore = useChatStore();
   height: calc(100% - 100px);
   background-color: white;
   z-index: inherit;
-  border-radius: 0 10px 0 0;
   overflow: auto;
 }
 </style>
