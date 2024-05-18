@@ -22,7 +22,7 @@ const styleClass = computed(() => {
   background-color: white;
   color: var(--brand-color);
   border: 1px solid var(--brand-color);
-  padding: 5px 30px;
+  padding: 5px 22px;
   cursor: pointer;
 }
 
@@ -30,7 +30,7 @@ const styleClass = computed(() => {
   background-color: var(--brand-color);
   border: none;
   color: white;
-  padding: 7px 30px;
+  padding: 7px 22px;
   z-index: 1;
 }
 </style>

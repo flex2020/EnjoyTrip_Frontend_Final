@@ -75,4 +75,12 @@ const changeSidoHandler = async () => {
   width: 100%;
   height: 90px;
 }
+
+.trip-search-area select {
+  width: 120px;
+  height: 30px;
+  border-radius: 5px;
+  padding-left: 5px;
+  margin: 5px 7px;
+}
 </style>

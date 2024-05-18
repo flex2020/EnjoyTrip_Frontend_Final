@@ -52,10 +52,14 @@ export const useTripStore = defineStore('tripStore', () => {
       contentId: item.contentId,
     })
     console.log(tabItemsLatLng.value[currentTab.value])
+    const content = {
+      tabIndex: currentTab.value,
+      data: tabItems.value[currentTab.value],
+    };
     const message = {
       type: 'update-tab',
       username: chatApi.username,
-      content: JSON.stringify(tabItems.value),
+      content: JSON.stringify(content),
       matchId: chatApi.matchId,
     };
     chatApi.sendMessage(message);
@@ -65,10 +69,14 @@ export const useTripStore = defineStore('tripStore', () => {
     tabItems.value[currentTab.value] = tabItems.value[currentTab.value].filter((item) => item.contentId != tripPlan.contentId);
     tabItemsLatLng.value[currentTab.value] = tabItemsLatLng.value[currentTab.value].filter((item) => item.contentId != tripPlan.contentId);
     toggledAttraction.value = '';
+    const content = {
+      tabIndex: currentTab.value,
+      data: tabItems.value[currentTab.value],
+    };
     const message = {
       type: 'update-tab',
       username: chatApi.username,
-      content: JSON.stringify(tabItems.value),
+      content: JSON.stringify(content),
       matchId: chatApi.matchId,
     };
     chatApi.sendMessage(message);
@@ -95,6 +103,36 @@ export const useTripStore = defineStore('tripStore', () => {
   }
 
   async function addTab(matchId) {
+    if (tabItems.value.length - removedTabs.value.length == 5) {
+      alert('탭은 최대 5개까지 생성할 수 있습니다.');
+      return;
+    }
+    const temp = await getMatchCourse(matchId);
+    const matchCourse = await temp.courseItem;
+    console.log('addtab', matchCourse)
+    tabItems.value.push(matchCourse);
+    const latlng = [];
+    for (let i=0; i<matchCourse.length; i++) {
+      const item = matchCourse[i];
+      latlng.push({
+        lat: item.latitude,
+        lng: item.longitude,
+        contentId: item.contentId,
+      });
+    }
+    tabItemsLatLng.value.push(latlng);
+
+  
+    const message = {
+      type: 'add-tab',
+      username: chatApi.username,
+      content: '',
+      matchId: chatApi.matchId,
+    };
+    chatApi.sendMessage(message);
+  }
+
+  async function addTabFromServer(matchId) {
     const temp = await getMatchCourse(matchId);
     const matchCourse = await temp.courseItem;
     console.log('addtab', matchCourse)
@@ -121,6 +159,8 @@ export const useTripStore = defineStore('tripStore', () => {
 
   function removeTab(index) {
     const currentTabCount = tabItems.value.length - removedTabs.value.length;
+    console.log('전체 탭의 수 = ' + tabItems.value.length + ', 삭제된 탭의 수 = ' + removedTabs.value.length);
+    console.log("현재 탭 크기 = " + currentTabCount)
     if (currentTabCount > 1) {
       removedTabs.value.push(index);
       for (let i=0; i<tabItems.value.length; i++) {
@@ -128,10 +168,26 @@ export const useTripStore = defineStore('tripStore', () => {
         currentTab.value = i;
         break;
       }
-    } else {
-      alert('최소 1개 이상의 여행 코스는 있어야 합니다.')
-      return;
+      const message = {
+        type: 'remove-tab',
+        username: chatApi.username,
+        content: index,
+        matchId: chatApi.matchId,
+      };
+      chatApi.sendMessage(message)
     }
+    else {
+      alert('최소 1개 이상의 여행 코스는 있어야 합니다.')
+    }
+  }
+
+  function removeTabFromServer(index) {
+    removedTabs.value.push(index);
+      for (let i=0; i<tabItems.value.length; i++) {
+        if (isRemovedTab(i)) continue;
+        currentTab.value = i;
+        break;
+      }
   }
 
   async function updateCourse() {
@@ -173,6 +229,6 @@ export const useTripStore = defineStore('tripStore', () => {
 
   return {
     sido, gugun, keyword, attractionSearchResults, pagination, totalPages, page, mapCenter, toggledAttraction, tabItems, tabItemsLatLng, currentTab, removedTabs, courseId, 
-    searchAttractions, setCenter, addTripPlan, removeTripPlan, checkIncludes, getTripPlanIndex, addTab, changeTab, isRemovedTab, removeTab, updateCourse, refreshCoursePath, refreshCoursePathByIndex,
+    searchAttractions, setCenter, addTripPlan, removeTripPlan, checkIncludes, getTripPlanIndex, addTab, changeTab, isRemovedTab, removeTab, updateCourse, refreshCoursePath, refreshCoursePathByIndex, removeTabFromServer, addTabFromServer, 
   }
 })
