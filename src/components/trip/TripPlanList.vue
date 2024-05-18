@@ -9,10 +9,14 @@ const tripStore = useTripStore();
 // 드래그 이벤트 핸들러
 const onEnd = (event) => {
   tripStore.refreshCoursePath();
-  const message = {
+  const content = {
+      tabIndex: tripStore.currentTab,
+      data: tripStore.tabItems[tripStore.currentTab],
+    };
+    const message = {
       type: 'update-tab',
       username: chatApi.username,
-      content: JSON.stringify(tripStore.tabItems),
+      content: JSON.stringify(content),
       matchId: chatApi.matchId,
     };
     chatApi.sendMessage(message);

@@ -51,10 +51,15 @@ class ChatApi {
       this.chatStore.addChatItem(message);
     } else if (message.type == 'update-tab') {
       const updatedData = JSON.parse(message.content);
-      this.tripStore.tabItems = updatedData;
-      for (let i=0; i<this.tripStore.tabItems.length; i++) {
-        this.tripStore.refreshCoursePathByIndex(i);
-      }
+      console.log(updatedData);
+      this.tripStore.tabItems[updatedData.tabIndex] = updatedData.data;
+      this.tripStore.refreshCoursePathByIndex(updatedData.tabIndex);
+    } else if (message.type == 'remove-tab') {
+      const index = parseInt(message.content);
+      console.log('삭제한 탭 = ' + index);
+      this.tripStore.removeTabFromServer(index);
+    } else if (message.type == 'add-tab') {
+      this.tripStore.addTabFromServer(this.matchId);
     }
   }
 
