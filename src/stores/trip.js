@@ -1,6 +1,7 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
-import { getAttractionSearchResults, getMatchCourse } from "@/api/trip";
+import { getAttractionSearchResults, getMatchCourse, updateMatchCourse } from "@/api/trip";
+import chatApi from '@/api/chat';
 
 export const useTripStore = defineStore('tripStore', () => {
   const sido = ref('');
@@ -15,9 +16,12 @@ export const useTripStore = defineStore('tripStore', () => {
     lat: 37.5664056,
     lng: 126.9778222,
   });
+  const courseId = ref(-1);
   const tabItems = ref([]);
   const tabItemsLatLng = ref([[]]);
   const currentTab = ref(0);
+  const removedTabs = ref([]);
+
 
   async function searchAttractions() {
     const data = await getAttractionSearchResults(sido.value, gugun.value, keyword.value, page.value);
@@ -48,12 +52,26 @@ export const useTripStore = defineStore('tripStore', () => {
       contentId: item.contentId,
     })
     console.log(tabItemsLatLng.value[currentTab.value])
+    const message = {
+      type: 'update-tab',
+      username: chatApi.username,
+      content: JSON.stringify(tabItems.value),
+      matchId: chatApi.matchId,
+    };
+    chatApi.sendMessage(message);
   }
 
   function removeTripPlan(tripPlan) {
     tabItems.value[currentTab.value] = tabItems.value[currentTab.value].filter((item) => item.contentId != tripPlan.contentId);
     tabItemsLatLng.value[currentTab.value] = tabItemsLatLng.value[currentTab.value].filter((item) => item.contentId != tripPlan.contentId);
     toggledAttraction.value = '';
+    const message = {
+      type: 'update-tab',
+      username: chatApi.username,
+      content: JSON.stringify(tabItems.value),
+      matchId: chatApi.matchId,
+    };
+    chatApi.sendMessage(message);
   }
 
   function checkIncludes(tripPlan) {
@@ -77,7 +95,9 @@ export const useTripStore = defineStore('tripStore', () => {
   }
 
   async function addTab(matchId) {
-    const matchCourse = await getMatchCourse(matchId);
+    const temp = await getMatchCourse(matchId);
+    const matchCourse = await temp.courseItem;
+    console.log('addtab', matchCourse)
     tabItems.value.push(matchCourse);
     const latlng = [];
     for (let i=0; i<matchCourse.length; i++) {
@@ -95,8 +115,64 @@ export const useTripStore = defineStore('tripStore', () => {
     currentTab.value = index;
   }
 
+  function isRemovedTab(index) {
+    return removedTabs.value.includes(index);
+  }
+
+  function removeTab(index) {
+    const currentTabCount = tabItems.value.length - removedTabs.value.length;
+    if (currentTabCount > 1) {
+      removedTabs.value.push(index);
+      for (let i=0; i<tabItems.value.length; i++) {
+        if (isRemovedTab(i)) continue;
+        currentTab.value = i;
+        break;
+      }
+    } else {
+      alert('최소 1개 이상의 여행 코스는 있어야 합니다.')
+      return;
+    }
+  }
+
+  async function updateCourse() {
+    const data = [];
+    const currentCourse = tabItems.value[currentTab.value];
+    for (let i=0; i<currentCourse.length; i++) {
+      data.push({
+        courseId: courseId.value,
+        attractionId: currentCourse[i].contentId,
+        order: i+1,
+      });
+    }
+    await updateMatchCourse(data);
+  }
+
+  function refreshCoursePath() {
+    const currentCourse = tabItems.value[currentTab.value];
+    tabItemsLatLng.value[currentTab.value] = [];
+    for (let i=0; i<currentCourse.length; i++) {
+      tabItemsLatLng.value[currentTab.value].push({
+        lat: currentCourse[i].latitude,
+        lng: currentCourse[i].longitude,
+        contentId: currentCourse[i].contentId,
+      })
+    }
+  }
+
+  function refreshCoursePathByIndex(tabIndex) {
+    const currentCourse = tabItems.value[tabIndex];
+    tabItemsLatLng.value[tabIndex] = [];
+    for (let i=0; i<currentCourse.length; i++) {
+      tabItemsLatLng.value[tabIndex].push({
+        lat: currentCourse[i].latitude,
+        lng: currentCourse[i].longitude,
+        contentId: currentCourse[i].contentId,
+      })
+    }
+  }
+
   return {
-    sido, gugun, keyword, attractionSearchResults, pagination, totalPages, page, mapCenter, toggledAttraction, tabItems, tabItemsLatLng, currentTab,
-    searchAttractions, setCenter, addTripPlan, removeTripPlan, checkIncludes, getTripPlanIndex, addTab, changeTab,
+    sido, gugun, keyword, attractionSearchResults, pagination, totalPages, page, mapCenter, toggledAttraction, tabItems, tabItemsLatLng, currentTab, removedTabs, courseId, 
+    searchAttractions, setCenter, addTripPlan, removeTripPlan, checkIncludes, getTripPlanIndex, addTab, changeTab, isRemovedTab, removeTab, updateCourse, refreshCoursePath, refreshCoursePathByIndex,
   }
 })

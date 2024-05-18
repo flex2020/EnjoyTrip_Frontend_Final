@@ -1,4 +1,5 @@
 import { useChatStore } from "@/stores/chat";
+import { useTripStore } from "@/stores/trip";
 class ChatApi {
   
   constructor() {
@@ -10,6 +11,7 @@ class ChatApi {
     this.matchId = -1;
     this.userIdx = -1;
     this.chatStore = null;
+    this.tripStore = null;
   }
 
   connect() {
@@ -20,6 +22,7 @@ class ChatApi {
         this.isConnected = true;
         console.log('WebSocket connection established');
         this.chatStore = useChatStore();
+        this.tripStore = useTripStore();
         resolve();
       };
 
@@ -43,8 +46,16 @@ class ChatApi {
 
   onMessage(message) {
     //alert('메시지 수신');
-    console.log(message);
-    this.chatStore.addChatItem(message);
+    console.log(message)
+    if (message.type == 'chat' || message.type == 'notice') {
+      this.chatStore.addChatItem(message);
+    } else if (message.type == 'update-tab') {
+      const updatedData = JSON.parse(message.content);
+      this.tripStore.tabItems = updatedData;
+      for (let i=0; i<this.tripStore.tabItems.length; i++) {
+        this.tripStore.refreshCoursePathByIndex(i);
+      }
+    }
   }
 
   sendMessage(message) {

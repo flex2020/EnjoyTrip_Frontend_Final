@@ -6,27 +6,21 @@ const tripStore = useTripStore();
 const route = useRoute();
 const updateCourse = () => {
   const index = tripStore.currentTab;
-  if (!window.confirm(`여행코스를 [ ${index + 1}안 ]으로 수정하시겠습니까?`)) return;
-  tripStore.updateCourse()
-    .then(() => {
-      alert('수정 되었습니다.')
-    })
-    .catch(() => {
-      alert('수정에 실패했습니다.')
-    });
+  if (!window.confirm(`현재 코스 [ ${index + 1}안 ]을 삭제하시겠습니까?`)) return;
+  tripStore.removeTab(index);
 }
 </script>
 
 <template>
   <button class="trip-plan-edit-btn" @click="updateCourse">
-    현재 코스 적용
+    현재 탭 닫기
   </button>
 </template>
 
 <style scoped>
 .trip-plan-edit-btn {
-  border: 1px solid var(--brand-color);
-  color: var(--brand-color);
+  border: 1px solid rgb(224, 35, 35);
+  color: rgb(224, 35, 35);
   background-color: white;
   padding: 5px 15px;
   border-radius: 15px;
@@ -34,12 +28,11 @@ const updateCourse = () => {
   transition: 0.2s;
   font-size: 16px;
   font-weight: 600;
-  width: 60%;
-  margin-right: 5px;
+  width: 40%;
 }
 
 .trip-plan-edit-btn:hover {
-  background-color: var(--brand-color);
+  background-color: rgb(224, 35, 35);;
   color: white;
 }
 </style>

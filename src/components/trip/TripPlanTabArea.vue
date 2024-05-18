@@ -7,7 +7,9 @@ const tripStore = useTripStore();
 
 <template>
   <div class="tab-area">
-    <TripPlanTabItem v-for="(tab, index) in tripStore.tabItems" :index="index" :key="index" />
+    <template v-for="(tab, index) in tripStore.tabItems" :key="index">
+      <TripPlanTabItem v-if="!tripStore.isRemovedTab(index)" :index="index"/>
+    </template>
     <TripPlanTabAdd />
   </div>
 </template>

@@ -31,4 +31,8 @@ async function getMatchCourse(matchId) {
   return data;
 }
 
-export { getAttractionSearchResults, getSidoList, getGugunList, getMatchCourse };
+async function updateMatchCourse(data) {
+  http.put(`/course`, data);
+}
+
+export { getAttractionSearchResults, getSidoList, getGugunList, getMatchCourse, updateMatchCourse };

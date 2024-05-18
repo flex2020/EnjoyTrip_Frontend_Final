@@ -15,9 +15,11 @@ const route = useRoute();
 
 onMounted(async () => {
   sidoList.value = await getSidoList();
-  const matchCourse = await getMatchCourse(route.params.matchId);
-  console.log(matchCourse);
+  const result = await getMatchCourse(route.params.matchId);
+  const matchCourse = await result.courseItem;
+  tripStore.courseId = await result.matchInfo.courseId;
   tripStore.tabItems.push(matchCourse);
+  console.log(tripStore.tabItems)
   for (let i=0; i<matchCourse.length; i++) {
     const item = matchCourse[i];
     tripStore.tabItemsLatLng[tripStore.currentTab].push({
@@ -30,6 +32,7 @@ onMounted(async () => {
 });
 
 const changeSidoHandler = async () => {
+  if (!tripStore.sido || tripStore.sido === '') tripStore.gugun = '';
   gugunList.value = await getGugunList(tripStore.sido);
 };
 
