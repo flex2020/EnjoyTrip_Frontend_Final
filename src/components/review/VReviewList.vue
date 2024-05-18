@@ -12,12 +12,16 @@ const reviews = ref([]);
 const currentPage = ref(1);
 const totalPageCount = ref(0);
 const sortSelect = ref(0);
+const scopeSecelct = ref(0);
+const inputKeyword = ref("");
 
 const { VITE_ARTICLE_LIST_SIZE } = import.meta.env;
 const param = ref({
   pgno: currentPage.value,
   spp: VITE_ARTICLE_LIST_SIZE,
   sortKey: sortSelect.value,
+  scopeKey: scopeSecelct.value,
+  keyword: inputKeyword.value,
 });
 
 onMounted(async () => {
@@ -52,6 +56,24 @@ const changeSortSelect = async () => {
   reviews.value = await response.reviews;
 }
 
+const changeScopeSelect = async () => {
+  param.value.scopeKey = scopeSecelct.value;
+  currentPage.value = 1;
+  param.value.pgno = currentPage.value;
+  const response = await getReviewList();
+  reviews.value = await response.reviews;
+  // console.log(response.reviews);
+}
+
+const searchReview = async () => {
+  param.value.keyword = inputKeyword.value;
+  currentPage.value = 1;
+  param.value.pgno = currentPage.value;
+  const response = await getReviewList();
+  reviews.value = await response.reviews;
+  // console.log(inputKeyword.value);
+  // console.log(response.reviews);
+}
 </script>
 
 <template>
@@ -63,9 +85,10 @@ const changeSortSelect = async () => {
 
     <div id="review-list-function">
       <div id="review-list-select-container">
-        <select>
-          <option value="">전체보기</option>
-          <option value="">팔로잉한 사람</option>
+        <select v-model="scopeSecelct" @change="changeScopeSelect">
+          <option :value="0">전체보기</option>
+          <option :value="1">팔로잉한 사람</option>
+          <option :value="2">나의 후기</option>
         </select>
         <select v-model="sortSelect" @change="changeSortSelect">
           <option :value="0">최신순</option>
@@ -74,8 +97,8 @@ const changeSortSelect = async () => {
         </select>
       </div>
       <div id="review-list-search">
-        <input type="text" placeholder="제목, 내용으로 검색해보세요" />
-        <button>검색</button>
+        <input v-model="inputKeyword" type="text" placeholder="제목, 내용으로 검색해보세요" />
+        <button @click="searchReview">검색</button>
       </div>
       <router-link :to="{ name: 'review-write' }" id="review-list-move-write">
         <img src="@/assets/img/fontawesome/pen-to-square-solid.svg" />
