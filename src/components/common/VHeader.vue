@@ -116,7 +116,7 @@ header {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  z-index: 10;
+  z-index: 100000;
 }
 
 #member-menu-container div {

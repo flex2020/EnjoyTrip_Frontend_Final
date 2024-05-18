@@ -1,118 +1,17 @@
-<!-- <script setup>
-defineProps({ reviews: Object });
-</script>
-
-<template>
-  <div id="review-list-item-container">
-    <div class="review-list-item" v-for="review in reviews" :key="review.reviewId">
-      <div class="review-list-item-intro">
-        <div>{{ review.reviewTitle }}</div>
-        <div v-html="review.content"></div>
-      </div>
-      <div class="review-list-item-info">
-        <div>
-          <img src="@/assets/img/fontawesome/heart-solid.svg" />
-          <div>{{ review.likeCount }}</div>
-        </div>
-        <div>
-          <img src="@/assets/img/fontawesome/eye-solid.svg" />
-          <div>1/6</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<style scoped>
-#review-list-item-container {
-  display: flex;
-  flex-flow: wrap;
-  justify-content: space-between;
-}
-
-#review-list-item-container > div {
-  width: 30%;
-  height: 350px;
-  background-color: gray;
-  border-radius: 20px;
-  margin-bottom: 34px;
-
-}
-
-.review-list-item {
-  display: flex;
-  padding: 20px;
-  justify-content: space-between;
-  align-items: flex-end;
-  color: white;
-}
-
-.review-list-item-intro {
-  width: 70%;
-  display: flex;
-  flex-direction: column;
-}
-
-.review-list-item-intro div:first-child {
-  font-weight: bold;
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.review-list-item-info {
-  width: 30%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.review-list-item-info div {
-  display: flex;
-  align-items: center;
-}
-
-.review-list-item-info img {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-}
-
-.review-list-item-info div:first-child {
-  margin-bottom: 5px;
-}
-</style> -->
-
-<template>
-  <div id="review-list-item-container">
-    <div class="review-list-item" v-for="review in reviews" :key="review.reviewId">
-      <div class="review-list-item-intro">
-        <div>{{ review.reviewTitle }}</div>
-        <div v-html="review.content"></div>
-      </div>
-      <div class="review-list-item-info">
-        <div>
-          <img src="@/assets/img/fontawesome/heart-solid.svg" />
-          <div>{{ review.likeCount }}</div>
-        </div>
-        <div>
-          <img src="@/assets/img/fontawesome/eye-solid.svg" />
-          <div>1/6</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div v-if="loading" class="loading">마지막 페이지 입니다.</div>
-  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">맨 위로</button>
-</template>
-
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { defineEmits, defineProps } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { defineEmits, defineProps } from "vue";
+import { useRouter } from "vue-router";
 
-const emit = defineEmits(['loadMoreReviews']);
+const emit = defineEmits(["loadMoreReviews"]);
+const router = useRouter();
 
 // Define props
-const props = defineProps({ reviews: Object, currentPage: Number, totalPageCount: Number });
+const props = defineProps({
+  reviews: Object,
+  currentPage: Number,
+  totalPageCount: Number,
+});
 
 // Reactive state for loading
 const loading = ref(false);
@@ -124,7 +23,7 @@ const isBottomOfPage = () => {
 };
 
 const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 // Function to handle scroll event
@@ -135,10 +34,9 @@ const handleScroll = () => {
     showScrollTopButton.value = false;
   }
 
-
   if (isBottomOfPage() && props.currentPage < props.totalPageCount) {
     // console.log(props.currentPage);
-    emit('currentPageAdd');
+    emit("currentPageAdd");
 
     // // Simulate loading more content
     // setTimeout(() => {
@@ -151,19 +49,59 @@ const handleScroll = () => {
 
 // Add and remove scroll event listener
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener("scroll", handleScroll);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener("scroll", handleScroll);
 });
+
+const moveView = (viewId) => {
+  router.push({
+    name: "review-view",
+    params: { viewid: viewId },
+  });
+};
 </script>
+
+<template>
+  <div id="review-list-item-container">
+    <div
+      class="review-list-item"
+      v-for="review in reviews"
+      :key="review.reviewId"
+      @click="moveView(review.reviewId)"
+    >
+      <div class="review-list-item-intro">
+        <div>{{ review.reviewTitle }}</div>
+        <div v-html="review.content"></div>
+      </div>
+      <div class="review-list-item-info">
+        <div>
+          <img src="@/assets/img/fontawesome/heart-solid.svg" />
+          <div>{{ review.likeCount }}</div>
+        </div>
+        <div>
+          <img src="@/assets/img/fontawesome/eye-solid.svg" />
+          <div>{{ review.hit }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="loading" class="loading">마지막 페이지 입니다.</div>
+  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">
+    맨 위로
+  </button>
+</template>
 
 <style scoped>
 #review-list-item-container {
   display: flex;
   flex-flow: wrap;
   justify-content: space-between;
+  :hover {
+    cursor: pointer;
+  }
 }
 
 #review-list-item-container > div {

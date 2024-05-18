@@ -40,6 +40,7 @@ const currentPageAdd = async () => {
   }
   console.log(reviews.value);
 };
+
 </script>
 
 <template>
