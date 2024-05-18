@@ -1,20 +1,70 @@
 <script setup>
-import { ref, computed } from "vue";
+import { getMatchesByMemberId, removeMatchOfMember } from "@/api/match";
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
+
+const router = useRouter();
 const isActive = ref(false);
+const chatListToggle = ref(false);
+const chatList = ref([]);
+
+onMounted(async () => {
+  chatList.value = await getMatchesByMemberId(1);
+});
+
 const memberOption = () => {
   isActive.value = !isActive.value;
 };
+
+const chatListToggleHandler = () => {
+  if (chatList.value.length == 0) {
+    alert('현재 연결된 채팅이 없습니다.');
+    return;
+  }
+  chatListToggle.value = !chatListToggle.value;
+}
+
+const enterChatRoom = (matchId) => {
+  router.push({name: 'chat', params: {matchId: matchId}})
+}
+
+const leaveMatching = async (matchId) => {
+  if (!window.confirm('정말 해당 매칭에서 나가시겠습니까?')) return;
+  await removeMatchOfMember(1, matchId);
+  chatList.value = chatList.value.filter((match) => match.matchId != matchId);
+}
 
 const props = defineProps({
   background: String,
 });
 
+
+
 const menuClass = computed(() => (props.background == "white" ? "menu-white" : "menu"));
+
 </script>
 
 <template>
   <header :class="background == 'white' ? 'header-white' : ''">
+    <div class="chat-list-bg" v-show="chatListToggle" @click="chatListToggleHandler">
+    </div>
+    <div class="chat-list" v-show="chatListToggle">
+        <div class="chat-list-top">
+          <h2>채팅 목록</h2>
+        </div>
+        <div class="chat-list-item-container" v-for="chat in chatList" :key="chat.matchId">
+          <div class="chat-list-item">
+            <div class="chat-list-item-title">
+              <h2>{{ chat.matchTitle }}</h2>
+            </div>
+            <div class="chat-list-item-btn">
+              <button @click="enterChatRoom(chat.matchId)">입장</button>
+              <button @click="leaveMatching(chat.matchId)">나가기</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <router-link :to="{ name: 'main' }" id="nav-logo">
       <img src="/src/assets/img/navlog.png" />
     </router-link>
@@ -22,11 +72,11 @@ const menuClass = computed(() => (props.background == "white" ? "menu-white" : "
       <router-link :to="{ name: 'review' }" :class="menuClass" class="trip-menu"
         >여행 후기</router-link
       >
-      <router-link
-        :to="{ name: 'chat', params: { matchId: 1 } }"
+      <div id="mate-chat"
         :class="menuClass"
         class="trip-menu"
-        >메이트 채팅</router-link
+        @click="chatListToggleHandler"
+        >메이트 채팅</div
       >
       <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
         >여행 메이트 찾기</router-link
@@ -87,6 +137,10 @@ header {
   color: white;
 }
 
+#mate-chat {
+  cursor: pointer;
+}
+
 .menu-white {
   margin-left: 15px;
   text-decoration: none;
@@ -126,5 +180,104 @@ header {
   border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   padding-bottom: 10px;
   font-weight: bold;
+}
+
+.chat-list-bg {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #00000088;
+  z-index: 100001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-list {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 25%);
+  width: 400px;
+  height: 600px;
+  z-index: 100001;
+  background-color: rgba(240, 248, 255, 0.85);
+  border-radius: 15px;;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chat-list-top {
+  width: 100%;
+  padding: 15px;
+  border-bottom: 1px solid var(--brand-color);
+}
+
+.chat-list-top h2 {
+  font-size: 25px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.chat-list-item-container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid black;
+}
+
+.chat-list-item {
+  width: 100%;
+  padding: 10px;
+  display: flex;
+}
+
+.chat-list-item {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.chat-list-item-title {
+  width: 60%;
+  display: flex;
+  align-items: center;
+}
+
+.chat-list-item-btn {
+  width: 40%;
+}
+.chat-list-item-btn button {
+  margin-right: 5px;
+  border: 5px;
+  background-color: white;
+  border-radius: 15px;
+  font-size: 18px;
+  padding: 2px 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.chat-list-item-btn button:first-child {
+  color: var(--brand-color);
+  border: 1px solid var(--brand-color);
+}
+
+.chat-list-item-btn button:first-child:hover {
+  background-color: var(--brand-color);
+  color: white;
+}
+
+.chat-list-item-btn button:last-child {
+  color: rgb(220, 35, 35);
+  border: 1px solid rgb(220, 35, 35);;
+}
+
+.chat-list-item-btn button:last-child:hover {
+  background-color: rgb(220, 35, 35);
+  color: white;
 }
 </style>
