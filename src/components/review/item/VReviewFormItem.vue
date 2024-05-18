@@ -12,7 +12,28 @@ const props = defineProps({ type: String });
 
 const isUseId = ref(false);
 
+if (props.type === "update") {
+  let { viewid } = route.params
+  // console.log(articleno + "번글 얻어와서 수정할거야")
+  // getModifyArticle(
+  //   articleno,
+  //   ({ data }) => {
+  //     article.value = data
+  //     isUseId.value = true
+  //   },
+  //   (error) => {
+  //     console.log(error)
+  //   }
+  // )
+  http.get(`review/update/${viewid}`).then((response) => {
+    console.log(response);
+    review_article.value = response.data;
+  })
+  isUseId.value = true
+}
+
 const review_article = ref({
+  reviewId: 0,
   matchId: 0,
   memberId: 0,
   reviewTitle: "",
@@ -32,8 +53,15 @@ const reviewWrite = () => {
     .catch((e) => console.log(e));
 }
 
-function reviewUpdate() {
-  
+const reviewUpdate = () => {
+  http.put("review", review_article.value);
+
+  router.push({name: "review-list"});
+}
+
+const reviewDelete = () => {
+  http.delete(`review/${review_article.value.reviewId}`);
+  // router.push({name: "review-list"});
 }
 </script>
 
@@ -47,7 +75,7 @@ function reviewUpdate() {
     <div id="review-input-select">
       <label>완료한 여행</label>
       <label class="red-star">*</label>
-      <select v-model="review_article.matchId">
+      <select :disabled="isUseId" v-model="review_article.matchId">
         <option :value="0">하이</option>
       </select>
 
@@ -60,8 +88,8 @@ function reviewUpdate() {
       </select>
     </div>
 
-    <div>메이트 평가</div>
-    <div id="evaluate-mate">
+    <div v-show="!isUseId">메이트 평가</div>
+    <div v-show="!isUseId" id="evaluate-mate">
       <label>메이트 A</label>
       <input type="text" />
     </div>
@@ -82,7 +110,9 @@ function reviewUpdate() {
   <div id="btn-container">
     <div id="divider"></div>
     <div id="btns">
-      <button type="button" @click="reviewWrite">작성하기</button>
+      <button type="button" v-show="!isUseId" @click="reviewWrite">작성하기</button>
+      <button type="button" v-show="isUseId" @click="reviewUpdate">수정하기</button>
+      <button type="button" v-show="isUseId" @click="reviewDelete">삭제하기</button>
       <button type="button">목록으로</button>
     </div>
   </div>

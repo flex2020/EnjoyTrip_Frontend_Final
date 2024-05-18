@@ -105,8 +105,9 @@ header {
 }
 
 #member-menu-container {
-  position: absolute;
-  background-color: rgba(255, 255, 255, 0.75);
+  position: fixed;
+  background-color: rgba(125, 180, 220, 0.8);
+  color: black;
   width: 200px;
   height: 300px;
   border-radius: 15px;
@@ -116,7 +117,7 @@ header {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  z-index: 10;
+  z-index: 100000;
 }
 
 #member-menu-container div {
