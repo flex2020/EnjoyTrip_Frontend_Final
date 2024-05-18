@@ -98,25 +98,20 @@ const moveView = (viewId) => {
 #review-list-item-container {
   display: flex;
   flex-flow: wrap;
-  justify-content: space-between;
   :hover {
     cursor: pointer;
   }
 }
 
-#review-list-item-container > div {
+.review-list-item {
+  display: flex;
+  align-items: flex-end;
   width: 30%;
   height: 350px;
   background-color: gray;
   border-radius: 20px;
-  margin-bottom: 34px;
-}
-
-.review-list-item {
-  display: flex;
+  margin: 1.667%;
   padding: 20px;
-  justify-content: space-between;
-  align-items: flex-end;
   color: white;
 }
 

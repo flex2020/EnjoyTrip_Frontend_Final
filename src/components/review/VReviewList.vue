@@ -52,7 +52,6 @@ const currentPageAdd = async () => {
 
     <div id="review-list-function">
       <div id="review-list-select-container">
-        <router-link :to="{ name: 'review-update' }"> 게시글 수정 </router-link>
         <select>
           <option value="">전체보기</option>
           <option value="">팔로잉한 사람</option>

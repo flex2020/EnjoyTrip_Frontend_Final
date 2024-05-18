@@ -57,6 +57,8 @@ const getReview = () => {
         <div>여행 코스</div>
         <div>코스</div>
     </div>
+    
+    <router-link :to="{ name: 'review-update', params: {viewid: review.reviewId} }"> 게시글 수정 </router-link>
   </div>
 </template>
 
