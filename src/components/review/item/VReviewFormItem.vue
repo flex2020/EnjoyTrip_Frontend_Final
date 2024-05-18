@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineComponent } from "vue";
+import { ref, defineComponent, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Axios } from "/src/api/http-common";
 
@@ -14,17 +14,6 @@ const isUseId = ref(false);
 
 if (props.type === "update") {
   let { viewid } = route.params
-  // console.log(articleno + "번글 얻어와서 수정할거야")
-  // getModifyArticle(
-  //   articleno,
-  //   ({ data }) => {
-  //     article.value = data
-  //     isUseId.value = true
-  //   },
-  //   (error) => {
-  //     console.log(error)
-  //   }
-  // )
   http.get(`review/update/${viewid}`).then((response) => {
     console.log(response);
     review_article.value = response.data;
@@ -44,6 +33,8 @@ const review_article = ref({
   deleted: 0,
 });
 
+const matches = ref([]);
+
 const reviewWrite = () => {
   http
     .post("/review", review_article.value)
@@ -51,6 +42,9 @@ const reviewWrite = () => {
       console.log(response.data);
     })
     .catch((e) => console.log(e));
+
+    
+  router.push({name: "review-list"});
 }
 
 const reviewUpdate = () => {
@@ -61,7 +55,18 @@ const reviewUpdate = () => {
 
 const reviewDelete = () => {
   http.delete(`review/${review_article.value.reviewId}`);
-  // router.push({name: "review-list"});
+  router.push({name: "review-list"});
+}
+
+onMounted(() => {
+  getMatches();
+})
+
+const getMatches = () => {
+  http.get("match/matches")
+  .then((response) => {
+    matches.value = response.data;
+  })
 }
 </script>
 
@@ -76,7 +81,7 @@ const reviewDelete = () => {
       <label>완료한 여행</label>
       <label class="red-star">*</label>
       <select :disabled="isUseId" v-model="review_article.matchId">
-        <option :value="0">하이</option>
+        <option v-for="match in matches" :key="match.matchId" :value="match.matchId">{{ match.matchTitle }}</option>
       </select>
 
       <label>공개범위</label>
