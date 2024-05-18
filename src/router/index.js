@@ -56,6 +56,49 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/member",
+      name: "member",
+      component: () => import("@/views/MemberView.vue"),
+      redirect: { name: "member-signin" },  
+      children: [
+        {
+          path: "signin",
+          name: "member-signin",
+          component: () => import("@/components/member/MemberSignin.vue"),
+        },
+        {
+          path: "signup",
+          name: "member-signup",
+          component: () => import("@/components/member/MemberSignup.vue"),
+        },
+        {
+          path: "signout",
+          name: "member-signout",
+          component: () => import("@/components/member/MemberSignout.vue"),
+        },
+        {
+          path: "update",
+          name: "member-update",
+          component: () => import("@/components/member/MemberUpdate.vue"),
+        },
+        {
+          path: "delete",
+          name: "member-delete",
+          component: () => import("@/components/member/MemberDelete.vue"),
+        },
+        {
+          path: "mypage",
+          name: "member-mypage",
+          component: () => import("@/components/member/MemberMypage.vue"),
+        },
+        {
+          path: "findpassword",
+          name: "member-findpassword",
+          component: () => import("@/components/member/MemberFindPassword.vue"),
+        },
+      ],
+    },
   ]
 })
 

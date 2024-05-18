@@ -40,10 +40,10 @@ const menuClass = computed(() => (props.background == "white" ? "menu-white" : "
     </div>
   </header>
   <div id="member-menu-container" v-show="isActive">
-    <div>회원가입</div>
-    <div>로그인</div>
-    <div>로그아웃</div>
-    <div>마이페이지</div>
+    <router-link :to="{ name: 'member-signup' }">회원가입</router-link>
+    <router-link :to="{ name: 'member-signin' }">로그인</router-link>
+    <router-link :to="{ name: 'member-signout' }">로그아웃</router-link>
+    <router-link :to="{ name: 'member-mypage' }">마이페이지</router-link>
   </div>
 </template>
 
@@ -120,7 +120,7 @@ header {
   z-index: 100000;
 }
 
-#member-menu-container div {
+#member-menu-container a {
   text-align: center;
   width: 100px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.3);
