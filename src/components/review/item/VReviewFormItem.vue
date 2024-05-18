@@ -68,6 +68,10 @@ const getMatches = () => {
     matches.value = response.data;
   })
 }
+
+const moveList = () => {
+  router.push({name: "review-list"});
+}
 </script>
 
 <template>
@@ -87,9 +91,9 @@ const getMatches = () => {
       <label>공개범위</label>
       <label class="red-star">*</label>
       <select v-model="review_article.scope">
-        <option :value="0">나만보기</option>
+        <option :value="0">전체공개</option>
         <option :value="1">팔로워만</option>
-        <option :value="2">전체공개</option>
+        <option :value="2">나만보기</option>
       </select>
     </div>
 
@@ -118,7 +122,7 @@ const getMatches = () => {
       <button type="button" v-show="!isUseId" @click="reviewWrite">작성하기</button>
       <button type="button" v-show="isUseId" @click="reviewUpdate">수정하기</button>
       <button type="button" v-show="isUseId" @click="reviewDelete">삭제하기</button>
-      <button type="button">목록으로</button>
+      <button type="button" @click="moveList">목록으로</button>
     </div>
   </div>
 </template>

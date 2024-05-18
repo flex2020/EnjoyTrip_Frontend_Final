@@ -11,10 +11,13 @@ const router = useRouter();
 const reviews = ref([]);
 const currentPage = ref(1);
 const totalPageCount = ref(0);
+const sortSelect = ref(0);
+
 const { VITE_ARTICLE_LIST_SIZE } = import.meta.env;
 const param = ref({
   pgno: currentPage.value,
   spp: VITE_ARTICLE_LIST_SIZE,
+  sortKey: sortSelect.value,
 });
 
 onMounted(async () => {
@@ -41,6 +44,14 @@ const currentPageAdd = async () => {
   console.log(reviews.value);
 };
 
+const changeSortSelect = async () => {
+  param.value.sortKey = sortSelect.value;
+  currentPage.value = 1;
+  param.value.pgno = currentPage.value;
+  const response = await getReviewList();
+  reviews.value = await response.reviews;
+}
+
 </script>
 
 <template>
@@ -56,10 +67,10 @@ const currentPageAdd = async () => {
           <option value="">전체보기</option>
           <option value="">팔로잉한 사람</option>
         </select>
-        <select>
-          <option value="">최신순</option>
-          <option value="">좋아요순</option>
-          <option value="">조회수순</option>
+        <select v-model="sortSelect" @change="changeSortSelect">
+          <option :value="0">최신순</option>
+          <option :value="1">좋아요순</option>
+          <option :value="2">조회수순</option>
         </select>
       </div>
       <div id="review-list-search">
