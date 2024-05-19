@@ -1,11 +1,32 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { Axios } from '/src/api/http-common';
+
+const http = Axios();
+const router = useRouter();
+const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
 
-const login = () => {
-  console.log('Logging in with', email.value, password.value);
+const login = async () => {
+  try {
+    const response = await http.post('/member/signin', {
+      email: email.value,
+      password: password.value,
+    });
+
+    const token = response.data.token; // Assuming the token is in response.data.token
+    authStore.setToken(token);
+
+    alert('로그인에 성공하였습니다.');
+    router.push('/');
+  } catch (error) {
+    console.error(error);
+    alert('로그인에 실패하였습니다. 다시 시도해주세요.');
+  }
 };
 </script>
 
