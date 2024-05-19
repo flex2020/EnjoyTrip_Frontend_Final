@@ -1,33 +1,71 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { Axios } from '/src/api/http-common';
+
+const http = Axios();
+const router = useRouter();
 
 const email = ref('');
 const nickname = ref('');
 const verificationCode = ref('');
-const name = ref('');
-const birthdate = ref('');
+const memberName = ref('');
+const birthday = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const mbti = ref('');
 const gender = ref('');
-const selfDescription = ref('');
-const phone = ref('');
+const intro = ref('');
+const phoneNumber = ref('');
+const emailVerifyCode = ref(generateRandomString());
 
-const register = () => {
+function generateRandomString(length = 8) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+const register = async () => {
   // Handle registration logic here
   console.log('Registering with:', {
     email: email.value,
     nickname: nickname.value,
     verificationCode: verificationCode.value,
-    name: name.value,
-    birthdate: birthdate.value,
+    memberName: memberName.value,
+    birthday: birthday.value,
     password: password.value,
     confirmPassword: confirmPassword.value,
     mbti: mbti.value,
     gender: gender.value,
-    selfDescription: selfDescription.value,
-    phone: phone.value,
+    intro: intro.value,
+    phoneNumber: phoneNumber.value,
   });
+
+  try {
+    const registrationData = {
+      email: email.value,
+      nickname: nickname.value,
+      memberName: memberName.value,
+      birthday: birthday.value,
+      password: password.value,
+      mbti: mbti.value,
+      gender: gender.value,
+      phoneNumber: phoneNumber.value,
+      intro: intro.value,
+      emailVerifyCode: emailVerifyCode.value
+    };
+    
+    const response = await http.post('/member/signup', registrationData);
+    alert('회원가입이 완료되었습니다.');
+    router.push('/');
+  } catch (error) {
+    console.error(error);
+    alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+  }
 };
 </script>
 
@@ -51,12 +89,12 @@ const register = () => {
             </div>
           </div>
           <div class="form-group">
-            <label for="name">이름 *</label>
-            <input type="text" id="name" v-model="name" required>
+            <label for="memberName">이름 *</label>
+            <input type="text" id="memberName" v-model="memberName" required>
           </div>
           <div class="form-group">
-            <label for="birthdate">생년월일 *</label>
-            <input type="date" id="birthdate" v-model="birthdate" required>
+            <label for="birthday">생년월일 *</label>
+            <input type="date" id="birthday" v-model="birthday" required>
           </div>
           <div class="form-group">
             <label for="password">비밀번호 *</label>
@@ -84,12 +122,12 @@ const register = () => {
             <input type="text" id="gender" v-model="gender" required>
           </div>
           <div class="form-group">
-            <label for="phone">핸드폰 *</label>
-            <input type="tel" id="phone" v-model="phone" required>
+            <label for="phoneNumber">핸드폰 *</label>
+            <input type="tel" id="phoneNumber" v-model="phoneNumber" required>
           </div>
           <div class="form-group">
-            <label for="selfDescription">자기소개</label>
-            <textarea id="selfDescription" v-model="selfDescription"></textarea>
+            <label for="intro">자기소개</label>
+            <textarea id="intro" v-model="intro"></textarea>
           </div>
         </div>
         </div>
