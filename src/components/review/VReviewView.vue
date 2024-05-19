@@ -12,20 +12,41 @@ const router = useRouter();
 const { viewid } = route.params;
 
 const review = ref({});
+const isLike = ref(false);
 
 onMounted(() => {
-    getReview();
+  getReview();
 });
 
-const getReview = () => {
-  http.get(`review/${viewid}`)
-  .then((response) => {
-    console.log(response);
-    review.value = response.data;
-  })
-  .catch((e) => {
-    console.log(e);
-  })
+const getReview = async () => {
+  http
+    .get(`review/${viewid}`)
+    .then((response) => {
+      console.log(response);
+      review.value = response.data;
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+
+  const response = await http.get(`review/likecount/${viewid}`);
+  console.log(response.data);
+  if (response.data) {
+    isLike.value = true;
+  } else {
+    isLike.value = false;
+  }
+};
+
+const updateLikeCount = async () => {
+  const response = await http.post(`review/likecount/${review.value.reviewId}`);
+  if (response.data === "up") {
+    review.value.likeCount++;
+    isLike.value = true;
+  } else {
+    review.value.likeCount--;
+    isLike.value = false;
+  }
 };
 </script>
 
@@ -37,12 +58,37 @@ const getReview = () => {
     <div id="review-view-author-id">{{ review.memberName }}</div>
     <div id="review-view-info">
       <div>
-        <div>여행기간 : {{ review.travelStartDate }} ~ {{review.travelEndDate}}</div>
+        <div>
+          여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}
+        </div>
         <div>여행인원 : ?</div>
       </div>
       <div>
         <div>
-          <img src="@/assets/img/fontawesome/heart-solid.svg" width="30px" />
+          <!-- <img
+            @click="updateLikeCount"
+            v-show="isLike"
+            src="@/assets/img/fontawesome/heart-solid.svg"
+            width="30px"
+          />
+          <img
+            @click="updateLikeCount"
+            v-show="!isLike"
+            src="@/assets/img/fontawesome/heart-regular.svg"
+            width="30px"
+          /> -->
+          <div class="like-container" @click="updateLikeCount">
+            <img
+              :class="{ fade: true, active: isLike }"
+              src="@/assets/img/fontawesome/heart-solid.svg"
+              width="30px"
+            />
+            <img
+              :class="{ fade: true, active: !isLike }"
+              src="@/assets/img/fontawesome/heart-regular.svg"
+              width="30px"
+            />
+          </div>
           {{ review.likeCount }}
         </div>
         <div>
@@ -51,14 +97,26 @@ const getReview = () => {
         </div>
       </div>
     </div>
-    <div id="review-view-contents" v-html="review.content">
-    </div>
+    <div id="review-view-contents" v-html="review.content"></div>
     <div id="review-view-course">
-        <div>여행 코스</div>
-        <div>코스</div>
+      <div>여행 코스</div>
+      <div>코스</div>
     </div>
-    
-    <router-link :to="{ name: 'review-update', params: {viewid: review.reviewId} }"> 게시글 수정 </router-link>
+
+    <div id="btn-container">
+      <div id="divider"></div>
+      <div id="btns">
+        <router-link
+          :to="{ name: 'review-update', params: { viewid: review.reviewId } }"
+          class="move-link"
+        >
+          게시글 수정
+        </router-link>
+        <router-link :to="{ name: 'review-list' }" class="move-link">
+          게시글 목록
+        </router-link>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -115,16 +173,71 @@ const getReview = () => {
 #review-view-info > div:last-child > div {
   display: flex;
   align-items: center;
-  margin-left: 10px
+  margin-left: 10px;
 }
 
 #review-view-course {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 #review-view-course div:first-child {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+#btn-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-top: 50px;
+}
+
+#btns {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin: 50px 0px;
+}
+
+.move-link {
+  width: 100px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+  border: none;
+  border-radius: 10px;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.like-container {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+
+.like-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.5s ease;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.like-container img.active {
+  opacity: 1;
 }
 </style>
