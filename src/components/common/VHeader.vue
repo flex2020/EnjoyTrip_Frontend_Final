@@ -49,7 +49,12 @@ const menuClass = computed(() => (props.background == "white" ? "menu-white" : "
 const signout = async () => {
   try {
     // pinia에 있던 토큰 파기
-    authStore.clearToken();
+    authStore.signout();
+
+        // Log the state
+    console.log('isLogin:', authStore.isLogin);
+    console.log('Email:', authStore.getEmail);
+    console.log('Nickname:', authStore.getNickname);
 
     // signout api 호출
     await http.post('/member/signout');

@@ -18,11 +18,20 @@ const login = async () => {
       password: password.value,
     });
 
-    const token = response.data.token; // Assuming the token is in response.data.token
-    authStore.setToken(token);
+    const token = response.data; // Assuming the token is in response.data.token
 
-    alert('로그인에 성공하였습니다.');
-    router.push('/');
+    if (token) {
+
+      // Log the state
+      console.log('isLogin:', authStore.isLogin);
+      console.log('Email:', authStore.getEmail);
+      console.log('Nickname:', authStore.getNickname);
+
+      alert('로그인에 성공하였습니다.');
+      router.push('/');
+    } else {
+      throw new Error('로그인에 실패하였습니다. 다시 시도해주세요.');
+    }
   } catch (error) {
     console.error(error);
     alert('로그인에 실패하였습니다. 다시 시도해주세요.');
@@ -65,7 +74,7 @@ const login = async () => {
   padding: 3rem; /* Increased padding */
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 350px; /* Increased width */
+  width: 500px; /* Increased width */
   text-align: center;
 }
 

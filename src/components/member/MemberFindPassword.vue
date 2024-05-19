@@ -1,20 +1,57 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { Axios } from '/src/api/http-common';
+
+const http = Axios();
+const router = useRouter();
 
 const name = ref('');
 const email = ref('');
 const verificationCode = ref('');
 const showVerification = ref(false);
+const verificationAttempts = ref(0);
+const errorMessage = ref('');
 
-const sendVerificationCode = () => {
-  // 인증번호 발송 로직
-  console.log('Sending verification code to', email.value);
-  showVerification.value = true;
+const sendVerificationCode = async () => {
+  try {
+    const response = await http.post('/member/findpassword', { name: name.value, email: email.value });
+    console.log(response.status);
+    if (response.data) {
+      await http.get(`/email/findpassword/auth/send?email=${email.value}`);
+      showVerification.value = true;
+      errorMessage.value = '';
+    } else {
+      errorMessage.value = '일치하는 계정이 존재하지 않습니다.';
+    }
+  } catch (error) {
+    console.error(error);
+    errorMessage.value = '계정 검증에 실패했습니다. 다시 시도해주세요.';
+  }
 };
 
-const verifyCode = () => {
-  // 인증번호 검증 로직
-  console.log('Verifying code', verificationCode.value);
+const verifyCode = async () => {
+  try {
+    const response = await http.post('/email/findpassword/verify', { email: email.value, code: verificationCode.value });
+    console.log(response);
+    if (response.data) {
+      router.push({name : 'member-resetpassword' , query: { email: email.value }});
+      errorMessage.value = '';
+    } else {
+      verificationAttempts.value++;
+      if (verificationAttempts.value >= 5) {
+        errorMessage.value = '인증번호 검증에 5회 실패했습니다. 다시 시도해주세요.';
+        showVerification.value = false;
+        verificationAttempts.value = 0;
+        verificationCode.value = '';
+      } else {
+        errorMessage.value = '인증번호가 일치하지 않습니다.';
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    errorMessage.value = '인증번호 검증에 실패했습니다. 다시 시도해주세요.';
+  }
 };
 </script>
 
@@ -33,6 +70,7 @@ const verifyCode = () => {
           <input type="email" id="email" v-model="email" required>
         </div>
         <button type="submit">인증번호 발송</button>
+        <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
       </form>
       <form @submit.prevent="verifyCode" v-if="showVerification">
         <div class="form-group">
@@ -40,6 +78,7 @@ const verifyCode = () => {
           <input type="text" id="verificationCode" v-model="verificationCode" required>
         </div>
         <button type="submit">인증하기</button>
+        <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
       </form>
     </div>
   </div>
@@ -121,5 +160,11 @@ button {
 
 button:hover {
   background-color: #444;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+  margin-top: 0.5rem;
 }
 </style>
