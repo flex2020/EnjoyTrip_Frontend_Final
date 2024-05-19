@@ -13,12 +13,12 @@ const props = defineProps({ type: String });
 const isUseId = ref(false);
 
 if (props.type === "update") {
-  let { viewid } = route.params
+  let { viewid } = route.params;
   http.get(`review/update/${viewid}`).then((response) => {
     console.log(response);
     review_article.value = response.data;
-  })
-  isUseId.value = true
+  });
+  isUseId.value = true;
 }
 
 const review_article = ref({
@@ -43,49 +43,57 @@ const reviewWrite = () => {
     })
     .catch((e) => console.log(e));
 
-    
-  router.push({name: "review-list"});
-}
+  router.push({ name: "review-list" });
+};
 
 const reviewUpdate = () => {
   http.put("review", review_article.value);
 
-  router.push({name: "review-list"});
-}
+  router.push({ name: "review-list" });
+};
 
 const reviewDelete = () => {
   http.delete(`review/${review_article.value.reviewId}`);
-  router.push({name: "review-list"});
-}
+  router.push({ name: "review-list" });
+};
 
 onMounted(() => {
   getMatches();
-})
+});
 
 const getMatches = () => {
-  http.get("match/matches")
-  .then((response) => {
+  http.get("match/matches").then((response) => {
     matches.value = response.data;
-  })
-}
+  });
+};
 
 const moveList = () => {
-  router.push({name: "review-list"});
-}
+  router.push({ name: "review-list" });
+};
 </script>
 
 <template>
   <form id="review-input-form">
     <div id="review-input-title">
-      <label>제목</label>
+      <label id="review-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input type="text" v-model="review_article.reviewTitle" placeholder="제목..." />
+      <input
+        type="text"
+        v-model="review_article.reviewTitle"
+        placeholder="제목..."
+      />
     </div>
     <div id="review-input-select">
       <label>완료한 여행</label>
       <label class="red-star">*</label>
       <select :disabled="isUseId" v-model="review_article.matchId">
-        <option v-for="match in matches" :key="match.matchId" :value="match.matchId">{{ match.matchTitle }}</option>
+        <option
+          v-for="match in matches"
+          :key="match.matchId"
+          :value="match.matchId"
+        >
+          {{ match.matchTitle }}
+        </option>
       </select>
 
       <label>공개범위</label>
@@ -119,9 +127,15 @@ const moveList = () => {
   <div id="btn-container">
     <div id="divider"></div>
     <div id="btns">
-      <button type="button" v-show="!isUseId" @click="reviewWrite">작성하기</button>
-      <button type="button" v-show="isUseId" @click="reviewUpdate">수정하기</button>
-      <button type="button" v-show="isUseId" @click="reviewDelete">삭제하기</button>
+      <button type="button" v-show="!isUseId" @click="reviewWrite">
+        작성하기
+      </button>
+      <button type="button" v-show="isUseId" @click="reviewUpdate">
+        수정하기
+      </button>
+      <button type="button" v-show="isUseId" @click="reviewDelete">
+        삭제하기
+      </button>
       <button type="button" @click="moveList">목록으로</button>
     </div>
   </div>
@@ -135,7 +149,7 @@ const moveList = () => {
   align-items: center;
 }
 #review-input-form div {
-  width: 80%;
+  width: 70%;
   display: flex;
   align-items: center;
   margin-bottom: 20px;
@@ -146,6 +160,10 @@ const moveList = () => {
 #review-input-title {
   display: flex;
   justify-content: flex-start;
+}
+
+#review-input-title-lable {
+  width: 8%;
 }
 
 #review-input-title input {
@@ -194,7 +212,7 @@ const moveList = () => {
 }
 
 #quill-editor-container {
-  width: 80%;
+  width: 70%;
   height: 500px;
 }
 
@@ -206,13 +224,13 @@ const moveList = () => {
 }
 
 #divider {
-  width: 80%;
+  width: 70%;
   height: 1px;
   background-color: rgba(0, 0, 0, 0.3);
 }
 
 #btns {
-  width: 80%;
+  width: 70%;
   display: flex;
   justify-content: flex-end;
   margin: 50px 0px;
