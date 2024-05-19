@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Axios } from "/src/api/http-common";
+import VReviewCommentItem from "@/components/review/item/VReviewCommentItem.vue";
 
 const http = Axios();
 
@@ -9,10 +10,11 @@ const route = useRoute();
 const router = useRouter();
 
 // const articleno = ref(route.params.articleno);
-const { viewid } = route.params;
+const viewId = ref(route.params.viewid);
 
 const review = ref({});
 const isLike = ref(false);
+const comments = ref([]);
 
 onMounted(() => {
   getReview();
@@ -20,16 +22,17 @@ onMounted(() => {
 
 const getReview = async () => {
   http
-    .get(`review/${viewid}`)
+    .get(`review/${viewId.value}`)
     .then((response) => {
       console.log(response);
-      review.value = response.data;
+      review.value = response.data.reviewView;
+      comments.value = response.data.comments;
     })
     .catch((e) => {
       console.log(e);
     });
 
-  const response = await http.get(`review/likecount/${viewid}`);
+  const response = await http.get(`review/likecount/${viewId.value}`);
   console.log(response.data);
   if (response.data) {
     isLike.value = true;
@@ -55,7 +58,7 @@ const updateLikeCount = async () => {
     <div>{{ review.reviewTitle }}</div>
   </div>
   <div id="review-view-container">
-    <div id="review-view-author-id">{{ review.memberName }}</div>
+    <div id="review-view-author-id">작성자 : {{ review.memberName }}</div>
     <div id="review-view-info">
       <div>
         <div>
@@ -65,18 +68,6 @@ const updateLikeCount = async () => {
       </div>
       <div>
         <div>
-          <!-- <img
-            @click="updateLikeCount"
-            v-show="isLike"
-            src="@/assets/img/fontawesome/heart-solid.svg"
-            width="30px"
-          />
-          <img
-            @click="updateLikeCount"
-            v-show="!isLike"
-            src="@/assets/img/fontawesome/heart-regular.svg"
-            width="30px"
-          /> -->
           <div class="like-container" @click="updateLikeCount">
             <img
               :class="{ fade: true, active: isLike }"
@@ -117,6 +108,8 @@ const updateLikeCount = async () => {
         </router-link>
       </div>
     </div>
+
+    <VReviewCommentItem :viewId="viewId" :comments="comments" />
   </div>
 </template>
 
@@ -230,7 +223,7 @@ const updateLikeCount = async () => {
 
 .like-container img {
   position: absolute;
-  top: 0;
+  top: 5px;
   left: 0;
   transition: opacity 0.5s ease;
   opacity: 0;
