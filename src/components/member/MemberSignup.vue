@@ -1,34 +1,34 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { Axios } from '/src/api/http-common';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { Axios } from "/src/api/http-common";
 
 const http = Axios();
 const router = useRouter();
 
-const email = ref('');
-const nickname = ref('');
-const verificationCode = ref('');
-const memberName = ref('');
-const birthday = ref('');
-const password = ref('');
-const confirmPassword = ref('');
-const mbti = ref('');
-const gender = ref('');
-const intro = ref('');
-const phoneNumber = ref('');
-const emailVerifyCode = ref('');
+const email = ref("");
+const nickname = ref("");
+const verificationCode = ref("");
+const memberName = ref("");
+const birthday = ref("");
+const password = ref("");
+const confirmPassword = ref("");
+const mbti = ref("");
+const gender = ref("");
+const intro = ref("");
+const phoneNumber = ref("");
+const emailVerifyCode = ref("");
 const verificationCodeSent = ref(false);
 const verificationCodeValid = ref(false);
 const countdown = ref(0);
 const countdownInterval = ref(null);
-const verificationError = ref('');
-const phoneError = ref('');
-const passwordError = ref('');
+const verificationError = ref("");
+const phoneError = ref("");
+const passwordError = ref("");
 
 const generateRandomString = (length = 8) => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -44,9 +44,9 @@ const startCountdown = () => {
     } else {
       clearInterval(countdownInterval.value);
       verificationCodeSent.value = false;
-      verificationCode.value = '';
-      verificationError.value = '';
-      emailVerifyCode.value = '';
+      verificationCode.value = "";
+      verificationError.value = "";
+      emailVerifyCode.value = "";
     }
   }, 1000);
 };
@@ -55,18 +55,21 @@ const sendEmailVerification = async () => {
   try {
     await http.get(`/email/signup/auth/send?email=${email.value}`);
     verificationCodeSent.value = true;
-    verificationError.value = '';
+    verificationError.value = "";
     startCountdown();
   } catch (error) {
     console.error(error);
-    alert('인증 번호 전송에 실패했습니다. 다시 시도해주세요.');
+    alert("인증 번호 전송에 실패했습니다. 다시 시도해주세요.");
   }
 };
 
 const verifyEmailCode = async () => {
   console.log("하하");
   try {
-    const response = await http.post('/email/signup/verify', { email: email.value, code: verificationCode.value });
+    const response = await http.post("/email/signup/verify", {
+      email: email.value,
+      code: verificationCode.value,
+    });
     if (response.status === 200) {
       verificationCodeValid.value = true;
       emailVerifyCode.value = verificationCode.value;
@@ -77,10 +80,10 @@ const verifyEmailCode = async () => {
       verificationCode.value = verificationCode.value; // Keeps verification code input value
       countdown.value = 0; // Clear countdown display
 
-      alert('이메일 인증에 성공했습니다.');
+      alert("이메일 인증에 성공했습니다.");
     }
   } catch (error) {
-    verificationError.value = '유효하지 않거나 만료된 인증 코드입니다.';
+    verificationError.value = "유효하지 않거나 만료된 인증 코드입니다.";
     console.error(error);
   }
 };
@@ -88,28 +91,42 @@ const verifyEmailCode = async () => {
 const validatePhoneNumber = () => {
   const phonePattern = /^\d{3}-\d{3,4}-\d{4}$/;
   if (!phonePattern.test(phoneNumber.value)) {
-    phoneError.value = '올바른 핸드폰 번호를 입력해주세요.';
+    phoneError.value = "올바른 핸드폰 번호를 입력해주세요.";
   } else {
-    phoneError.value = '';
+    phoneError.value = "";
   }
 };
 
 const validatePassword = () => {
   if (password.value !== confirmPassword.value) {
-    passwordError.value = '비밀번호가 일치하지 않습니다.';
+    passwordError.value = "비밀번호가 일치하지 않습니다.";
   } else {
-    passwordError.value = '';
+    passwordError.value = "";
   }
 };
 
 const formatPhoneNumber = () => {
-  let input = phoneNumber.value.replace(/\D/g, '');
+  let input = phoneNumber.value.replace(/\D/g, "");
   if (input.length > 3 && input.length <= 7) {
     input = `${input.slice(0, 3)}-${input.slice(3)}`;
   } else if (input.length > 7) {
     input = `${input.slice(0, 3)}-${input.slice(3, 7)}-${input.slice(7, 11)}`;
   }
   phoneNumber.value = input;
+};
+
+const generateNickname = async () => {
+  console.log("generateNickname");
+  try {
+    const response = await http.post("/gpt/generate/nickname");
+    if (response.status === 200) {
+      console.log(response);
+      // 대괄호를 제거하고 닉네임을 설정합니다.
+      nickname.value = response.data.nickname.replace(/\[|\]/g, "");
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const selectGender = (value) => {
@@ -119,11 +136,11 @@ const selectGender = (value) => {
 
 const register = async () => {
   if (password.value !== confirmPassword.value) {
-    alert('비밀번호가 일치하지 않습니다.');
+    alert("비밀번호가 일치하지 않습니다.");
     return;
   }
   if (phoneError.value) {
-    alert('올바른 핸드폰 번호를 입력해주세요.');
+    alert("올바른 핸드폰 번호를 입력해주세요.");
     return;
   }
 
@@ -140,13 +157,13 @@ const register = async () => {
       intro: intro.value,
       emailVerifyCode: emailVerifyCode.value,
     };
-    
-    const response = await http.post('/member/signup', registrationData);
-    alert('회원가입이 완료되었습니다.');
-    router.push('/');
+
+    const response = await http.post("/member/signup", registrationData);
+    alert("회원가입이 완료되었습니다.");
+    router.push("/");
   } catch (error) {
     console.error(error);
-    alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+    alert("회원가입에 실패했습니다. 다시 시도해주세요.");
   }
 };
 </script>
@@ -154,7 +171,7 @@ const register = async () => {
 <template>
   <div class="signup-background">
     <div class="signup-container">
-      <img src="/src/assets/img/navlog.png" alt="logo" class="logo">
+      <img src="/src/assets/img/navlog.png" alt="logo" class="logo" />
       <h2>회원가입</h2>
       <form class="form-container" @submit.prevent="register">
         <div class="form-input-container">
@@ -162,34 +179,65 @@ const register = async () => {
             <div class="form-group">
               <label for="email">이메일 *</label>
               <div class="inline-input">
-                <input type="email" id="email" v-model="email" required :disabled="verificationCodeSent && verificationCodeValid">
-                <button type="button" @click="sendEmailVerification" :disabled="verificationCodeSent && verificationCodeValid">{{ verificationCodeSent ? '인증번호 재발송' : '인증번호 발송' }}</button>
+                <input
+                  type="email"
+                  id="email"
+                  v-model="email"
+                  required
+                  :disabled="verificationCodeSent && verificationCodeValid"
+                />
+                <button
+                  type="button"
+                  @click="sendEmailVerification"
+                  :disabled="verificationCodeSent && verificationCodeValid"
+                >
+                  {{ verificationCodeSent ? "인증번호 재발송" : "인증번호 발송" }}
+                </button>
               </div>
             </div>
             <div class="form-group">
               <label for="verificationCode">인증번호 *</label>
               <div class="inline-input">
-                <input type="text" id="verificationCode" v-model="verificationCode" :disabled="!verificationCodeSent || verificationCodeValid">
-                <button type="button" @click="verifyEmailCode" :disabled="!countdown || verificationCodeValid">인증</button>
-                <div v-if="countdown > 0" class="countdown">{{ Math.floor(countdown / 60) }}:{{ ('0' + (countdown % 60)).slice(-2) }}</div>
+                <input
+                  type="text"
+                  id="verificationCode"
+                  v-model="verificationCode"
+                  :disabled="!verificationCodeSent || verificationCodeValid"
+                />
+                <button
+                  type="button"
+                  @click="verifyEmailCode"
+                  :disabled="!countdown || verificationCodeValid"
+                >
+                  인증
+                </button>
+                <div v-if="countdown > 0" class="countdown">
+                  {{ Math.floor(countdown / 60) }}:{{ ("0" + (countdown % 60)).slice(-2) }}
+                </div>
               </div>
               <div v-if="verificationError" class="error">{{ verificationError }}</div>
             </div>
             <div class="form-group">
               <label for="memberName">이름 *</label>
-              <input type="text" id="memberName" v-model="memberName" required>
+              <input type="text" id="memberName" v-model="memberName" required />
             </div>
             <div class="form-group">
               <label for="birthday">생년월일 *</label>
-              <input type="date" id="birthday" v-model="birthday" required>
+              <input type="date" id="birthday" v-model="birthday" required />
             </div>
             <div class="form-group">
               <label for="password">비밀번호 *</label>
-              <input type="password" id="password" v-model="password" required>
+              <input type="password" id="password" v-model="password" required />
             </div>
             <div class="form-group">
               <label for="confirmPassword">비밀번호 확인 *</label>
-              <input type="password" id="confirmPassword" v-model="confirmPassword" @blur="validatePassword" required>
+              <input
+                type="password"
+                id="confirmPassword"
+                v-model="confirmPassword"
+                @blur="validatePassword"
+                required
+              />
               <div v-if="passwordError" class="error">{{ passwordError }}</div>
             </div>
           </div>
@@ -197,24 +245,35 @@ const register = async () => {
             <div class="form-group">
               <label for="nickname">닉네임 *</label>
               <div class="inline-input">
-                <input type="text" id="nickname" v-model="nickname" required>
-                <button type="button">자동생성</button>
+                <input type="text" id="nickname" v-model="nickname" required />
+                <button type="button" @click="generateNickname()">자동생성</button>
               </div>
             </div>
             <div class="form-group">
               <label for="mbti">MBTI</label>
-              <input type="text" id="mbti" v-model="mbti">
+              <input type="text" id="mbti" v-model="mbti" />
             </div>
             <div class="form-group">
               <label>성별 *</label>
-                <div class="gender-buttons">
-                  <button type="button" @click="selectGender(1)" :class="{ selected: gender === 1 }">남</button>
-                  <button type="button" @click="selectGender(0)" :class="{ selected: gender === 0 }">여</button>
-                </div>
+              <div class="gender-buttons">
+                <button type="button" @click="selectGender(1)" :class="{ selected: gender === 1 }">
+                  남
+                </button>
+                <button type="button" @click="selectGender(0)" :class="{ selected: gender === 0 }">
+                  여
+                </button>
+              </div>
             </div>
             <div class="form-group">
               <label for="phoneNumber">핸드폰 *</label>
-              <input type="tel" id="phoneNumber" v-model="phoneNumber" @input="formatPhoneNumber" @blur="validatePhoneNumber" required>
+              <input
+                type="tel"
+                id="phoneNumber"
+                v-model="phoneNumber"
+                @input="formatPhoneNumber"
+                @blur="validatePhoneNumber"
+                required
+              />
               <div v-if="phoneError" class="error">{{ phoneError }}</div>
             </div>
             <div class="form-group">
@@ -236,7 +295,7 @@ const register = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('/src/assets/background.jpg'); /* Replace with the path to your background image */
+  background-image: url("/src/assets/background.jpg"); /* Replace with the path to your background image */
   background-size: cover;
   background-position: center;
   position: absolute;
@@ -275,7 +334,8 @@ form {
   justify-content: space-between;
 }
 
-.form-left, .form-right {
+.form-left,
+.form-right {
   width: 48%; /* Two equal columns */
 }
 
