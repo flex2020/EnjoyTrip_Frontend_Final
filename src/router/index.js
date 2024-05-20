@@ -99,6 +99,11 @@ const router = createRouter({
           name: "member-findpassword",
           component: () => import("@/components/member/MemberFindPassword.vue"),
         },
+        {
+          path: "resetpassword",
+          name: "member-resetpassword",
+          component: () => import("@/components/member/MemberResetPassword.vue"),
+        },
       ],
     },
   ]

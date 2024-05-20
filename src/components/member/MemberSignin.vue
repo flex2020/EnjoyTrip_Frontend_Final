@@ -1,11 +1,41 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { Axios } from '/src/api/http-common';
+
+const http = Axios();
+const router = useRouter();
+const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
 
-const login = () => {
-  console.log('Logging in with', email.value, password.value);
+const login = async () => {
+  try {
+    const response = await http.post('/member/signin', {
+      email: email.value,
+      password: password.value,
+    });
+
+    const token = response.data; // Assuming the token is in response.data.token
+
+    if (token) {
+
+      // Log the state
+      console.log('isLogin:', authStore.isLogin);
+      console.log('Email:', authStore.getEmail);
+      console.log('Nickname:', authStore.getNickname);
+
+      alert('로그인에 성공하였습니다.');
+      router.push('/');
+    } else {
+      throw new Error('로그인에 실패하였습니다. 다시 시도해주세요.');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('로그인에 실패하였습니다. 다시 시도해주세요.');
+  }
 };
 </script>
 
@@ -44,7 +74,7 @@ const login = () => {
   padding: 3rem; /* Increased padding */
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 350px; /* Increased width */
+  width: 500px; /* Increased width */
   text-align: center;
 }
 
