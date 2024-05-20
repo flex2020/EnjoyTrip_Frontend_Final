@@ -71,6 +71,7 @@ const moveView = (viewId) => {
       v-for="review in reviews"
       :key="review.reviewId"
       @click="moveView(review.reviewId)"
+      v-show="review.deleted === 0 ? true : false"
     >
       <div class="review-list-item-intro">
         <div>{{ review.reviewTitle }}</div>
@@ -89,18 +90,17 @@ const moveView = (viewId) => {
     </div>
   </div>
   <div v-if="loading" class="loading">마지막 페이지 입니다.</div>
-  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">
-    맨 위로
-  </button>
+  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">맨 위로</button>
 </template>
 
 <style scoped>
 #review-list-item-container {
   display: flex;
   flex-flow: wrap;
-  :hover {
-    cursor: pointer;
-  }
+}
+
+#review-list-item-container:hover {
+  cursor: pointer;
 }
 
 .review-list-item {

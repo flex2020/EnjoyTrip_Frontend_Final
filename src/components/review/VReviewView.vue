@@ -30,7 +30,7 @@ const getReview = async () => {
       console.log(response);
       review.value = response.data.reviewView;
       comments.value = response.data.comments;
-      if (response.data.reviewView.memberId === authStore.getMemberId) {
+      if (response.data.reviewView.memberId === authStore.memberId) {
         isMyReview.value = true;
       }
     })
@@ -56,6 +56,10 @@ const updateLikeCount = async () => {
     review.value.likeCount--;
     isLike.value = false;
   }
+};
+
+const getComment = () => {
+  getReview();
 };
 </script>
 
@@ -112,7 +116,7 @@ const updateLikeCount = async () => {
       </div>
     </div>
 
-    <VReviewCommentItem :viewId="viewId" :comments="comments" />
+    <VReviewCommentItem :viewId="viewId" :comments="comments" @getComment="getComment" />
   </div>
 </template>
 

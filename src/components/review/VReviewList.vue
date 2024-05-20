@@ -27,8 +27,6 @@ const param = ref({
 onMounted(async () => {
   const response = await getReviewList();
   reviews.value = await response.reviews;
-  // console.log(response.reviews);
-  // console.log(totalPageCount.value);
 });
 
 const getReviewList = async () => {
@@ -54,7 +52,7 @@ const changeSortSelect = async () => {
   param.value.pgno = currentPage.value;
   const response = await getReviewList();
   reviews.value = await response.reviews;
-}
+};
 
 const changeScopeSelect = async () => {
   param.value.scopeKey = scopeSecelct.value;
@@ -63,7 +61,7 @@ const changeScopeSelect = async () => {
   const response = await getReviewList();
   reviews.value = await response.reviews;
   // console.log(response.reviews);
-}
+};
 
 const searchReview = async () => {
   param.value.keyword = inputKeyword.value;
@@ -73,7 +71,7 @@ const searchReview = async () => {
   reviews.value = await response.reviews;
   // console.log(inputKeyword.value);
   // console.log(response.reviews);
-}
+};
 </script>
 
 <template>

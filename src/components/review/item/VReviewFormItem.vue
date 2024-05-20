@@ -47,8 +47,8 @@ const reviewWrite = () => {
   router.push({ name: "review-list" });
 };
 
-const reviewUpdate = () => {
-  http.put("review", review_article.value);
+const reviewUpdate = async () => {
+  await http.put("review", review_article.value);
 
   router.push({ name: "review-list" });
 };
