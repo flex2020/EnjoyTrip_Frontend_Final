@@ -5,6 +5,7 @@ import MyProfileUpdate from '@/components/mypage/MyProfileUpdate.vue';
 import MyCourses from '@/components/mypage/MyCourses.vue';
 import MyMatches from '@/components/mypage/MyMatches.vue';
 import MyReviews from '@/components/mypage/MyReviews.vue';
+import MyWithdraw from '@/components/mypage/MyWithdraw.vue';
 
 const props = defineProps({
   activeTab: {
@@ -19,6 +20,7 @@ const componentsMap = {
   courses: MyCourses,
   matches: MyMatches,
   reviews: MyReviews,
+  withdraw: MyWithdraw,
 };
 
 const activeComponent = computed(() => componentsMap[props.activeTab]);

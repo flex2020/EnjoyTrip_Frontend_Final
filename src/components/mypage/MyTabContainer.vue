@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, defineEmits } from 'vue';
 
 // Props 정의
 const props = defineProps({
@@ -20,8 +20,10 @@ const tabs = [
   { name: 'profileUpdate', label: '회원정보 수정' },
   { name: 'matches', label: '매칭 게시물 목록' },
   { name: 'reviews', label: '여행 후기 목록' },
-  { name: 'signout', label: '회원 탈퇴' },
+  { name: 'withdraw', label: '회원 탈퇴' },
 ];
+
+const emit = defineEmits(['update-active-tab', 'open-modal']);
 </script>
 
 <template>
@@ -34,7 +36,7 @@ const tabs = [
           :class="{ active: props.activeTab === tab.name, hover: hoverTab === tab.name }"
           @mouseenter="setHoverTab(tab.name)"
           @mouseleave="setHoverTab(null)"
-          @click="$emit('update-active-tab', tab.name)"
+          @click="tab.name === 'withdraw' ? emit('open-modal') : emit('update-active-tab', tab.name)"
         >
           {{ tab.label }}
         </li>
