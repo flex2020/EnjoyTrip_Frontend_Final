@@ -1,19 +1,19 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { Axios } from '/src/api/http-common';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { Axios } from "/src/api/http-common";
 
 const http = Axios();
 const router = useRouter();
 const authStore = useAuthStore();
 
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 
 const login = async () => {
   try {
-    const response = await http.post('/member/signin', {
+    const response = await http.post("/member/signin", {
       email: email.value,
       password: password.value,
     });
@@ -21,20 +21,22 @@ const login = async () => {
     const token = response.data; // Assuming the token is in response.data.token
 
     if (token) {
-
       // Log the state
-      console.log('isLogin:', authStore.isLogin);
-      console.log('Email:', authStore.getEmail);
-      console.log('Nickname:', authStore.getNickname);
+      authStore.setToken(token);
 
-      alert('로그인에 성공하였습니다.');
-      router.push('/');
+      console.log("isLogin:", authStore.isLogin);
+      console.log("Email:", authStore.getEmail);
+      console.log("Nickname:", authStore.getNickname);
+      console.log("memberId:", authStore.getMemberId);
+
+      alert("로그인에 성공하였습니다.");
+      router.push("/");
     } else {
-      throw new Error('로그인에 실패하였습니다. 다시 시도해주세요.');
+      throw new Error("로그인에 실패하였습니다. 다시 시도해주세요.");
     }
   } catch (error) {
     console.error(error);
-    alert('로그인에 실패하였습니다. 다시 시도해주세요.');
+    alert("로그인에 실패하였습니다. 다시 시도해주세요.");
   }
 };
 </script>
@@ -42,15 +44,15 @@ const login = async () => {
 <template>
   <div class="login-background">
     <div class="login-container">
-      <img src="/src/assets/img/navlog.png" alt="logo" class="logo">
+      <img src="/src/assets/img/navlog.png" alt="logo" class="logo" />
       <h2>로그인</h2>
       <form @submit.prevent="login">
-        <input type="email" v-model="email" placeholder="your@email.com" required>
-        <input type="password" v-model="password" placeholder="********" required>
+        <input type="email" v-model="email" placeholder="your@email.com" required />
+        <input type="password" v-model="password" placeholder="********" required />
         <button type="submit">로그인</button>
       </form>
       <div class="links">
-        <router-link :to="{ name: 'member-signup' }">회원가입</router-link> | 
+        <router-link :to="{ name: 'member-signup' }">회원가입</router-link> |
         <router-link :to="{ name: 'member-findpassword' }">비밀번호 찾기</router-link>
       </div>
     </div>
@@ -59,7 +61,7 @@ const login = async () => {
 
 <style scoped>
 .login-background {
-  width: 100vw;  /* Viewport width */
+  width: 100vw; /* Viewport width */
   height: 100vh; /* Viewport height */
   display: flex;
   justify-content: center;

@@ -9,6 +9,7 @@ export default {
   data() {
     return {
       activeTab: "profile",
+      hoverTab: null,
     };
   },
   computed: {
@@ -29,13 +30,9 @@ export default {
     setActiveTab(tab) {
       this.activeTab = tab;
     },
-  },
-  components: {
-    MyProfile,
-    MyCourses,
-    MyMatches,
-    MyReviews,
-    VHeader, // VHeader 추가
+    setHoverTab(tab) {
+      this.hoverTab = tab;
+    },
   },
 };
 </script>
@@ -55,19 +52,44 @@ export default {
           <div class="tab-container">
             <nav>
               <ul>
-                <li :class="{ active: activeTab === 'profile' }" @click="setActiveTab('profile')">
+                <li
+                  :class="{ active: activeTab === 'profile', hover: hoverTab === 'profile' }"
+                  @click="setActiveTab('profile')"
+                  @mouseenter="setHoverTab('profile')"
+                  @mouseleave="setHoverTab(null)"
+                >
                   개인정보 수정
                 </li>
-                <li :class="{ active: activeTab === 'courses' }" @click="setActiveTab('courses')">
+                <li
+                  :class="{ active: activeTab === 'courses', hover: hoverTab === 'courses' }"
+                  @click="setActiveTab('courses')"
+                  @mouseenter="setHoverTab('courses')"
+                  @mouseleave="setHoverTab(null)"
+                >
                   내 여행 코스
                 </li>
-                <li :class="{ active: activeTab === 'matches' }" @click="setActiveTab('matches')">
+                <li
+                  :class="{ active: activeTab === 'matches', hover: hoverTab === 'matches' }"
+                  @click="setActiveTab('matches')"
+                  @mouseenter="setHoverTab('matches')"
+                  @mouseleave="setHoverTab(null)"
+                >
                   매칭 게시물 목록
                 </li>
-                <li :class="{ active: activeTab === 'reviews' }" @click="setActiveTab('reviews')">
+                <li
+                  :class="{ active: activeTab === 'reviews', hover: hoverTab === 'reviews' }"
+                  @click="setActiveTab('reviews')"
+                  @mouseenter="setHoverTab('reviews')"
+                  @mouseleave="setHoverTab(null)"
+                >
                   여행 후기 목록
                 </li>
-                <li :class="{ active: activeTab === 'signout' }" @click="setActiveTab('signout')">
+                <li
+                  :class="{ active: activeTab === 'signout', hover: hoverTab === 'signout' }"
+                  @click="setActiveTab('signout')"
+                  @mouseenter="setHoverTab('signout')"
+                  @mouseleave="setHoverTab(null)"
+                >
                   회원 탈퇴
                 </li>
               </ul>
@@ -92,7 +114,7 @@ export default {
   background-image: url("/src/assets/img/mainpage.png");
   background-size: cover;
   background-position: center;
-  position: relative; /* Changed to relative */
+  position: relative;
 }
 
 .background::before {
@@ -102,8 +124,8 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.15); /* Adjust the opacity as needed */
-  z-index: 1; /* Adjust z-index */
+  background-color: rgba(0, 0, 0, 0.15);
+  z-index: 1;
 }
 
 .profile-container {
@@ -113,12 +135,12 @@ export default {
   width: 100%;
   height: 80%;
   max-width: 1200px;
-  position: relative; /* Ensure it stays above the dark overlay */
-  z-index: 2; /* Ensure it's above the overlay */
+  position: relative;
+  z-index: 2;
 }
 
 .left-container {
-  width: 35%; /* Adjust width as needed */
+  width: 35%;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -141,44 +163,68 @@ export default {
 }
 
 .tab-container {
-  height: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .tab-container nav ul {
   list-style: none;
   padding: 0;
-  text-align: center; /* Center align text */
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
 }
 
 .tab-container nav ul li {
-  padding: 10px 0;
+  position: relative;
+  padding: 15px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  border-bottom: 1px solid #e0e0e0; /* Add bottom border */
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+  font-size: 18px;
 }
 
 .tab-container nav ul li:last-child {
-  border-bottom: none; /* Remove bottom border for last item */
+  border-bottom: none;
 }
 
-.tab-container nav ul li:hover {
-  background-color: #000; /* Change to black on hover */
-  color: #fff; /* Change text color to white on hover */
+.tab-container nav ul li::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: #000;
+  border-radius: 5px;
+  z-index: -1;
+  transition: height 0.3s ease;
 }
 
+.tab-container nav ul li.active::before,
+.tab-container nav ul li.hover::before {
+  height: 100%;
+}
+
+.tab-container nav ul li:hover,
 .tab-container nav ul li.active {
-  background-color: #000; /* Keep black background when active */
-  color: #fff; /* Keep text color white when active */
+  color: #fff;
 }
 
 .content-container {
-  width: 65%; /* Adjust width as needed */
+  width: 65%;
   margin-left: 20px;
 }
 
 .profile-pic {
-  width: 100px; /* Reduced size */
-  height: 100px; /* Reduced size */
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   margin-bottom: 20px;
 }
