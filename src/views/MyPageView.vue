@@ -212,8 +212,13 @@ export default {
   height: 100%;
 }
 
-.tab-container nav ul li:hover,
-.tab-container nav ul li.active {
+.tab-container nav ul li.active,
+.tab-container nav ul li.hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.tab-container nav ul li:hover {
   color: #fff;
 }
 
