@@ -31,8 +31,7 @@ function Axios() {
   
       if (error.response && error.response.status === 401) {
         authStore.signout();
-        alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-        router.push('/login'); // 로그인 페이지로 리다이렉션
+        location.href = "/member/signin";
       }
   
       return Promise.reject(error);
