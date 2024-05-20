@@ -1,9 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, useRoute } from 'vue-router'
 import MainView from "@/views/MainView.vue"
 import ReviewView from "@/views/ReviewView.vue"
 import ChatView from "@/views/ChatView.vue"
 import MatchView from "@/views/MatchView.vue"
 import PlanView from "@/views/PlanView.vue"
+import { getMatchesByMemberId } from '@/api/match'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,7 +17,8 @@ const router = createRouter({
     {
       path: '/chat/:matchId',
       name: 'chat',
-      component: ChatView 
+      component: ChatView,
+      beforeEnter: canEnterChat,
     },
     {
       path: '/match',
@@ -102,4 +104,19 @@ const router = createRouter({
   ]
 })
 
+async function canEnterChat(to, from, next) {
+  const matchId = to.params.matchId;
+  const memberId = 1;
+  const chatList = await getMatchesByMemberId(memberId);
+  console.log(matchId)
+  console.log(chatList[0])
+  for (let i=0; i<chatList.length; i++) {
+    if (chatList[i].matchId == matchId) {
+      next();
+      return;
+    }
+    alert('입장할 수 없는 채팅방입니다.');
+    router.push({name: 'main'});
+  }
+}
 export default router

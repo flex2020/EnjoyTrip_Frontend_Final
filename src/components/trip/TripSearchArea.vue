@@ -28,6 +28,7 @@ onMounted(async () => {
       contentId: item.contentId,
     })
   }
+  if (tripStore.tabItemsLatLng[0].length > 0) tripStore.setCenter(tripStore.tabItemsLatLng[0][0].lat, tripStore.tabItemsLatLng[0][0].lng);
   console.log(tripStore.tabItemsLatLng)
 });
 

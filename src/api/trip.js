@@ -18,9 +18,9 @@ async function getGugunList(sido) {
 
 // GET
 // 관광지 정보
-async function getAttractionSearchResults(sido, gugun, keyword, page) {
+async function getAttractionSearchResults(sido, gugun, keyword) {
   // api.defaults.headers["access-token"] = store.getters["accessToken"];
-  const response = await http.get(`/trip/attractions?sido=${sido}&gugun=${gugun}&keyword=${keyword}&page=${page}`);
+  const response = await http.get(`/trip/attractions?sido=${sido}&gugun=${gugun}&keyword=${keyword}`);
   const data = await response.data;
   return data;
 }

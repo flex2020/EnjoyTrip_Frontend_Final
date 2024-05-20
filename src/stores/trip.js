@@ -24,7 +24,7 @@ export const useTripStore = defineStore('tripStore', () => {
 
 
   async function searchAttractions() {
-    const data = await getAttractionSearchResults(sido.value, gugun.value, keyword.value, page.value);
+    const data = await getAttractionSearchResults(sido.value, gugun.value, keyword.value);
     attractionSearchResults.value = await data.data;
     pagination.value = await data.pagination;
     totalPages.value = await data.totalPages;
