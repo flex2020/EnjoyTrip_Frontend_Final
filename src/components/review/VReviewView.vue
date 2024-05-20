@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Axios } from "/src/api/http-common";
 import VReviewCommentItem from "@/components/review/item/VReviewCommentItem.vue";
+import { useAuthStore } from "@/stores/auth";
+import { Axios } from "/src/api/http-common";
 
 const http = Axios();
+const authStore = useAuthStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -15,6 +17,7 @@ const viewId = ref(route.params.viewid);
 const review = ref({});
 const isLike = ref(false);
 const comments = ref([]);
+const isMyReview = ref(false);
 
 onMounted(() => {
   getReview();
@@ -27,13 +30,16 @@ const getReview = async () => {
       console.log(response);
       review.value = response.data.reviewView;
       comments.value = response.data.comments;
+      if (response.data.reviewView.memberId === authStore.memberId) {
+        isMyReview.value = true;
+      }
     })
     .catch((e) => {
       console.log(e);
     });
 
   const response = await http.get(`review/likecount/${viewId.value}`);
-  console.log(response.data);
+  // console.log(response.data);
   if (response.data) {
     isLike.value = true;
   } else {
@@ -51,6 +57,10 @@ const updateLikeCount = async () => {
     isLike.value = false;
   }
 };
+
+const getComment = () => {
+  getReview();
+};
 </script>
 
 <template>
@@ -58,12 +68,10 @@ const updateLikeCount = async () => {
     <div>{{ review.reviewTitle }}</div>
   </div>
   <div id="review-view-container">
-    <div id="review-view-author-id">작성자 : {{ review.memberName }}</div>
+    <div id="review-view-author-id">작성자 : {{ review.nickName }}</div>
     <div id="review-view-info">
       <div>
-        <div>
-          여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}
-        </div>
+        <div>여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}</div>
         <div>여행인원 : ?</div>
       </div>
       <div>
@@ -100,16 +108,15 @@ const updateLikeCount = async () => {
         <router-link
           :to="{ name: 'review-update', params: { viewid: review.reviewId } }"
           class="move-link"
+          v-show="isMyReview"
         >
           게시글 수정
         </router-link>
-        <router-link :to="{ name: 'review-list' }" class="move-link">
-          게시글 목록
-        </router-link>
+        <router-link :to="{ name: 'review-list' }" class="move-link"> 게시글 목록 </router-link>
       </div>
     </div>
 
-    <VReviewCommentItem :viewId="viewId" :comments="comments" />
+    <VReviewCommentItem :viewId="viewId" :comments="comments" @getComment="getComment" />
   </div>
 </template>
 
