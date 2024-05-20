@@ -17,10 +17,7 @@ console.log('props', props.attraction)
     </div>
     <div class="marker-info-bottom">
       <p>
-        {{ attraction.addr1 }}
-      </p>
-      <p>
-        {{ attraction.addr2 }}
+        {{ attraction.addr1 + " " + attraction.addr2 }}
       </p>
       <button class="btn-add" v-if="!planStore.checkIncludes(attraction)" @click="planStore.addPlan(attraction)">
         여행 코스에 추가

@@ -16,11 +16,9 @@ const props = defineProps({
     </div>
     <div class="marker-info-bottom">
       <p>
-        {{ attraction.addr1 }}
+        {{ attraction.addr1 + " " + attraction.addr2 }}
       </p>
-      <p>
-        {{ attraction.addr2 }}
-      </p>
+      
       <button class="btn-add" v-if="!tripStore.checkIncludes(attraction)" @click="tripStore.addTripPlan(attraction)">
         여행 코스에 추가
       </button>

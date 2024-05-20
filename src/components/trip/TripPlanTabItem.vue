@@ -24,13 +24,19 @@ const styleClass = computed(() => {
   border: 1px solid var(--brand-color);
   padding: 5px 22px;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.tab:hover {
+  background-color: var(--brand-color);
+  color: white;
 }
 
 .tab-selected {
   background-color: var(--brand-color);
-  border: none;
   color: white;
-  padding: 7px 22px;
+  padding: 9px 22px;
   z-index: 1;
+  cursor: default;
 }
 </style>

@@ -28,6 +28,10 @@ const chatListToggleHandler = () => {
 };
 
 const chatListClickHandler = () => {
+  if (!authStore.isLogin) {
+    alert('로그인 후 이용가능합니다.');
+    return;
+  }
   if (chatList.value.length == 0) {
     alert("현재 연결된 채팅이 없습니다.");
     return;
@@ -112,7 +116,7 @@ watch(chatListToggle, async (newVal) => {
       <router-link :to="{ name: 'review' }" :class="menuClass" class="trip-menu"
         >여행 후기</router-link
       >
-      <div id="mate-chat" :class="menuClass" class="trip-menu" @click="chatListToggleHandler">
+      <div id="mate-chat" :class="menuClass" class="trip-menu" @click="chatListClickHandler">
         메이트 채팅
       </div>
       <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
