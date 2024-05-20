@@ -1,10 +1,11 @@
 <script setup>
-import { useTripStore } from "@/stores/trip";
-const tripStore = useTripStore();
-
+import { usePlanStore } from "@/stores/plan";
+const planStore = usePlanStore();
 const props = defineProps({
   attraction: Object,
 });
+
+console.log('props', props.attraction)
 
 </script>
 
@@ -21,10 +22,10 @@ const props = defineProps({
       <p>
         {{ attraction.addr2 }}
       </p>
-      <button class="btn-add" v-if="!tripStore.checkIncludes(attraction)" @click="tripStore.addTripPlan(attraction)">
+      <button class="btn-add" v-if="!planStore.checkIncludes(attraction)" @click="planStore.addPlan(attraction)">
         여행 코스에 추가
       </button>
-      <button class="btn-remove" v-if="tripStore.checkIncludes(attraction)" @click="tripStore.removeTripPlan(attraction)">
+      <button class="btn-remove" v-if="planStore.checkIncludes(attraction)" @click="planStore.removePlan(attraction)">
         여행 코스에서 삭제
       </button>
     </div>

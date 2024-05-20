@@ -1,11 +1,12 @@
 <script setup>
 import { getMatchesByMemberId, removeMatchOfMember } from "@/api/match";
 import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/auth';
 import { Axios } from '/src/api/http-common';
 
 const http = Axios();
+
 const router = useRouter();
 const authStore = useAuthStore();
 const isActive = ref(false);
@@ -36,6 +37,9 @@ const leaveMatching = async (matchId) => {
   if (!window.confirm('정말 해당 매칭에서 나가시겠습니까?')) return;
   await removeMatchOfMember(1, matchId);
   chatList.value = chatList.value.filter((match) => match.matchId != matchId);
+  if (route.params.matchId == matchId) {
+    router.push({name: 'main'});
+  }
 }
 
 const props = defineProps({
