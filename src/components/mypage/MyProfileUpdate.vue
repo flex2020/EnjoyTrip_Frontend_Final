@@ -17,6 +17,7 @@ const intro = ref("");
 const phoneNumber = ref("");
 const phoneError = ref("");
 const activeTab = ref("profile"); // 기본 활성 탭 설정
+const profileImageFile = ref(null); // 프로필 이미지 파일
 
 // 전화번호 형식 검사 메소드
 const validatePhoneNumber = () => {
@@ -66,6 +67,18 @@ const updateProfile = async () => {
   }
 
   try {
+    // 사진 데이터 포함 저장해보기
+    // const formData = new FormData();
+    // formData.append('nickname', nickname.value);
+    // formData.append('email', email.value);
+    // if (profileImageFile.value) {
+    //   formData.append('profileImage', profileImageFile.value);
+    // }
+
+    // const response = await http.post('/profile/update', formData);
+    // console.log('프로필 데이터 저장 성공:', response.data);
+
+
     await http.put("/member/update", {
       email: email.value,
       memberName: memberName.value,
@@ -126,8 +139,8 @@ onMounted(() => {
         <div v-if="phoneError" class="error">{{ phoneError }}</div>
       </div>
       <div class="button-group">
-        <button type="submit" class="btn btn-update btn-4">수정</button>
-        <router-link to="/reset-password" class="btn btn-reset btn-4">비밀번호 재설정</router-link>
+        <button type="submit" class="btn btn-update">수정</button>
+        <router-link :to="{ name: 'member-findpassword' }" class="btn btn-reset">비밀번호 재설정</router-link>
       </div>
     </form>
   </div>
@@ -135,7 +148,7 @@ onMounted(() => {
 
 <style scoped>
 .profile-update {
-  padding: 30px;
+  padding: 15px;
   width: 100%;
   height: 100%;
   margin: auto;
@@ -173,7 +186,7 @@ onMounted(() => {
 
 .form-group textarea {
   resize: none;
-  height: 80px;
+  height: 70px;
 }
 
 .button-group {
