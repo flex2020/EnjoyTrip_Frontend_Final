@@ -9,7 +9,7 @@ const planStore = usePlanStore();
 </script>
 
 <template>
-  <div class="trip-plan-list-item">
+  <div class="trip-plan-list-item" @click="planStore.setCenter(tripPlan.latitude, tripPlan.longitude)">
     <div class="trip-plan-list-item-top">
       <h2>{{ tripPlan.title }}</h2>
       <img :src="tripPlan.firstImage" />
@@ -38,7 +38,14 @@ const planStore = usePlanStore();
   border-radius: 7px;
   padding: 10px;
   margin: 2px;
+  cursor: pointer;
+  transition: 0.2s;
 }
+.trip-plan-list-item:hover {
+  background-color: var(--brand-color);
+  color: white;
+}
+
 .trip-plan-list-item-top {
   width: 100%;
   height: 65%;

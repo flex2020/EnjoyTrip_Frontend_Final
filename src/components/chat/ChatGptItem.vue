@@ -7,7 +7,7 @@ defineProps({
 <template>
   <div class="chat-list-item">
     <div class="chat-list-item-profile">
-      <img src="/src/assets/img/sample_img.jpg"/>
+      <img src="/src/assets/img/ChatGPT_logo.svg" />
     </div>
     <div style="width: 80%;">
       <div class="chat-list-item-name">
@@ -16,7 +16,7 @@ defineProps({
       <div class="chat-list-item-content">
         {{ chat.content }}
       </div>
-      <div class="chat-list-item-time">
+      <div>
         {{ chat.time }}
       </div>
     </div>
@@ -65,13 +65,6 @@ defineProps({
   border: 1px solid var(--brand-color);
   border-radius: 7px;
   padding: 7px;
-}
-
-.chat-list-item-time {
-  font-size: 12px;
-  width: 86%;
-  text-align: end;
-  margin: 5px;
 }
 
 </style>

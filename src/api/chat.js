@@ -1,22 +1,20 @@
 import { useChatStore } from "@/stores/chat";
 import { useTripStore } from "@/stores/trip";
+import { getAttractionRecommend } from "./gpt";
 class ChatApi {
   
   constructor() {
     this.socket = null;
     this.isConnected = false;
-    this.type = '';
-    this.username = '';
-    this.content = '';
     this.matchId = -1;
-    this.userIdx = -1;
     this.chatStore = null;
     this.tripStore = null;
   }
 
   connect() {
     return new Promise((resolve, reject) => {
-      this.socket = new WebSocket('ws://localhost:8080/chat');
+      const WebSocketURL = import.meta.env.VITE_WEB_SOCKET_URL;
+      this.socket = new WebSocket(WebSocketURL);
 
       this.socket.onopen = () => {
         this.isConnected = true;
@@ -47,7 +45,7 @@ class ChatApi {
   onMessage(message) {
     //alert('메시지 수신');
     console.log(message)
-    if (message.type == 'chat' || message.type == 'notice') {
+    if (message.type == 'chat' || message.type == 'notice' || message.type == 'gpt-answer') {
       this.chatStore.addChatItem(message);
     } else if (message.type == 'update-tab') {
       const updatedData = JSON.parse(message.content);
@@ -63,9 +61,23 @@ class ChatApi {
     }
   }
 
-  sendMessage(message) {
+  async sendMessage(message) {
     if (this.isConnected && this.socket) {
       this.socket.send(JSON.stringify(message));
+
+      // GPT 여행지 정보 호출
+      if (message.content.startsWith('!여행지정보')) {
+        const attractionName = message.content.substring('!여행지정보'.length).trim();
+        const gptAnswer = 'gpt 답변';
+        //const gptAnswer = await getAttractionRecommend(attractionName);
+        // GPT답변 전송
+        this.sendMessage({
+          type: 'gpt-answer',
+          username: 'Chat-GPT',
+          content: gptAnswer,
+          matchId: this.matchId,
+        })
+      }
     } else {
       console.warn('Cannot send message: WebSocket connection is not open.');
     }
@@ -77,36 +89,10 @@ class ChatApi {
     }
   }
 
-  setType(type) {
-    this.type = type;
-  }
-
-  setUsername(username) {
-    this.username = username;
-  }
-
-  setContent(content) {
-    this.content = content;
-  }
-
   setMatchId(matchId) {
     this.matchId = matchId;
   }
 
-  setUserIdx(userIdx) {
-    this.userIdx = userIdx;
-  }
-
-  sendChat() {
-    const message = {
-      type: this.type,
-      username: this.username,
-      content: this.content,
-      matchId: this.matchId
-    };
-    console.log(message);
-    this.sendMessage(message);
-  }
 }
 
 const chatApi = new ChatApi();
