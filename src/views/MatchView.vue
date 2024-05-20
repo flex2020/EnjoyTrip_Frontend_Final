@@ -3,8 +3,8 @@ import VHeader from "@/components/common/VHeader.vue";
 </script>
 
 <template>
-  <VHeader></VHeader>
-  <div>메이트 찾기 페이지 입니다.</div>
+  <VHeader background="white"></VHeader>
+  <router-view></router-view>
 </template>
 
 <style scoped></style>
