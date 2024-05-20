@@ -31,6 +31,8 @@ export const useAuthStore = defineStore("auth", {
       this.token = token;
       // Assuming token is a JWT and contains email and nickname
       const payload = JSON.parse(base64DecodeUnicode(token.split(".")[1]));
+      console.log(token);
+      console.log(payload.email);
       this.email = payload.email;
       this.nickname = payload.nickname;
       this.memberId = payload.memberId;
