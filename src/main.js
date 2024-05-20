@@ -17,7 +17,7 @@ pinia.use(piniaPersist);
 
 app.component("QuillEditor", QuillEditor);
 
-app.use(pinia); // pinia를 여기에 추가합니다.
+app.use(pinia); // pinia를 여기에 추가합니다.npm run
 app.use(router);
 
 useKakao(import.meta.env.VITE_KAKAOMAP_SERVICE_KEY);

@@ -1,56 +1,62 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { Axios } from '/src/api/http-common';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { Axios } from "/src/api/http-common";
 
 const http = Axios();
 const router = useRouter();
 
-const name = ref('');
-const email = ref('');
-const verificationCode = ref('');
+const name = ref("");
+const email = ref("");
+const verificationCode = ref("");
 const showVerification = ref(false);
 const verificationAttempts = ref(0);
-const errorMessage = ref('');
+const errorMessage = ref("");
 
 const sendVerificationCode = async () => {
   try {
-    const response = await http.post('/member/findpassword', { name: name.value, email: email.value });
+    const response = await http.post("/member/findpassword", {
+      name: name.value,
+      email: email.value,
+    });
     console.log(response.status);
     if (response.data) {
       await http.get(`/email/findpassword/auth/send?email=${email.value}`);
       showVerification.value = true;
-      errorMessage.value = '';
+      errorMessage.value = "";
     } else {
-      errorMessage.value = '일치하는 계정이 존재하지 않습니다.';
+      errorMessage.value = "일치하는 계정이 존재하지 않습니다.";
     }
   } catch (error) {
     console.error(error);
-    errorMessage.value = '계정 검증에 실패했습니다. 다시 시도해주세요.';
+    errorMessage.value = "계정 검증에 실패했습니다. 다시 시도해주세요.";
   }
 };
 
 const verifyCode = async () => {
   try {
-    const response = await http.post('/email/findpassword/verify', { email: email.value, code: verificationCode.value });
+    const response = await http.post("/email/findpassword/verify", {
+      email: email.value,
+      code: verificationCode.value,
+    });
     console.log(response);
     if (response.data) {
-      router.push({name : 'member-resetpassword' , query: { email: email.value }});
-      errorMessage.value = '';
+      router.push({ name: "member-resetpassword", query: { email: email.value } });
+      errorMessage.value = "";
     } else {
       verificationAttempts.value++;
       if (verificationAttempts.value >= 5) {
-        errorMessage.value = '인증번호 검증에 5회 실패했습니다. 다시 시도해주세요.';
+        errorMessage.value = "인증번호 검증에 5회 실패했습니다. 다시 시도해주세요.";
         showVerification.value = false;
         verificationAttempts.value = 0;
-        verificationCode.value = '';
+        verificationCode.value = "";
       } else {
-        errorMessage.value = '인증번호가 일치하지 않습니다.';
+        errorMessage.value = "인증번호가 일치하지 않습니다.";
       }
     }
   } catch (error) {
     console.error(error);
-    errorMessage.value = '인증번호 검증에 실패했습니다. 다시 시도해주세요.';
+    errorMessage.value = "인증번호 검증에 실패했습니다. 다시 시도해주세요.";
   }
 };
 </script>
@@ -58,16 +64,16 @@ const verifyCode = async () => {
 <template>
   <div class="forgot-password-background">
     <div class="forgot-password-container">
-      <img src="/src/assets/img/navlog.png" alt="logo" class="logo">
-      <h2>비밀번호 찾기</h2>
+      <img src="/src/assets/img/navlog.png" alt="logo" class="logo" />
+      <h2>비밀번호 재설정</h2>
       <form @submit.prevent="sendVerificationCode" v-if="!showVerification">
         <div class="form-group">
           <label for="name">이름</label>
-          <input type="text" id="name" v-model="name" required>
+          <input type="text" id="name" v-model="name" required />
         </div>
         <div class="form-group">
           <label for="email">이메일</label>
-          <input type="email" id="email" v-model="email" required>
+          <input type="email" id="email" v-model="email" required />
         </div>
         <button type="submit">인증번호 발송</button>
         <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
@@ -75,7 +81,7 @@ const verifyCode = async () => {
       <form @submit.prevent="verifyCode" v-if="showVerification">
         <div class="form-group">
           <label for="verificationCode">인증번호</label>
-          <input type="text" id="verificationCode" v-model="verificationCode" required>
+          <input type="text" id="verificationCode" v-model="verificationCode" required />
         </div>
         <button type="submit">인증하기</button>
         <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
@@ -91,7 +97,7 @@ const verifyCode = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('/src/assets/background.jpg'); /* Replace with the path to your background image */
+  background-image: url("/src/assets/background.jpg"); /* Replace with the path to your background image */
   background-size: cover;
   background-position: center;
   position: absolute;
