@@ -150,14 +150,18 @@ async function canEnterChat(to, from, next) {
   const memberId = authStore.getMemberId;
   const chatList = await getMatchesByMemberId(memberId);
   console.log(matchId);
-  console.log(chatList[0]);
+  console.log(chatList);
+  let flag = false;
   for (let i = 0; i < chatList.length; i++) {
     if (chatList[i].matchId == matchId) {
+      flag = true;
       next();
       return;
     }
+  }
+  if (!flag) {
     alert("입장할 수 없는 채팅방입니다.");
-    router.push({ name: "main" });
+      router.push({ name: "main" });
   }
 }
 export default router;

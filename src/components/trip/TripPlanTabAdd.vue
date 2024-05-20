@@ -20,5 +20,12 @@ const tripStore = useTripStore();
   color: var(--brand-color);
   border: 1px solid var(--brand-color);
   cursor: pointer;
+  transition: 0.2s;
 }
+
+.tab-add-btn:hover {
+  background-color: var(--brand-color);
+  color: white;
+}
+
 </style>
