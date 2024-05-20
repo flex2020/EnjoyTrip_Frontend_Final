@@ -9,6 +9,7 @@ const router = useRouter();
 const route = useRoute();
 
 const props = defineProps({ viewId: String, comments: Array });
+const isDepth = ref(false);
 
 const newComment = ref({
   reviewId: props.viewId,
@@ -18,70 +19,95 @@ const newComment = ref({
 const newReply = ref({
   reviewId: props.viewId,
   depth: -1,
-  content: '',
-	commentGroup: -1,
-	replyTo: -1,
-})
+  content: "",
+  commentGroup: -1,
+  replyTo: -1,
+  replyParentId: -1,
+});
 
 const addComment = async () => {
   // console.log(props.viewId);
   await http.post("review/comments", newComment.value);
-  newComment.value.content = '';
+  newComment.value.content = "";
 };
 
-const setCurrentReply = (commentGroup, depth, index) => {
-	if (index != newReply.value.replyTo) {
-		newReply.value.commentGroup = commentGroup;
-		newReply.value.depth = depth;
-		newReply.value.replyTo = index;
-	} else {
-		newReply.value.commentGroup = -1;
-		newReply.value.depth = -1;
-		newReply.value.replyTo = -1;
-		newReply.value.content = '';
-	}
-}
+const setCurrentReply = (commentGroup, depth, index, commentId) => {
+  if (index != newReply.value.replyTo) {
+    newReply.value.commentGroup = commentGroup;
+    newReply.value.depth = depth;
+    newReply.value.replyTo = index;
+    newReply.value.replyParentId = commentId;
+  } else {
+    newReply.value.commentGroup = -1;
+    newReply.value.depth = -1;
+    newReply.value.replyTo = -1;
+    newReply.value.content = "";
+    newReply.value.replyParentId = -1;
+  }
+};
 
 const addReply = async () => {
-	await http.post(`review/comments-reply`, {
-		reviewId: props.viewId,
-		depth: newReply.value.depth,
-		content: newReply.value.content,
-		commentGroup: newReply.value.commentGroup,
-	});
-	newReply.value.depth = -1;
-	newReply.value.replyTo = -1;
-  newReply.value.content = '';
-	newReply.value.commentGroup = -1;
-}
+  await http.post(`review/comments-reply`, {
+    reviewId: props.viewId,
+    depth: newReply.value.depth,
+    content: newReply.value.content,
+    commentGroup: newReply.value.commentGroup,
+    commentId: newReply.value.replyParentId,
+  });
+  newReply.value.depth = -1;
+  newReply.value.replyTo = -1;
+  newReply.value.content = "";
+  newReply.value.commentGroup = -1;
+  newReply.value.replyParentId = -1;
+};
 </script>
 
 <template>
   <div>
     <div>댓글</div>
     <form @submit.prevent="addComment" id="review-comment-input-container">
-      <textarea
-        v-model="newComment.content"
-        type="text"
-        placeholder="댓글을 입력하세요"
-      ></textarea>
+      <textarea v-model="newComment.content" type="text" placeholder="댓글을 입력하세요"></textarea>
       <button type="submit">댓글 작성</button>
     </form>
-    <div class="comment" v-for="(comment, index) in comments" :key="comment.commentId">
-      <div>{{ comment.memberName }} </div>
+    <div
+      class="comment"
+      v-for="(comment, index) in comments"
+      :key="comment.commentId"
+      :style="{
+        marginLeft: Number(comment.depth) > 0 ? '20px' : '0',
+      }"
+    >
+      <div>{{ comment.replyParentName == null ? "" : "@" + comment.replyParentName }}</div>
+      <div>{{ comment.memberName }}</div>
       <div>{{ comment.content }}</div>
-      <a @click="setCurrentReply(comment.commentGroup, Number(comment.depth) + 1, index)"> {{ newReply.replyTo == index ? '취소' : '답글작성' }}</a>
+      <a
+        @click="
+          setCurrentReply(comment.commentGroup, Number(comment.depth) + 1, index, comment.commentId)
+        "
+      >
+        {{ newReply.replyTo == index ? "취소" : "답글작성" }}</a
+      >
       <!-- 대댓글 작성 -->
-      <div :id="`comment${comment.commentId}`" :style="{ marginLeft: (comment.depth + 2) * 3 + '%', width: '96.7%', display: index == newReply.replyTo ? 'block' : 'none' }">
+      <div
+        :id="`comment${comment.commentId}`"
+        :style="{
+          display: index === newReply.replyTo ? 'block' : 'none',
+        }"
+      >
         <form @submit.prevent="addReply">
           <div class="form-group">
-            <textarea id="commentContent" name="content" rows="2" v-model="newReply.content" required></textarea>
+            <textarea
+              id="commentContent"
+              name="content"
+              rows="2"
+              v-model="newReply.content"
+              required
+            ></textarea>
           </div>
           <button type="submit">답글 작성</button>
         </form>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -107,6 +133,6 @@ const addReply = async () => {
 }
 
 .comment {
-  margin-bottom : 10px; 
+  margin-bottom: 10px;
 }
 </style>
