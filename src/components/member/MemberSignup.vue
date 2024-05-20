@@ -59,7 +59,12 @@ const sendEmailVerification = async () => {
     startCountdown();
   } catch (error) {
     console.error(error);
-    alert("인증 번호 전송에 실패했습니다. 다시 시도해주세요.");
+    if (error.response && error.response.status === 409) {
+      alert("이미 등록된 이메일입니다.");
+      email.value = "";
+    } else {
+      alert("인증 번호 전송에 실패했습니다. 다시 시도해주세요.");
+    }
   }
 };
 
