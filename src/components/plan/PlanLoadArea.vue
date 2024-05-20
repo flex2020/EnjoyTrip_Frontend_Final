@@ -19,7 +19,8 @@ const courseChangeHandler = async () => {
   planStore.plan = await getCourseByCourseId(courseId);
   planStore.refreshCoursePath();
   planStore.prevCourseId = planStore.courseId;
-  console.log(planStore.plan);
+  planStore.courseName = planStore.getCourseNameByCourseId(planStore.courseId);
+  console.log(planStore.courseName);
 }
 
 </script>

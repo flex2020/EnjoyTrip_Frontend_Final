@@ -17,7 +17,34 @@ async function getCourseByCourseId(courseId) {
   return data; 
 }
 
+async function savePlan(courseId, courseName, memberId, plan) {
+  const courseDetail = [];
+  for (let i = 0; i < plan.length; i++) {
+    courseDetail.push({
+      courseId: courseId,
+      attractionId: plan[i].contentId,
+      order: i + 1,
+    });
+  }
+  
+
+  const data = {
+    courseId: courseId,
+    memberId: memberId,
+    courseName: courseName,
+    plan: courseDetail,
+  }
+  console.log(data);
+  await http.post(`/course`, data);
+}
+
+async function removeCourseByCourseId(courseId) {
+  await http.delete(`/course/${courseId}`);
+}
+
 export {
   getCourseListByMember,
   getCourseByCourseId,
+  savePlan,
+  removeCourseByCourseId,
 };

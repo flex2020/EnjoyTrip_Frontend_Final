@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { getAttractionSearchResults, updateMatchCourse } from '@/api/trip';
-import { getCourseListByMember } from '@/api/plan';
+import { getCourseListByMember, savePlan } from '@/api/plan';
 
 export const usePlanStore = defineStore('planStore', () => {
   const courseId = ref(-1);
@@ -13,6 +13,8 @@ export const usePlanStore = defineStore('planStore', () => {
     lat: 37.5664056,
     lng: 126.9778222,
   });
+  const nameInputToggle = ref(false);
+  const courseName = ref('');
 
   const sido = ref('');
   const gugun = ref('');
@@ -102,10 +104,33 @@ export const usePlanStore = defineStore('planStore', () => {
     toggledAttraction.value = '';
   }
 
+  async function saveCourse() {
+    if (courseName.value == '') {
+      alert('코스명을 입력해주세요.');
+      return;
+    }
+    const memberId = 1;
+    await savePlan(courseId.value, courseName.value, memberId, plan.value);
+    console.log(plan.value)
+    alert('저장되었습니다.');
+    nameInputToggle.value = false;
+    await loadCourseList(memberId);
+    if (courseId.value == -1) plan.value = [];
+  }
+
+  function getCourseNameByCourseId(courseId) {
+    for (let i = 0; i < courseList.value.length; i++) {
+      if (courseList.value[i].courseId == courseId) return courseList.value[i].courseName;
+    }
+    return '';
+  }
+
   return { 
     courseId,
     prevCourseId,
     searchResults,
+    nameInputToggle,
+    courseName,
     plan,
     mapCenter,
     keyword,
@@ -123,5 +148,7 @@ export const usePlanStore = defineStore('planStore', () => {
     updateCourse,
     addPlan,
     removePlan,
+    saveCourse,
+    getCourseNameByCourseId,
   }
 })

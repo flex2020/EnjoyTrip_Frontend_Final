@@ -1,23 +1,18 @@
 <script setup>
+import { usePlanStore } from "@/stores/plan";
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+const planStore = usePlanStore();
 
-const updateCourse = () => {
-  if (!window.confirm(`현재 코스를 저장하시겠습니까?`)) return;
-  tripStore.updateCourse()
-    .then(() => {
-      alert('저장 되었습니다.')
-    })
-    .catch(() => {
-      alert('저장에 실패했습니다.')
-    });
+const saveCourse = () => {
+  planStore.nameInputToggle = true;
 }
 
 </script>
 
 <template>
-  <button class="plan-save-btn" @click="updateCourse">
+  <button class="plan-save-btn" @click="saveCourse">
     현재 코스 저장
   </button>
 </template>
