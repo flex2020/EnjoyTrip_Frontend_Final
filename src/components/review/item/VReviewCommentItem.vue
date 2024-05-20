@@ -25,6 +25,11 @@ const newReply = ref({
   replyParentId: -1,
 });
 
+const updateComment = ref({
+  commentId: -1,
+  content: "",
+});
+
 const addComment = async () => {
   // console.log(props.viewId);
   await http.post("review/comments", newComment.value);
@@ -60,6 +65,30 @@ const addReply = async () => {
   newReply.value.commentGroup = -1;
   newReply.value.replyParentId = -1;
 };
+
+const setUpdateComment = (commentId, content) => {
+  if (updateComment.value.commentId != commentId) {
+    updateComment.value.commentId = commentId;
+    updateComment.value.content = content;
+  } else {
+    updateComment.value.commentId = -1;
+    updateComment.value.content = "";
+  }
+};
+
+const commentUpdate = async () => {
+  // console.log(updateComment.value);
+  await http.put("review/comments", updateComment.value);
+  updateComment.value.commentId = -1;
+  updateComment.value.content = "";
+  alert("댓글 수정 완료");
+};
+
+const commentDelete = async (commentId) => {
+  await http.delete(`/review/comments/${commentId}`);
+  alert("댓글 삭제 완료");
+  // getBoard();
+};
 </script>
 
 <template>
@@ -87,6 +116,19 @@ const addReply = async () => {
       >
         {{ newReply.replyTo == index ? "취소" : "답글작성" }}</a
       >
+      <a style="margin-left: 7px" @click="commentDelete(comment.commentId)">삭제</a>
+      <a style="margin-left: 7px" @click="setUpdateComment(comment.commentId, comment.content)">{{
+        updateComment.commentId != comment.commentId ? "댓글수정" : "취소"
+      }}</a>
+      <div v-show="updateComment.commentId == comment.commentId">
+        <form @submit.prevent="commentUpdate">
+          <div>
+            <textarea rows="2" v-model="updateComment.content" required></textarea>
+          </div>
+          <button type="submit">댓글 수정</button>
+          <button type="button">취소</button>
+        </form>
+      </div>
       <!-- 대댓글 작성 -->
       <div
         :id="`comment${comment.commentId}`"
