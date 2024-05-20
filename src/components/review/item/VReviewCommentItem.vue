@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
 
 const http = Axios();
+const authStore = useAuthStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -14,6 +16,7 @@ const isDepth = ref(false);
 const newComment = ref({
   reviewId: props.viewId,
   content: "",
+  memberId: authStore.getMemberId,
 });
 
 const newReply = ref({
@@ -23,6 +26,7 @@ const newReply = ref({
   commentGroup: -1,
   replyTo: -1,
   replyParentId: -1,
+  memberId: authStore.getMemberId,
 });
 
 const updateComment = ref({
@@ -58,6 +62,7 @@ const addReply = async () => {
     content: newReply.value.content,
     commentGroup: newReply.value.commentGroup,
     commentId: newReply.value.replyParentId,
+    memberId: newReply.value.memberId,
   });
   newReply.value.depth = -1;
   newReply.value.replyTo = -1;
@@ -92,12 +97,12 @@ const commentDelete = async (commentId) => {
 </script>
 
 <template>
+  <div>댓글</div>
+  <form @submit.prevent="addComment" id="review-comment-input-container">
+    <textarea v-model="newComment.content" type="text" placeholder="댓글을 입력하세요"></textarea>
+    <button type="submit">댓글 작성</button>
+  </form>
   <div>
-    <div>댓글</div>
-    <form @submit.prevent="addComment" id="review-comment-input-container">
-      <textarea v-model="newComment.content" type="text" placeholder="댓글을 입력하세요"></textarea>
-      <button type="submit">댓글 작성</button>
-    </form>
     <div
       class="comment"
       v-for="(comment, index) in comments"
@@ -106,48 +111,59 @@ const commentDelete = async (commentId) => {
         marginLeft: Number(comment.depth) > 0 ? '20px' : '0',
       }"
     >
-      <div>{{ comment.replyParentName == null ? "" : "@" + comment.replyParentName }}</div>
-      <div>{{ comment.memberName }}</div>
-      <div>{{ comment.content }}</div>
-      <a
-        @click="
-          setCurrentReply(comment.commentGroup, Number(comment.depth) + 1, index, comment.commentId)
-        "
-      >
-        {{ newReply.replyTo == index ? "취소" : "답글작성" }}</a
-      >
-      <a style="margin-left: 7px" @click="commentDelete(comment.commentId)">삭제</a>
-      <a style="margin-left: 7px" @click="setUpdateComment(comment.commentId, comment.content)">{{
-        updateComment.commentId != comment.commentId ? "댓글수정" : "취소"
-      }}</a>
-      <div v-show="updateComment.commentId == comment.commentId">
-        <form @submit.prevent="commentUpdate">
-          <div>
-            <textarea rows="2" v-model="updateComment.content" required></textarea>
-          </div>
-          <button type="submit">댓글 수정</button>
-          <button type="button">취소</button>
-        </form>
+      <div v-if="comment.deleted == 0">
+        <div>{{ comment.replyParentName == null ? "" : "@" + comment.replyParentName }}</div>
+        <div>{{ comment.nickName }}</div>
+        <div>{{ comment.content }}</div>
+        <a
+          @click="
+            setCurrentReply(
+              comment.commentGroup,
+              Number(comment.depth) + 1,
+              index,
+              comment.commentId
+            )
+          "
+        >
+          {{ newReply.replyTo == index ? "취소" : "답글작성" }}</a
+        >
+        <a style="margin-left: 7px" @click="commentDelete(comment.commentId)">삭제</a>
+        <a style="margin-left: 7px" @click="setUpdateComment(comment.commentId, comment.content)">{{
+          updateComment.commentId != comment.commentId ? "댓글수정" : "취소"
+        }}</a>
+        <div v-show="updateComment.commentId == comment.commentId">
+          <form @submit.prevent="commentUpdate">
+            <div>
+              <textarea rows="2" v-model="updateComment.content" required></textarea>
+            </div>
+            <button type="submit">댓글 수정</button>
+            <button type="button">취소</button>
+          </form>
+        </div>
+        <!-- 대댓글 작성 -->
+        <div
+          :id="`comment${comment.commentId}`"
+          :style="{
+            display: index === newReply.replyTo ? 'block' : 'none',
+          }"
+        >
+          <form @submit.prevent="addReply">
+            <div class="form-group">
+              <textarea
+                id="commentContent"
+                name="content"
+                rows="2"
+                v-model="newReply.content"
+                required
+              ></textarea>
+            </div>
+            <button type="submit">답글 작성</button>
+          </form>
+        </div>
       </div>
-      <!-- 대댓글 작성 -->
-      <div
-        :id="`comment${comment.commentId}`"
-        :style="{
-          display: index === newReply.replyTo ? 'block' : 'none',
-        }"
-      >
-        <form @submit.prevent="addReply">
-          <div class="form-group">
-            <textarea
-              id="commentContent"
-              name="content"
-              rows="2"
-              v-model="newReply.content"
-              required
-            ></textarea>
-          </div>
-          <button type="submit">답글 작성</button>
-        </form>
+
+      <div v-if="comment.deleted == 1">
+        <p>삭제된 댓글입니다.</p>
       </div>
     </div>
   </div>

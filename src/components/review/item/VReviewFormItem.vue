@@ -1,9 +1,11 @@
 <script setup>
 import { ref, defineComponent, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
 
 const http = Axios();
+const authStore = useAuthStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -15,7 +17,6 @@ const isUseId = ref(false);
 if (props.type === "update") {
   let { viewid } = route.params;
   http.get(`review/update/${viewid}`).then((response) => {
-    console.log(response);
     review_article.value = response.data;
   });
   isUseId.value = true;
@@ -77,21 +78,13 @@ const moveList = () => {
     <div id="review-input-title">
       <label id="review-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input
-        type="text"
-        v-model="review_article.reviewTitle"
-        placeholder="제목..."
-      />
+      <input type="text" v-model="review_article.reviewTitle" placeholder="제목..." />
     </div>
     <div id="review-input-select">
       <label>완료한 여행</label>
       <label class="red-star">*</label>
       <select :disabled="isUseId" v-model="review_article.matchId">
-        <option
-          v-for="match in matches"
-          :key="match.matchId"
-          :value="match.matchId"
-        >
+        <option v-for="match in matches" :key="match.matchId" :value="match.matchId">
           {{ match.matchTitle }}
         </option>
       </select>
@@ -127,15 +120,9 @@ const moveList = () => {
   <div id="btn-container">
     <div id="divider"></div>
     <div id="btns">
-      <button type="button" v-show="!isUseId" @click="reviewWrite">
-        작성하기
-      </button>
-      <button type="button" v-show="isUseId" @click="reviewUpdate">
-        수정하기
-      </button>
-      <button type="button" v-show="isUseId" @click="reviewDelete">
-        삭제하기
-      </button>
+      <button type="button" v-show="!isUseId" @click="reviewWrite">작성하기</button>
+      <button type="button" v-show="isUseId" @click="reviewUpdate">수정하기</button>
+      <button type="button" v-show="isUseId" @click="reviewDelete">삭제하기</button>
       <button type="button" @click="moveList">목록으로</button>
     </div>
   </div>
