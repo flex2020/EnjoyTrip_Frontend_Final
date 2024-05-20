@@ -3,6 +3,10 @@ import { ref, defineComponent, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
+import Quill from 'quill/core';
+import ImageUploader from 'quill-image-uploader';
+
+Quill.register('modules/imageUploader', ImageUploader);
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -63,7 +67,7 @@ onMounted(() => {
 });
 
 const getMatches = () => {
-  http.get("match/matches").then((response) => {
+  http.get("/match/matches").then((response) => {
     matches.value = response.data;
   });
 };
@@ -71,6 +75,30 @@ const getMatches = () => {
 const moveList = () => {
   router.push({ name: "review-list" });
 };
+
+const modules = {
+  name: 'imageUploader',
+  module: ImageUploader,
+  options: {
+    upload: file => {
+      return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        http.post('/files', formData)
+          .then(res => {
+            console.log(res)
+            resolve(res.data.filePath);
+          })
+          .catch(err => {
+            reject("Upload failed");
+            console.error("Error:", err)
+          })
+      })
+    }
+  }
+}
+
 </script>
 
 <template>
@@ -112,7 +140,7 @@ const moveList = () => {
         contentType="html"
         theme="snow"
         :modules="modules"
-        toolbar="minimal"
+        toolbar="full"
       />
     </div>
   </div>
