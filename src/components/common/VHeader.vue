@@ -2,8 +2,8 @@
 import { getMatchesByMemberId, removeMatchOfMember } from "@/api/match";
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useAuthStore } from '@/stores/auth';
-import { Axios } from '/src/api/http-common';
+import { useAuthStore } from "@/stores/auth";
+import { Axios } from "/src/api/http-common";
 
 const http = Axios();
 
@@ -23,30 +23,28 @@ const memberOption = () => {
 
 const chatListToggleHandler = () => {
   if (chatList.value.length == 0) {
-    alert('현재 연결된 채팅이 없습니다.');
+    alert("현재 연결된 채팅이 없습니다.");
     return;
   }
   chatListToggle.value = !chatListToggle.value;
-}
+};
 
 const enterChatRoom = (matchId) => {
-  router.push({name: 'chat', params: {matchId: matchId}})
-}
+  router.push({ name: "chat", params: { matchId: matchId } });
+};
 
 const leaveMatching = async (matchId) => {
-  if (!window.confirm('정말 해당 매칭에서 나가시겠습니까?')) return;
+  if (!window.confirm("정말 해당 매칭에서 나가시겠습니까?")) return;
   await removeMatchOfMember(1, matchId);
   chatList.value = chatList.value.filter((match) => match.matchId != matchId);
   if (route.params.matchId == matchId) {
-    router.push({name: 'main'});
+    router.push({ name: "main" });
   }
-}
+};
 
 const props = defineProps({
   background: String,
 });
-
-
 
 const menuClass = computed(() => (props.background == "white" ? "menu-white" : "menu"));
 
@@ -55,45 +53,43 @@ const signout = async () => {
     // pinia에 있던 토큰 파기
     authStore.signout();
 
-        // Log the state
-    console.log('isLogin:', authStore.isLogin);
-    console.log('Email:', authStore.getEmail);
-    console.log('Nickname:', authStore.getNickname);
+    // Log the state
+    console.log("isLogin:", authStore.isLogin);
+    console.log("Email:", authStore.getEmail);
+    console.log("Nickname:", authStore.getNickname);
 
     // signout api 호출
-    await http.post('/member/signout');
+    await http.post("/member/signout");
 
     // Redirect to the main page
-    alert('로그아웃이 완료되었습니다.');
-    router.push('/');
+    alert("로그아웃이 완료되었습니다.");
+    router.push("/");
   } catch (error) {
     console.error(error);
-    alert('로그아웃에 실패하였습니다. 다시 시도해주세요.');
+    alert("로그아웃에 실패하였습니다. 다시 시도해주세요.");
   }
 };
-
 </script>
 
 <template>
   <header :class="background == 'white' ? 'header-white' : ''">
-    <div class="chat-list-bg" v-show="chatListToggle" @click="chatListToggleHandler">
-    </div>
+    <div class="chat-list-bg" v-show="chatListToggle" @click="chatListToggleHandler"></div>
     <div class="chat-list" v-show="chatListToggle">
-        <div class="chat-list-top">
-          <h2>채팅 목록</h2>
-        </div>
-        <div class="chat-list-item-container" v-for="chat in chatList" :key="chat.matchId">
-          <div class="chat-list-item">
-            <div class="chat-list-item-title">
-              <h2>{{ chat.matchTitle }}</h2>
-            </div>
-            <div class="chat-list-item-btn">
-              <button @click="enterChatRoom(chat.matchId)">입장</button>
-              <button @click="leaveMatching(chat.matchId)">나가기</button>
-            </div>
+      <div class="chat-list-top">
+        <h2>채팅 목록</h2>
+      </div>
+      <div class="chat-list-item-container" v-for="chat in chatList" :key="chat.matchId">
+        <div class="chat-list-item">
+          <div class="chat-list-item-title">
+            <h2>{{ chat.matchTitle }}</h2>
+          </div>
+          <div class="chat-list-item-btn">
+            <button @click="enterChatRoom(chat.matchId)">입장</button>
+            <button @click="leaveMatching(chat.matchId)">나가기</button>
           </div>
         </div>
       </div>
+    </div>
     <router-link :to="{ name: 'main' }" id="nav-logo">
       <img src="/src/assets/img/navlog.png" />
     </router-link>
@@ -101,12 +97,9 @@ const signout = async () => {
       <router-link :to="{ name: 'review' }" :class="menuClass" class="trip-menu"
         >여행 후기</router-link
       >
-      <div id="mate-chat"
-        :class="menuClass"
-        class="trip-menu"
-        @click="chatListToggleHandler"
-        >메이트 채팅</div
-      >
+      <div id="mate-chat" :class="menuClass" class="trip-menu" @click="chatListToggleHandler">
+        메이트 채팅
+      </div>
       <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
         >여행 메이트 찾기</router-link
       >
@@ -122,7 +115,7 @@ const signout = async () => {
     <router-link :to="{ name: 'member-signup' }">회원가입</router-link>
     <router-link :to="{ name: 'member-signin' }">로그인</router-link>
     <a @click="signout" href="#">로그아웃</a>
-    <router-link :to="{ name: 'member-mypage' }">마이페이지</router-link>
+    <router-link :to="{ name: 'mypage' }">마이페이지</router-link>
   </div>
 </template>
 
@@ -232,7 +225,7 @@ header {
   height: 600px;
   z-index: 100001;
   background-color: rgba(240, 248, 255, 0.85);
-  border-radius: 15px;;
+  border-radius: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -302,7 +295,7 @@ header {
 
 .chat-list-item-btn button:last-child {
   color: rgb(220, 35, 35);
-  border: 1px solid rgb(220, 35, 35);;
+  border: 1px solid rgb(220, 35, 35);
 }
 
 .chat-list-item-btn button:last-child:hover {

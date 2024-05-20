@@ -1,40 +1,41 @@
-import { createRouter, createWebHistory, useRoute } from 'vue-router'
-import MainView from "@/views/MainView.vue"
-import ReviewView from "@/views/ReviewView.vue"
-import ChatView from "@/views/ChatView.vue"
-import MatchView from "@/views/MatchView.vue"
-import PlanView from "@/views/PlanView.vue"
-import { getMatchesByMemberId } from '@/api/match'
+import { createRouter, createWebHistory, useRoute } from "vue-router";
+import MainView from "@/views/MainView.vue";
+import ReviewView from "@/views/ReviewView.vue";
+import ChatView from "@/views/ChatView.vue";
+import MatchView from "@/views/MatchView.vue";
+import PlanView from "@/views/PlanView.vue";
+import MyPageView from "@/views/MyPageView.vue";
+import { getMatchesByMemberId } from "@/api/match";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'main',
-      component: MainView
+      path: "/",
+      name: "main",
+      component: MainView,
     },
     {
-      path: '/chat/:matchId',
-      name: 'chat',
+      path: "/chat/:matchId",
+      name: "chat",
       component: ChatView,
       beforeEnter: canEnterChat,
     },
     {
-      path: '/match',
-      name: 'match',
-      component: MatchView
+      path: "/match",
+      name: "match",
+      component: MatchView,
     },
     {
-      path: '/plan',
-      name: 'plan',
-      component: PlanView
+      path: "/plan",
+      name: "plan",
+      component: PlanView,
     },
     {
       path: "/review",
       name: "review",
       component: () => import("@/views/ReviewView.vue"),
-      redirect: { name: "review-list" },  
+      redirect: { name: "review-list" },
       children: [
         {
           path: "list",
@@ -62,7 +63,7 @@ const router = createRouter({
       path: "/member",
       name: "member",
       component: () => import("@/views/MemberView.vue"),
-      redirect: { name: "member-signin" },  
+      redirect: { name: "member-signin" },
       children: [
         {
           path: "signin",
@@ -106,22 +107,55 @@ const router = createRouter({
         },
       ],
     },
-  ]
-})
+    {
+      path: "/mypage",
+      name: "mypage",
+      component: () => import("@/views/MyPageView.vue"),
+      redirect: { name: "mypage-profile" },
+      children: [
+        {
+          path: "profile",
+          name: "mypage-profile",
+          component: () => import("@/components/mypage/MyProfile.vue"),
+        },
+        {
+          path: "reviews",
+          name: "mypage-reviews",
+          component: () => import("@/components/mypage/MyReviews.vue"),
+        },
+        {
+          path: "courses",
+          name: "mypage-courses",
+          component: () => import("@/components/mypage/MyCourses.vue"),
+        },
+        {
+          path: "matches",
+          name: "mypage-matches",
+          component: () => import("@/components/mypage/MyMatches.vue"),
+        },
+        {
+          path: "profileupdate",
+          name: "mypage-profileupdate",
+          component: () => import("@/components/mypage/MyProfileUpdate.vue"),
+        },
+      ],
+    },
+  ],
+});
 
 async function canEnterChat(to, from, next) {
   const matchId = to.params.matchId;
   const memberId = 1;
   const chatList = await getMatchesByMemberId(memberId);
-  console.log(matchId)
-  console.log(chatList[0])
-  for (let i=0; i<chatList.length; i++) {
+  console.log(matchId);
+  console.log(chatList[0]);
+  for (let i = 0; i < chatList.length; i++) {
     if (chatList[i].matchId == matchId) {
       next();
       return;
     }
-    alert('입장할 수 없는 채팅방입니다.');
-    router.push({name: 'main'});
+    alert("입장할 수 없는 채팅방입니다.");
+    router.push({ name: "main" });
   }
 }
-export default router
+export default router;
