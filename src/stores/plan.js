@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { getAttractionSearchResults, updateMatchCourse } from '@/api/trip';
 import { getCourseListByMember, savePlan } from '@/api/plan';
+import { useAuthStore } from "./auth";
 
 export const usePlanStore = defineStore('planStore', () => {
   const courseId = ref(-1);
@@ -109,13 +110,17 @@ export const usePlanStore = defineStore('planStore', () => {
       alert('코스명을 입력해주세요.');
       return;
     }
-    const memberId = 1;
+    const authStore = useAuthStore();
+    const memberId = authStore.getMemberId;
     await savePlan(courseId.value, courseName.value, memberId, plan.value);
     console.log(plan.value)
     alert('저장되었습니다.');
     nameInputToggle.value = false;
     await loadCourseList(memberId);
-    if (courseId.value == -1) plan.value = [];
+    if (courseId.value == -1) {
+      plan.value = [];
+      planLatLng.value = [];
+    } 
   }
 
   function getCourseNameByCourseId(courseId) {

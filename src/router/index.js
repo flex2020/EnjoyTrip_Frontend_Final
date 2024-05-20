@@ -6,6 +6,7 @@ import MatchView from "@/views/MatchView.vue";
 import PlanView from "@/views/PlanView.vue";
 import MyPageView from "@/views/MyPageView.vue";
 import { getMatchesByMemberId } from "@/api/match";
+import { useAuthStore } from "@/stores/auth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -144,8 +145,9 @@ const router = createRouter({
 });
 
 async function canEnterChat(to, from, next) {
+  const authStore = useAuthStore();
   const matchId = to.params.matchId;
-  const memberId = 1;
+  const memberId = authStore.getMemberId;
   const chatList = await getMatchesByMemberId(memberId);
   console.log(matchId);
   console.log(chatList[0]);

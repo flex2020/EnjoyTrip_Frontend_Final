@@ -1,6 +1,6 @@
 <script setup>
 import { getMatchesByMemberId, removeMatchOfMember } from "@/api/match";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
@@ -12,9 +12,11 @@ const authStore = useAuthStore();
 const isActive = ref(false);
 const chatListToggle = ref(false);
 const chatList = ref([]);
+const chatListElement = ref(null);
 
 onMounted(async () => {
-  chatList.value = await getMatchesByMemberId(1);
+  const memberId = authStore.getMemberId;
+  chatList.value = await getMatchesByMemberId(memberId);
 });
 
 const memberOption = () => {
@@ -22,12 +24,16 @@ const memberOption = () => {
 };
 
 const chatListToggleHandler = () => {
+  chatListToggle.value = !chatListToggle.value;
+};
+
+const chatListClickHandler = () => {
   if (chatList.value.length == 0) {
     alert("현재 연결된 채팅이 없습니다.");
     return;
   }
-  chatListToggle.value = !chatListToggle.value;
-};
+  chatListToggleHandler();
+}
 
 const enterChatRoom = (matchId) => {
   router.push({ name: "chat", params: { matchId: matchId } });
@@ -35,7 +41,8 @@ const enterChatRoom = (matchId) => {
 
 const leaveMatching = async (matchId) => {
   if (!window.confirm("정말 해당 매칭에서 나가시겠습니까?")) return;
-  await removeMatchOfMember(1, matchId);
+  const memberId = authStore.getMemberId();
+  await removeMatchOfMember(memberId, matchId);
   chatList.value = chatList.value.filter((match) => match.matchId != matchId);
   if (route.params.matchId == matchId) {
     router.push({ name: "main" });
@@ -69,12 +76,20 @@ const signout = async () => {
     alert("로그아웃에 실패하였습니다. 다시 시도해주세요.");
   }
 };
+
+watch(chatListToggle, async (newVal) => {
+  if (newVal) {
+    await nextTick();
+    chatListElement.value.focus();
+  }
+});
+
 </script>
 
 <template>
   <header :class="background == 'white' ? 'header-white' : ''">
-    <div class="chat-list-bg" v-show="chatListToggle" @click="chatListToggleHandler"></div>
-    <div class="chat-list" v-show="chatListToggle">
+    <div class="chat-list-bg" v-show="chatListToggle" @click="chatListClickHandler"></div>
+    <div class="chat-list" v-show="chatListToggle" tabindex="0" @keyup.esc="chatListToggleHandler" ref="chatListElement">
       <div class="chat-list-top">
         <h2>채팅 목록</h2>
       </div>
@@ -231,6 +246,10 @@ header {
   align-items: center;
 }
 
+.chat-list:focus {
+  outline: none;
+}
+
 .chat-list-top {
   width: 100%;
   padding: 15px;
@@ -271,6 +290,8 @@ header {
 
 .chat-list-item-btn {
   width: 40%;
+  display: flex;
+  align-items: center;
 }
 .chat-list-item-btn button {
   margin-right: 5px;

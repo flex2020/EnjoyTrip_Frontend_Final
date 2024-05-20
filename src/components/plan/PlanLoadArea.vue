@@ -1,12 +1,14 @@
 <script setup>
 import { getCourseByCourseId } from '@/api/plan';
+import { useAuthStore } from "@/stores/auth";
 import { usePlanStore } from '@/stores/plan';
 import { onMounted } from 'vue';
 
 const planStore = usePlanStore();
+const authStore = useAuthStore();
 
 onMounted(() => {
-  const memberId = 1;
+  const memberId = authStore.getMemberId;
   planStore.loadCourseList(memberId);
 })
 

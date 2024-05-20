@@ -21,7 +21,7 @@ const chatStore = useChatStore();
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 48px;
+  height: 50px;
   background-color: white;
   z-index: inherit;
   border-radius: 0 0 10px 0;
