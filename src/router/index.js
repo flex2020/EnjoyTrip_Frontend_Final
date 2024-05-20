@@ -141,6 +141,34 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/match",
+      name: "match",
+      component: () => import("@/views/MatchView.vue"),
+      redirect: { name: "match-list" },
+      children: [
+        {
+          path: "list",
+          name: "match-list",
+          component: () => import("@/components/match/MatchList.vue"),
+        },
+        // {
+        //   path: "write",
+        //   name: "review-write",
+        //   component: () => import("@/components/review/VReviewWrite.vue"),
+        // },
+        // {
+        //   path: "update/:viewid",
+        //   name: "review-update",
+        //   component: () => import("@/components/review/VReviewUpdate.vue"),
+        // },
+        // {
+        //   path: "view/:viewid",
+        //   name: "review-view",
+        //   component: () => import("@/components/review/VReviewView.vue"),
+        // },
+      ],
+    },
   ],
 });
 

@@ -23,6 +23,11 @@ onMounted(() => {
   getReview();
 });
 
+const likeInfo = ref({
+  reviewId: viewId.value,
+  memberId: authStore.memberId,
+});
+
 const getReview = async () => {
   http
     .get(`review/${viewId.value}`)
@@ -38,8 +43,8 @@ const getReview = async () => {
       console.log(e);
     });
 
-  const response = await http.get(`review/likecount/${viewId.value}`);
-  // console.log(response.data);
+  const response = await http.post(`review/get/likecount`, likeInfo.value);
+  console.log(response.data);
   if (response.data) {
     isLike.value = true;
   } else {
@@ -48,13 +53,17 @@ const getReview = async () => {
 };
 
 const updateLikeCount = async () => {
-  const response = await http.post(`review/likecount/${review.value.reviewId}`);
-  if (response.data === "up") {
-    review.value.likeCount++;
-    isLike.value = true;
+  if (authStore.memberId !== null) {
+    const response = await http.post(`review/likecount`, likeInfo.value);
+    if (response.data === "up") {
+      review.value.likeCount++;
+      isLike.value = true;
+    } else {
+      review.value.likeCount--;
+      isLike.value = false;
+    }
   } else {
-    review.value.likeCount--;
-    isLike.value = false;
+    alert("로그인 하세요.");
   }
 };
 
@@ -71,7 +80,9 @@ const getComment = () => {
     <div id="review-view-author-id">작성자 : {{ review.nickName }}</div>
     <div id="review-view-info">
       <div>
-        <div>여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}</div>
+        <div>
+          여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}
+        </div>
         <div>여행인원 : ?</div>
       </div>
       <div>
@@ -112,11 +123,17 @@ const getComment = () => {
         >
           게시글 수정
         </router-link>
-        <router-link :to="{ name: 'review-list' }" class="move-link"> 게시글 목록 </router-link>
+        <router-link :to="{ name: 'review-list' }" class="move-link">
+          게시글 목록
+        </router-link>
       </div>
     </div>
 
-    <VReviewCommentItem :viewId="viewId" :comments="comments" @getComment="getComment" />
+    <VReviewCommentItem
+      :viewId="viewId"
+      :comments="comments"
+      @getComment="getComment"
+    />
   </div>
 </template>
 
