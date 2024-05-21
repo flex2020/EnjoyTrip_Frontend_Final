@@ -149,7 +149,9 @@ watch(chatListToggle, async (newVal) => {
     <router-link :to="{ name: 'member-signup' }">회원가입</router-link>
     <router-link :to="{ name: 'member-signin' }">로그인</router-link>
     <a @click="signout" href="#">로그아웃</a>
-    <router-link :to="{ name: 'mypage', params: { memberId: authStore.getMemberId } }"
+    <router-link
+      v-if="authStore.getMemberId"
+      :to="{ name: 'mypage', params: { memberId: authStore.getMemberId } }"
       >마이페이지</router-link
     >
   </div>

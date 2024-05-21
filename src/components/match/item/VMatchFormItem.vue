@@ -3,6 +3,7 @@ import { ref, defineComponent, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
+import { getCourseListByMember } from "@/api/plan";
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -13,6 +14,8 @@ const route = useRoute();
 const props = defineProps({ type: String });
 
 const isUseId = ref(false);
+const inputHashtag = ref("");
+const hashtagArray = ref([]);
 
 if (props.type === "update") {
   let { viewid } = route.params;
@@ -24,27 +27,24 @@ if (props.type === "update") {
 
 const match_article = ref({
   courseId: 0,
-  authorId: 0,
+  authorId: authStore.getMemberId,
   matchTitle: "",
   travelStartDate: "",
   travelEndDate: "",
   maxPeople: 0,
   genderType: 0,
-  deadline: "",
+  deadine: "",
   hit: 0,
   registerDate: "",
   deleted: 0,
+  content: "",
+  hashtags: hashtagArray.value,
 });
 
-const matches = ref([]);
+const courses = ref([]);
 
-const matchWrite = () => {
-  http
-    .post("/review", match_article.value)
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((e) => console.log(e));
+const matchWrite = async () => {
+  await http.post("/match", match_article.value);
 
   router.push({ name: "review-list" });
 };
@@ -60,10 +60,19 @@ const matchWrite = () => {
 //   router.push({ name: "review-list" });
 // };
 
-onMounted(() => {});
+onMounted(async () => {
+  courses.value = await getCourseListByMember(authStore.memberId);
+  // console.log(courses.value);
+});
 
 const moveList = () => {
   router.push({ name: "review-list" });
+};
+
+const addHashtag = () => {
+  hashtagArray.value.push(inputHashtag.value);
+  inputHashtag.value = "";
+  console.log(hashtagArray.value);
 };
 </script>
 
@@ -75,26 +84,57 @@ const moveList = () => {
       <input type="text" v-model="match_article.matchTitle" placeholder="제목..." />
     </div>
     <div id="match-input-select">
-      <label>완료한 여행</label>
-      <label class="red-star">*</label>
-      <!-- <select :disabled="isUseId" v-model="match_article.matchId">
-        <option v-for="match in matches" :key="match.matchId" :value="match.matchId"></option>
-      </select> -->
+      <div>
+        <label>여행 코스</label>
+        <label class="red-star">*</label>
+        <select :disabled="isUseId" v-model="match_article.courseId">
+          <option value="0" hidden>코스를 선택해주세요.</option>
+          <option v-for="course in courses" :key="course.courseId" :value="course.courseId">
+            {{ course.courseName }}
+          </option>
+        </select>
 
-      <label>공개범위</label>
-      <label class="red-star">*</label>
-      <!-- <select v-model="match_article.scope"> -->
-      <!-- <option :value="0">전체공개</option>
-        <option :value="1">팔로워만</option>
-        <option :value="2">나만보기</option>
-      </select> -->
+        <label>여행 기간</label>
+        <label class="red-star">*</label>
+        <input type="date" v-model="match_article.travelStartDate" /> ~
+        <input type="date" v-model="match_article.travelEndDate" />
+
+        <label>모집 기한</label>
+        <label class="red-star">*</label>
+        <input type="date" v-model="match_article.deadline" />
+      </div>
+
+      <div>
+        <label>최대 인원</label>
+        <label class="red-star">*</label>
+        <input type="text" v-model="match_article.maxPeople" />
+
+        <label>성별 제한</label>
+        <label class="red-star">*</label>
+        <select :disabled="isUseId" v-model="match_article.genderType">
+          <option value="0" hidden>성별 제한 선택</option>
+          <option value="0">성별 무관</option>
+          <option value="1">남성만</option>
+          <option value="2">여성만</option>
+        </select>
+      </div>
+      <div id="match-content-container">
+        <div>이런 분을 원해요</div>
+        <textarea v-model="match_article.content"></textarea>
+      </div>
+
+      <div id="match-hashtag-container">
+        <div>해시태그</div>
+        <input type="text" v-model="inputHashtag" @keyup.enter="addHashtag" />
+        <button type="button" @click="addHashtag">해시태그 추가하기</button>
+      </div>
     </div>
   </form>
 
   <div id="btn-container">
     <div id="divider"></div>
     <div id="btns">
-      <button type="button" v-show="!isUseId">작성하기</button>
+      <button type="button" v-show="!isUseId" @click="matchWrite">작성하기</button>
       <button type="button" v-show="isUseId">수정하기</button>
       <button type="button" v-show="isUseId">삭제하기</button>
       <button type="button" @click="moveList">목록으로</button>
@@ -112,7 +152,7 @@ const moveList = () => {
 #match-input-form div {
   width: 70%;
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   margin-bottom: 20px;
   font-size: 24px;
   font-weight: bold;
@@ -120,7 +160,6 @@ const moveList = () => {
 
 #match-input-title {
   display: flex;
-  justify-content: flex-start;
 }
 
 #match-input-title-lable {
@@ -141,7 +180,12 @@ const moveList = () => {
 }
 
 #match-input-select {
-  width: 20%;
+  display: flex;
+  flex-direction: column;
+}
+
+#match-input-select div {
+  width: 100%;
 }
 
 #match-input-select select {
@@ -149,6 +193,23 @@ const moveList = () => {
   height: 40px;
   margin-left: 10px;
   margin-right: 20px;
+}
+
+#match-content-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#match-content-container textarea {
+  width: 100%;
+  height: 200px;
+}
+
+#match-hashtag-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 #btn-container {
