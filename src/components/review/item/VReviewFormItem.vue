@@ -93,9 +93,13 @@ const reviewUpdate = async () => {
 };
 
 const reviewDelete = async () => {
-  await http.delete(`review/${review_article.value.review.reviewId}`);
-  if (response.status == 200) router.push({ name: "review-list" });
-  else alert('삭제 중 오류가 발생했습니다.');
+  if (!window.confirm('정말 게시물을 삭제하시겠습니까?')) return;
+  try {
+    await http.delete(`review/${review_article.value.review.reviewId}`);
+    router.push({ name: "review-list" });
+  } catch {
+    alert('삭제 중 오류가 발생했습니다.');
+  }
 };
 
 onMounted(async () => {
