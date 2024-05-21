@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
 import Quill from 'quill/core';
 import ImageUploader from 'quill-image-uploader';
+import { getMatchesByMemberId } from "@/api/match";
 
 Quill.register('modules/imageUploader', ImageUploader);
 
@@ -27,28 +28,56 @@ if (props.type === "update") {
 }
 
 const review_article = ref({
-  reviewId: 0,
-  matchId: 0,
-  memberId: 0,
-  reviewTitle: "",
-  scope: 0,
-  content: "",
-  hit: 0,
-  registerTime: "",
-  deleted: 0,
+  review: {
+    reviewId: 0,
+    matchId: 0,
+    memberId: authStore.getMemberId,
+    reviewTitle: "",
+    scope: 0,
+    content: "",
+    hit: 0,
+    registerTime: "",
+    deleted: 0,
+  },
+  fileIds: [],
 });
+
+function getTextContent(htmlString) {
+  // Create a temporary DOM element
+  const tempElement = document.createElement('div');
+  // Set the HTML content
+  tempElement.innerHTML = htmlString;
+  // Get the text content
+  const textContent = tempElement.textContent || tempElement.innerText || '';
+  // Return the first 200 characters
+  return textContent.substring(0, 200);
+}
+
+function getFirstImage(htmlString) {
+  // Create a temporary DOM element
+  const tempElement = document.createElement('div');
+  // Set the HTML content
+  tempElement.innerHTML = htmlString;
+  
+  // Find the first <img> tag
+  const imgTag = tempElement.querySelector('img');
+  
+  // Return the src attribute of the first <img> tag, if it exists
+  return imgTag ? imgTag.src : `/src/assets/img/card_image${Math.floor(Math.random() * 3) + 1}.png`;
+}
 
 const matches = ref([]);
 
 const reviewWrite = () => {
+  const data = review_article.value;
+  data.review.previewContent = getTextContent(review_article.value.review.content);
+  data.review.firstImage = getFirstImage(review_article.value.review.content);
   http
-    .post("/review", review_article.value)
+    .post("/review", data)
     .then((response) => {
-      console.log(response.data);
+      router.push({ name: "review-list" });
     })
     .catch((e) => console.log(e));
-
-  router.push({ name: "review-list" });
 };
 
 const reviewUpdate = async () => {
@@ -62,15 +91,9 @@ const reviewDelete = () => {
   router.push({ name: "review-list" });
 };
 
-onMounted(() => {
-  getMatches();
+onMounted(async () => {
+  matches.value = await getMatchesByMemberId(authStore.getMemberId);
 });
-
-const getMatches = () => {
-  http.get("/match/matches").then((response) => {
-    matches.value = response.data;
-  });
-};
 
 const moveList = () => {
   router.push({ name: "review-list" });
@@ -87,7 +110,7 @@ const modules = {
 
         http.post('/files', formData)
           .then(res => {
-            console.log(res)
+            review_article.value.fileIds.push(res.data.fileId);
             resolve(res.data.filePath);
           })
           .catch(err => {
@@ -106,12 +129,13 @@ const modules = {
     <div id="review-input-title">
       <label id="review-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input type="text" v-model="review_article.reviewTitle" placeholder="제목..." />
+      <input type="text" v-model="review_article.review.reviewTitle" placeholder="제목..." />
     </div>
     <div id="review-input-select">
       <label>완료한 여행</label>
       <label class="red-star">*</label>
-      <select :disabled="isUseId" v-model="review_article.matchId">
+      <select :disabled="isUseId" v-model="review_article.review.matchId">
+        <option value="0" hidden>여행을 선택해주세요.</option>
         <option v-for="match in matches" :key="match.matchId" :value="match.matchId">
           {{ match.matchTitle }}
         </option>
@@ -119,7 +143,7 @@ const modules = {
 
       <label>공개범위</label>
       <label class="red-star">*</label>
-      <select v-model="review_article.scope">
+      <select v-model="review_article.review.scope">
         <option :value="0">전체공개</option>
         <option :value="1">팔로워만</option>
         <option :value="2">나만보기</option>
@@ -136,7 +160,7 @@ const modules = {
   <div id="quill-editor-box">
     <div id="quill-editor-container">
       <QuillEditor
-        v-model:content="review_article.content"
+        v-model:content="review_article.review.content"
         contentType="html"
         theme="snow"
         :modules="modules"
