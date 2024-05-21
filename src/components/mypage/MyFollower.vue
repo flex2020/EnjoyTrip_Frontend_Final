@@ -12,6 +12,7 @@ const fetchFollowers = async () => {
     const response = await http.post("/follow/followers/list", {
       memberId: route.params.memberId,
     });
+    console.log(response.data);
     followers.value = response.data;
   } catch (error) {
     console.error("Error fetching followers:", error);
@@ -27,7 +28,7 @@ onMounted(() => {
   <div class="modal-content">
     <h2>팔로워 목록</h2>
     <ul>
-      <li v-for="follower in followers" :key="follower.id">{{ follower.name }}</li>
+      <li v-for="follower in followers" :key="follower.id">{{ follower.memberName }}</li>
     </ul>
     <div class="button-group">
       <button class="btn" @click="$emit('close-modal')">닫기</button>
