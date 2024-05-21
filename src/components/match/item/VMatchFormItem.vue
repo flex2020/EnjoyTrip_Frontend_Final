@@ -46,7 +46,7 @@ const courses = ref([]);
 const matchWrite = async () => {
   await http.post("/match", match_article.value);
 
-  router.push({ name: "review-list" });
+  router.push({ name: "match-list" });
 };
 
 // const reviewUpdate = async () => {
@@ -66,7 +66,7 @@ onMounted(async () => {
 });
 
 const moveList = () => {
-  router.push({ name: "review-list" });
+  router.push({ name: "match-list" });
 };
 
 const addHashtag = () => {
