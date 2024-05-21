@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
+import VKakaoMapForReview from "@/components/common/VKakaoMapForReview.vue";
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -48,10 +49,10 @@ const getMatch = async () => {
         </div>
       </div>
     </div>
-    <div id="match-view-contents">이런 사람을 원해요 : {{ match.content}}</div>
+    <div id="match-view-contents">{{match.content}}</div>
     <div id="match-view-course">
       <div>여행 코스</div>
-      <div>코스</div>
+      <VKakaoMapForReview v-if="match.matchId" :match-id="match.matchId"/>
     </div>
 
     <div>마감 일자 : {{ match.deadline }}
@@ -63,9 +64,8 @@ const getMatch = async () => {
       <div id="divider"></div>
       <div id="btns">
         <router-link
-          :to="{ name: 'match-update', params: { viewid: match.matchId } }"
+          :to="{ name: 'match-update', params: { matchid: match.matchId } }"
           class="move-link"
-          v-show="isMymatch"
         >
           게시글 수정
         </router-link>
