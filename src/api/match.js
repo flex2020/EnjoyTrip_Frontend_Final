@@ -12,4 +12,11 @@ async function removeMatchOfMember(memberId, matchId) {
   await http.delete(`/match/member-matches/${memberId}/${matchId}`);
 }
 
-export { getMatchesByMemberId, removeMatchOfMember };
+async function postMatchesByMemberId(map) {
+  // console.log(map);
+  const response = await http.post(`match/member-matches`, map);
+  const data = await response.data;
+  return data;
+}
+
+export { getMatchesByMemberId, removeMatchOfMember, postMatchesByMemberId };
