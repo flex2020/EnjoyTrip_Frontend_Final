@@ -61,9 +61,9 @@ function getFirstImage(htmlString) {
   
   // Find the first <img> tag
   const imgTag = tempElement.querySelector('img');
-  
+  console.log(imgTag)
   // Return the src attribute of the first <img> tag, if it exists
-  return imgTag ? imgTag.src : `/src/assets/img/card_image${Math.floor(Math.random() * 3) + 1}.png`;
+  return imgTag ? imgTag.getAttribute('src') : `/src/assets/img/card_image${Math.floor(Math.random() * 3) + 1}.png`;
 }
 
 const matches = ref([]);

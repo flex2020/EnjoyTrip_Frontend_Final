@@ -87,7 +87,7 @@ const signout = async () => {
     isActive.value = false;
     // Redirect to the main page
     alert("로그아웃이 완료되었습니다.");
-    
+    profileImage.value = '/src/assets/img/profileDefault.png';
   } catch (error) {
     console.error(error);
     isActive.value = false;
@@ -139,9 +139,9 @@ watch(chatListToggle, async (newVal) => {
       <div id="mate-chat" :class="menuClass" class="trip-menu" @click="chatListClickHandler">
         메이트 채팅
       </div>
-      <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
+      <!-- <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
         >여행 메이트 찾기</router-link
-      >
+      > -->
       <router-link :to="{ name: 'plan' }" :class="menuClass" class="trip-menu"
         >나만의 여행 계획</router-link
       >
@@ -200,6 +200,7 @@ header {
   color: white;
   padding: 15px;
   position: relative;
+  font-size: 18px;
 }
 
 .trip-menu:after {

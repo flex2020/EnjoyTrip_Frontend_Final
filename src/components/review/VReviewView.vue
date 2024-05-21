@@ -2,8 +2,11 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import VReviewCommentItem from "@/components/review/item/VReviewCommentItem.vue";
+import VKakaoMapForReview from "@/components/common/VKakaoMapForReview.vue";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
+import { getCourseByCourseId } from "@/api/plan";
+import { getMatchCourse } from "@/api/trip";
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -19,8 +22,9 @@ const isLike = ref(false);
 const comments = ref([]);
 const isMyReview = ref(false);
 
-onMounted(() => {
-  getReview();
+onMounted(async () => {
+  await getReview();
+  console.log('matchid = ', review.value.matchId)
 });
 
 const likeInfo = ref({
@@ -29,27 +33,21 @@ const likeInfo = ref({
 });
 
 const getReview = async () => {
-  http
-    .get(`review/${viewId.value}`)
-    .then((response) => {
-      console.log(response);
-      review.value = response.data.reviewView;
-      comments.value = response.data.comments;
-      if (response.data.reviewView.memberId === authStore.memberId) {
-        isMyReview.value = true;
-      }
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+  const response1 =  await http.get(`review/${viewId.value}`)
+  review.value = await response1.data.reviewView;
+  comments.value = await response1.data.comments;
+  if (review.value.memberId === authStore.memberId) {
+    isMyReview.value = true;
+  }
 
-  const response = await http.post(`review/get/likecount`, likeInfo.value);
-  console.log(response.data);
-  if (response.data) {
+  const response2 = await http.post(`review/get/likecount`, likeInfo.value);
+  console.log(response2.data);
+  if (response2.data) {
     isLike.value = true;
   } else {
     isLike.value = false;
   }
+  console.log(response2);
 };
 
 const updateLikeCount = async () => {
@@ -110,7 +108,7 @@ const getComment = () => {
     <div id="review-view-contents" v-html="review.content"></div>
     <div id="review-view-course">
       <div>여행 코스</div>
-      <div>코스</div>
+      <VKakaoMapForReview v-if="review.matchId" :match-id="review.matchId"/>
     </div>
 
     <div id="btn-container">
@@ -139,8 +137,17 @@ const getComment = () => {
 
 <style scoped>
 #review-view-container {
+  width: 50%;
   padding-top: 30px;
   margin: 0px 25% 30px;
+}
+
+#review-view-contents {
+  width: 100%;
+}
+
+#review-view-contents * {
+  max-width: 100%;
 }
 
 #head-image {
