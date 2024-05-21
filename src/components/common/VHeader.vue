@@ -65,12 +65,16 @@ const leaveMatching = async (matchId) => {
   }
 };
 
+const goToMyPage = (memberId) => {
+  router.push({ name: "mypage", params: { memberId: memberId } });
+};
+
 const props = defineProps({
   background: String,
 });
 
-const menuClass = computed(() => (props.background == "white" ? "menu-white" : "menu"));
-const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu'))
+const menuClass = computed(() => (props.background == 'white' ? 'menu-white' : 'menu'));
+const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu'));
 
 const signout = async () => {
   try {
@@ -87,6 +91,7 @@ const signout = async () => {
     isActive.value = false;
     // Redirect to the main page
     alert("로그아웃이 완료되었습니다.");
+    router.push("/");
     profileImage.value = '/src/assets/img/profileDefault.png';
   } catch (error) {
     console.error(error);
@@ -152,9 +157,7 @@ watch(chatListToggle, async (newVal) => {
       <div :class="memberMenuClass" v-show="isActive">
       <router-link v-if="!authStore.getMemberId" :to="{ name: 'member-signup' }">회원가입</router-link>
       <router-link v-if="!authStore.getMemberId" :to="{ name: 'member-signin' }">로그인</router-link>
-      <router-link v-if="authStore.getMemberId" :to="{ name: 'mypage', params: { memberId: authStore.getMemberId } }"
-        >마이페이지</router-link
-      >
+      <a v-if="authStore.getMemberId" @click="() => goToMyPage(authStore.getMemberId)">마이페이지</a>
       <a v-if="authStore.getMemberId" @click="signout" href="#">로그아웃</a>
     </div>
   </div>
@@ -281,6 +284,7 @@ header {
   font-weight: bold;
   border-radius: 5px;
   transition: 0.2s;
+  cursor: pointer;
 }
 
 .member-menu a:hover {

@@ -1,10 +1,13 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { Axios } from "/src/api/http-common";
+import { useKakaoStore } from "@/stores/kakao";
 
 const http = Axios();
 const router = useRouter();
+const route = useRoute();
+const kakaoStore = useKakaoStore();
 
 const email = ref("");
 const nickname = ref("");
@@ -140,6 +143,9 @@ const selectGender = (value) => {
 };
 
 const register = async () => {
+
+  console.log("register 완료");
+
   if (password.value !== confirmPassword.value) {
     alert("비밀번호가 일치하지 않습니다.");
     return;
@@ -164,6 +170,8 @@ const register = async () => {
     };
 
     const response = await http.post("/member/signup", registrationData);
+    kakaoStore.clearEmail();
+    kakaoStore.clearNickname();
     alert("회원가입이 완료되었습니다.");
     router.push("/");
   } catch (error) {
@@ -171,6 +179,17 @@ const register = async () => {
     alert("회원가입에 실패했습니다. 다시 시도해주세요.");
   }
 };
+
+// onMounted 훅을 사용하여 컴포넌트가 마운트될 때 route params를 확인하여 값을 설정합니다.
+onMounted(() => {
+  console.log(kakaoStore.email + " " + kakaoStore.nickname);
+  email.value = kakaoStore.email;
+  nickname.value = kakaoStore.nickname;
+
+  if (kakaoStore.email !== '' || kakaoStore.nickname !== '') {
+    verificationCodeValid.value = true;
+  }
+});
 </script>
 
 <template>
@@ -189,12 +208,12 @@ const register = async () => {
                   id="email"
                   v-model="email"
                   required
-                  :disabled="verificationCodeSent && verificationCodeValid"
+                  :disabled="true"
                 />
                 <button
                   type="button"
                   @click="sendEmailVerification"
-                  :disabled="verificationCodeSent && verificationCodeValid"
+                  :disabled="true"
                 >
                   {{ verificationCodeSent ? "인증번호 재발송" : "인증번호 발송" }}
                 </button>
@@ -207,12 +226,12 @@ const register = async () => {
                   type="text"
                   id="verificationCode"
                   v-model="verificationCode"
-                  :disabled="!verificationCodeSent || verificationCodeValid"
+                  :disabled="true"
                 />
                 <button
                   type="button"
                   @click="verifyEmailCode"
-                  :disabled="!countdown || verificationCodeValid"
+                  :disabled="true"
                 >
                   인증
                 </button>
