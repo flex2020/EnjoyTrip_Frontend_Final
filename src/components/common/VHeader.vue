@@ -8,6 +8,7 @@ import { Axios } from "/src/api/http-common";
 const http = Axios();
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const isActive = ref(false);
 const chatListToggle = ref(false);
@@ -156,8 +157,16 @@ watch(chatListToggle, async (newVal) => {
       >
       <a v-if="authStore.getMemberId" @click="signout" href="#">로그아웃</a>
     </div>
-    
-    
+  </header>
+  <div id="member-menu-container" v-show="isActive">
+    <router-link :to="{ name: 'member-signup' }">회원가입</router-link>
+    <router-link :to="{ name: 'member-signin' }">로그인</router-link>
+    <a @click="signout" href="#">로그아웃</a>
+    <router-link
+      v-if="authStore.getMemberId"
+      :to="{ name: 'mypage', params: { memberId: authStore.getMemberId } }"
+      >마이페이지</router-link
+    >
   </div>
   </header>
 </template>

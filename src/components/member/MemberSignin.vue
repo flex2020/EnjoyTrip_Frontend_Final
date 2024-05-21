@@ -1,11 +1,12 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
 
 const http = Axios();
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 
 const email = ref("");
@@ -28,6 +29,14 @@ const login = async () => {
       console.log("Email:", authStore.getEmail);
       console.log("Nickname:", authStore.getNickname);
       console.log("memberId:", authStore.getMemberId);
+
+      const profileResponse = await http.post("/member/profile", {
+        memberId: authStore.getMemberId,
+      });
+
+      if (profileResponse.data) {
+        authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
+      }
 
       alert("로그인에 성공하였습니다.");
       router.push("/");

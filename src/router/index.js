@@ -152,11 +152,11 @@ const router = createRouter({
           name: "match-list",
           component: () => import("@/components/match/MatchList.vue"),
         },
-        {
-          path: "write",
-          name: "match-write",
-          component: () => import("@/components/match/MatchWrite.vue"),
-        },
+        // {
+        //   path: "write",
+        //   name: "review-write",
+        //   component: () => import("@/components/review/VReviewWrite.vue"),
+        // },
         // {
         //   path: "update/:viewid",
         //   name: "review-update",
