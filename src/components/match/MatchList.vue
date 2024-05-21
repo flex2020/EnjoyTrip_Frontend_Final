@@ -25,7 +25,7 @@ const param = ref({
 onMounted(async () => {
   const response = await getMatchList();
   matches.value = await response.matches;
-  console.log(matches.value);
+  // console.log(matches.value);
 });
 
 const getMatchList = async () => {
@@ -42,7 +42,7 @@ const currentPageAdd = async () => {
   for (let i = 0; i < response.matches.length; i++) {
     matches.value.push(response.matches[i]);
   }
-  console.log(matches.value);
+  // console.log(matches.value);
 };
 
 const changeSortSelect = async () => {
