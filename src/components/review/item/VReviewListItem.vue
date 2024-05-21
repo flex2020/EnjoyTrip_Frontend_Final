@@ -103,10 +103,6 @@ const moveView = (viewId) => {
   flex-flow: wrap;
 }
 
-#review-list-item-container:hover {
-  cursor: pointer;
-}
-
 .review-list-item {
   display: flex;
   align-items: flex-end;
@@ -120,6 +116,7 @@ const moveView = (viewId) => {
   position: relative;
   overflow: hidden;
   transition: 0.2s;
+  cursor: pointer;
 }
 
 .review-list-item:hover {
@@ -140,19 +137,27 @@ const moveView = (viewId) => {
   z-index: 10;
   margin: 20px;
   text-overflow: ellipsis;
-   overflow: hidden;
-   word-break: break-word;
-    
-   display: -webkit-box;
-   -webkit-line-clamp: 3;
-   -webkit-box-orient: vertical;
+  
 }
 
 .review-list-item-intro div:first-child {
   font-weight: bold;
   font-size: 24px;
   margin-bottom: 10px;
+  overflow: hidden;
+  word-break: break-word;
   
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.review-list-item-intro div:last-child {
+  overflow: hidden;
+  word-break: break-word;
+  
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .review-list-item-info {
@@ -182,9 +187,9 @@ const moveView = (viewId) => {
 .loading {
   width: 100%;
   text-align: center;
-  font-size: 1.5em;
-  color: white;
-  background-color: gray;
+  font-size: 1.2em;
+  color: black;
+  background-color: white;
   padding: 20px;
   border-radius: 20px;
   margin-bottom: 34px;
