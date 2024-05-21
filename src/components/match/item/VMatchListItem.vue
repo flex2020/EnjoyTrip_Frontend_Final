@@ -56,10 +56,10 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", handleScroll);
 });
 
-const moveView = (viewId) => {
+const moveView = (matchId) => {
   router.push({
-    name: "",
-    params: { viewid: viewId },
+    name: "match-view",
+    params: { matchid: matchId },
   });
 };
 </script>
