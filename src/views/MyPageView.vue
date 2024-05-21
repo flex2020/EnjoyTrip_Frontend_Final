@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
-import { Axios } from "/src/api/http-common";
+import { Axios } from "@/api/http-common";
 import VHeader from "@/components/common/VHeader.vue";
 import MySideProfileContainer from "@/components/mypage/MySideProfileContainer.vue";
 import MyTabContainer from "@/components/mypage/MyTabContainer.vue";
@@ -10,7 +10,7 @@ import MyWithdraw from "@/components/mypage/MyWithdraw.vue";
 
 const http = Axios();
 const authStore = useAuthStore();
-const activeTab = ref('profile');
+const activeTab = ref("profile");
 const profileImageFile = ref(null); // 프로필 이미지 파일
 const showModal = ref(false);
 
@@ -21,6 +21,12 @@ const openModal = () => {
 const closeModal = () => {
   showModal.value = false;
 };
+
+// 프로필 이미지 업데이트 핸들러
+const updateProfileImage = (file) => {
+  profileImageFile.value = file;
+  console.log("MyPageView: profileImageFile updated:", profileImageFile.value);
+};
 </script>
 
 <template>
@@ -29,11 +35,22 @@ const closeModal = () => {
     <transition name="fade">
       <div class="profile-container">
         <div class="left-container">
-          <MySideProfileContainer :active-tab="activeTab" :profile-image-file="profileImageFile"></MySideProfileContainer>
-          <MyTabContainer :active-tab="activeTab" @update-active-tab="activeTab = $event" @open-modal="openModal"></MyTabContainer>
+          <MySideProfileContainer
+            :active-tab="activeTab"
+            :profile-image-file="profileImageFile"
+            @update-profile-image="updateProfileImage"
+          />
+          <MyTabContainer
+            :active-tab="activeTab"
+            @update-active-tab="activeTab = $event"
+            @open-modal="openModal"
+          ></MyTabContainer>
         </div>
         <div class="right-container">
-          <MyContentContainer :active-tab="activeTab" :profile-image-file="profileImageFile"></MyContentContainer>
+          <MyContentContainer
+            :active-tab="activeTab"
+            :profile-image-file="profileImageFile"
+          ></MyContentContainer>
         </div>
       </div>
     </transition>
@@ -121,20 +138,25 @@ const closeModal = () => {
   z-index: 1000;
 }
 
-.modal-enter-active, .modal-leave-active {
-  transition: transform 0.3s cubic-bezier(.77,0,.175,1), opacity 0.3s cubic-bezier(.77,0,.175,1);
+.modal-enter-active,
+.modal-leave-active {
+  transition: transform 0.3s cubic-bezier(0.77, 0, 0.175, 1),
+    opacity 0.3s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-.modal-enter-from, .modal-leave-to {
+.modal-enter-from,
+.modal-leave-to {
   opacity: 0;
   transform: translateY(20px); /* 아래에서 위로 나타남 */
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
 
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

@@ -2,13 +2,15 @@
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
+import { useRoute } from "vue-router";
 
 const http = Axios();
 const authStore = useAuthStore();
+const route = useRoute();
 
 // 데이터 정의
 const mbti = ref("ISTJ");
-const gender = ref("남성"); // 예시 성별
+const gender = ref("남"); // 예시 성별
 const score = ref(72);
 const introduction = ref("안녕하세요!! 같이 여행가요!");
 const recentMatch = ref("아직 매칭을 안하셨네요~^^");
@@ -18,7 +20,7 @@ const recentReview = ref("아직 후기를 안올리셨네요~^^");
 const fetchProfileData = async () => {
   try {
     const profileResponse = await http.post("/member/info", {
-      email: authStore.getEmail,
+      memberId: route.params.memberId,
     });
     const profileData = profileResponse.data;
     console.log(profileData);

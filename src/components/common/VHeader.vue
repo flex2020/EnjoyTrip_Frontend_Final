@@ -13,10 +13,19 @@ const isActive = ref(false);
 const chatListToggle = ref(false);
 const chatList = ref([]);
 const chatListElement = ref(null);
+const profileImage = ref(authStore.getProfileImage);
 
 onMounted(async () => {
   const memberId = authStore.getMemberId;
   chatList.value = await getMatchesByMemberId(memberId);
+  const profileResponse = await http.post("/member/profile", {
+    memberId: authStore.getMemberId,
+  });
+
+  if (profileResponse.data) {
+    profileImage.value = profileResponse.data;
+    authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
+  }
 });
 
 const memberOption = () => {
@@ -29,7 +38,7 @@ const chatListToggleHandler = () => {
 
 const chatListClickHandler = () => {
   if (!authStore.isLogin) {
-    alert('로그인 후 이용가능합니다.');
+    alert("로그인 후 이용가능합니다.");
     return;
   }
   if (chatList.value.length == 0) {
@@ -37,7 +46,7 @@ const chatListClickHandler = () => {
     return;
   }
   chatListToggleHandler();
-}
+};
 
 const enterChatRoom = (matchId) => {
   router.push({ name: "chat", params: { matchId: matchId } });
@@ -75,6 +84,7 @@ const signout = async () => {
     // Redirect to the main page
     alert("로그아웃이 완료되었습니다.");
     router.push("/");
+    location.reload();
   } catch (error) {
     console.error(error);
     alert("로그아웃에 실패하였습니다. 다시 시도해주세요.");
@@ -87,13 +97,18 @@ watch(chatListToggle, async (newVal) => {
     chatListElement.value.focus();
   }
 });
-
 </script>
 
 <template>
   <header :class="background == 'white' ? 'header-white' : ''">
     <div class="chat-list-bg" v-show="chatListToggle" @click="chatListClickHandler"></div>
-    <div class="chat-list" v-show="chatListToggle" tabindex="0" @keyup.esc="chatListToggleHandler" ref="chatListElement">
+    <div
+      class="chat-list"
+      v-show="chatListToggle"
+      tabindex="0"
+      @keyup.esc="chatListToggleHandler"
+      ref="chatListElement"
+    >
       <div class="chat-list-top">
         <h2>채팅 목록</h2>
       </div>
@@ -126,7 +141,7 @@ watch(chatListToggle, async (newVal) => {
         >나만의 여행 계획</router-link
       >
       <div :class="menuClass" class="trip-menu" id="profile" @click="memberOption">
-        <img src="/src/assets/img/profileEX.png" />
+        <img :src="profileImage" />
       </div>
     </div>
   </header>
@@ -134,7 +149,9 @@ watch(chatListToggle, async (newVal) => {
     <router-link :to="{ name: 'member-signup' }">회원가입</router-link>
     <router-link :to="{ name: 'member-signin' }">로그인</router-link>
     <a @click="signout" href="#">로그아웃</a>
-    <router-link :to="{ name: 'mypage' }">마이페이지</router-link>
+    <router-link :to="{ name: 'mypage', params: { memberId: authStore.getMemberId } }"
+      >마이페이지</router-link
+    >
   </div>
 </template>
 
@@ -197,6 +214,7 @@ header {
 #profile img {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
 }
 
 #member-menu-container {

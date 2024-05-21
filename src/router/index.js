@@ -109,7 +109,7 @@ const router = createRouter({
       ],
     },
     {
-      path: "/mypage",
+      path: "/mypage/:memberId",
       name: "mypage",
       component: () => import("@/views/MyPageView.vue"),
       redirect: { name: "mypage-profile" },
@@ -189,7 +189,7 @@ async function canEnterChat(to, from, next) {
   }
   if (!flag) {
     alert("입장할 수 없는 채팅방입니다.");
-      router.push({ name: "main" });
+    router.push({ name: "main" });
   }
 }
 export default router;

@@ -1,17 +1,21 @@
 <script setup>
-import { computed } from 'vue';
-import MyProfile from '@/components/mypage/MyProfile.vue';
-import MyProfileUpdate from '@/components/mypage/MyProfileUpdate.vue';
-import MyCourses from '@/components/mypage/MyCourses.vue';
-import MyMatches from '@/components/mypage/MyMatches.vue';
-import MyReviews from '@/components/mypage/MyReviews.vue';
-import MyWithdraw from '@/components/mypage/MyWithdraw.vue';
+import { computed } from "vue";
+import MyProfile from "@/components/mypage/MyProfile.vue";
+import MyProfileUpdate from "@/components/mypage/MyProfileUpdate.vue";
+import MyCourses from "@/components/mypage/MyCourses.vue";
+import MyMatches from "@/components/mypage/MyMatches.vue";
+import MyReviews from "@/components/mypage/MyReviews.vue";
+import MyWithdraw from "@/components/mypage/MyWithdraw.vue";
 
 const props = defineProps({
   activeTab: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
+  profileImageFile: {
+    type: File,
+    default: null,
+  },
 });
 
 const componentsMap = {
@@ -28,7 +32,7 @@ const activeComponent = computed(() => componentsMap[props.activeTab]);
 
 <template>
   <div class="content-container">
-    <component :is="activeComponent"></component>
+    <component :is="activeComponent" :profile-image-file="props.profileImageFile"></component>
   </div>
 </template>
 
