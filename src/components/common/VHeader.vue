@@ -139,9 +139,9 @@ watch(chatListToggle, async (newVal) => {
       <div id="mate-chat" :class="menuClass" class="trip-menu" @click="chatListClickHandler">
         메이트 채팅
       </div>
-      <!-- <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
+      <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
         >여행 메이트 찾기</router-link
-      > -->
+      >
       <router-link :to="{ name: 'plan' }" :class="menuClass" class="trip-menu"
         >나만의 여행 계획</router-link
       >
