@@ -101,7 +101,7 @@ const commentDelete = async (commentId) => {
   <div>댓글</div>
   <form @submit.prevent="addComment" id="review-comment-input-container">
     <textarea v-model="newComment.content" type="text" placeholder="댓글을 입력하세요"></textarea>
-    <button type="submit">댓글 작성</button>
+    <button type="submit" class="reply-btn">댓글 작성</button>
   </form>
   <div>
     <div
@@ -208,6 +208,19 @@ const commentDelete = async (commentId) => {
 #review-comment-input-container button {
   width: 15%;
   height: 30px;
+}
+
+.reply-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+  border: none;
+  border-radius: 10px;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .comment {

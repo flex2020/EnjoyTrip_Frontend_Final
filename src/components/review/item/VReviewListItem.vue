@@ -92,7 +92,9 @@ const moveView = (viewId) => {
     </div>
   </div>
   <div v-if="loading" class="loading">마지막 페이지 입니다.</div>
-  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">맨 위로</button>
+  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">
+    <img src="/src/assets/img/fontawesome/chevron-up-solid.svg">
+  </button>
 </template>
 
 <style scoped>
@@ -117,6 +119,11 @@ const moveView = (viewId) => {
   background-position: center center;
   position: relative;
   overflow: hidden;
+  transition: 0.2s;
+}
+
+.review-list-item:hover {
+  transform: scale(103%);
 }
 
 .review-list-item-grad {
@@ -187,5 +194,12 @@ const moveView = (viewId) => {
   position: fixed;
   bottom: 50px;
   right: 50px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+  border: none;
+  cursor: pointer;
 }
 </style>

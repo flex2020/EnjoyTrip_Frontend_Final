@@ -95,8 +95,10 @@ const searchReview = async () => {
         </select>
       </div>
       <div id="review-list-search">
-        <input v-model="inputKeyword" type="text" placeholder="제목, 내용으로 검색해보세요" />
-        <button @click="searchReview">검색</button>
+        <input v-model="inputKeyword" type="text" placeholder="제목, 내용으로 검색해보세요" @keyup.enter="searchReview" />
+        <button id="review-search-btn" @click="searchReview">
+          <img src="/src/assets/img/fontawesome/magnifying-glass-solid-white.svg" width="25">
+        </button>
       </div>
       <router-link :to="{ name: 'review-write' }" id="review-list-move-write">
         <img src="@/assets/img/fontawesome/pen-to-square-solid.svg" />
@@ -127,9 +129,10 @@ const searchReview = async () => {
 }
 
 #review-list-title div:first-child {
-  font-size: 24px;
+  font-size: 36px;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid var(--brand-color);
 }
 #review-list-title div:last-child {
   font-size: 18px;
@@ -154,8 +157,13 @@ const searchReview = async () => {
 
 #review-list-search button {
   position: absolute;
-  top: 8px;
-  right: 10px;
+  background-color: var(--brand-color);
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+  top: 2px;
+  right: 0;
+  cursor: pointer;
 }
 
 #review-list-search input {
@@ -164,14 +172,22 @@ const searchReview = async () => {
   font-size: 20px;
   padding: 0px 10px;
   border-radius: 10px;
+  border: 2px solid var(--brand-color);
+}
+
+#review-list-search input:focus {
+  outline: none;
 }
 
 #review-list-move-write {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  transition: 0.2s;
 }
-
+#review-list-move-write:hover {
+  transform: scale(110%);
+}
 #review-list-move-write img {
   width: 30px;
   height: 30px;
@@ -185,4 +201,5 @@ const searchReview = async () => {
   padding-left: 5px;
   margin-right: 5px;
 }
+
 </style>
