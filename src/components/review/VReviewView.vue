@@ -83,7 +83,7 @@ const getComment = () => {
         <div>
           여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}
         </div>
-        <div>여행인원 : ?</div>
+        <div>여행인원 : {{ review.memberCount }}</div>
       </div>
       <div>
         <div>
@@ -140,7 +140,7 @@ const getComment = () => {
 <style scoped>
 #review-view-container {
   padding-top: 30px;
-  margin: 0px 25%;
+  margin: 0px 25% 30px;
 }
 
 #head-image {

@@ -21,8 +21,8 @@ const isUseId = ref(false);
 
 if (props.type === "update") {
   let { viewid } = route.params;
-  http.get(`review/update/${viewid}`).then((response) => {
-    review_article.value = response.data;
+  http.get(`/review/update/${viewid}`).then((response) => {
+    review_article.value.review = response.data;
   });
   isUseId.value = true;
 }
@@ -81,14 +81,21 @@ const reviewWrite = () => {
 };
 
 const reviewUpdate = async () => {
-  await http.put("review", review_article.value);
+  const data = review_article.value;
+  data.review.previewContent = getTextContent(review_article.value.review.content);
+  data.review.firstImage = getFirstImage(review_article.value.review.content);
+  const response = await http.put("review", data);
+  if (response.status == 200) {
+    router.push({ name: "review-list" });
+  }
+  else alert('수정 중 오류가 발생했습니다.');
 
-  router.push({ name: "review-list" });
 };
 
-const reviewDelete = () => {
-  http.delete(`review/${review_article.value.reviewId}`);
-  router.push({ name: "review-list" });
+const reviewDelete = async () => {
+  await http.delete(`review/${review_article.value.review.reviewId}`);
+  if (response.status == 200) router.push({ name: "review-list" });
+  else alert('삭제 중 오류가 발생했습니다.');
 };
 
 onMounted(async () => {

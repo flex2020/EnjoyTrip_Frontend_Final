@@ -17,14 +17,16 @@ const profileImage = ref(authStore.getProfileImage);
 
 onMounted(async () => {
   const memberId = authStore.getMemberId;
-  chatList.value = await getMatchesByMemberId(memberId);
-  const profileResponse = await http.post("/member/profile", {
-    memberId: authStore.getMemberId,
-  });
+  if (memberId) {
+    chatList.value = await getMatchesByMemberId(memberId);
+    const profileResponse = await http.post("/member/profile", {
+      memberId: authStore.getMemberId,
+    });
 
-  if (profileResponse.data) {
-    profileImage.value = profileResponse.data;
-    authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
+    if (profileResponse.data) {
+      profileImage.value = profileResponse.data;
+      authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
+    }
   }
 });
 
@@ -67,6 +69,7 @@ const props = defineProps({
 });
 
 const menuClass = computed(() => (props.background == "white" ? "menu-white" : "menu"));
+const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu'))
 
 const signout = async () => {
   try {
@@ -80,13 +83,13 @@ const signout = async () => {
 
     // signout api 호출
     await http.post("/member/signout");
-
+    isActive.value = false;
     // Redirect to the main page
     alert("로그아웃이 완료되었습니다.");
-    router.push("/");
-    location.reload();
+    
   } catch (error) {
     console.error(error);
+    isActive.value = false;
     alert("로그아웃에 실패하였습니다. 다시 시도해주세요.");
   }
 };
@@ -127,7 +130,8 @@ watch(chatListToggle, async (newVal) => {
     <router-link :to="{ name: 'main' }" id="nav-logo">
       <img src="/src/assets/img/navlog.png" />
     </router-link>
-    <div id="trip-menu-container">
+    <div style="display: flex;">
+      <div id="trip-menu-container">
       <router-link :to="{ name: 'review' }" :class="menuClass" class="trip-menu"
         >여행 후기</router-link
       >
@@ -140,19 +144,22 @@ watch(chatListToggle, async (newVal) => {
       <router-link :to="{ name: 'plan' }" :class="menuClass" class="trip-menu"
         >나만의 여행 계획</router-link
       >
-      <div :class="menuClass" class="trip-menu" id="profile" @click="memberOption">
-        <img :src="profileImage" />
       </div>
+      <div :class="menuClass" id="profile">
+        <img :src="profileImage" @click="memberOption" />
+      </div>
+      <div :class="memberMenuClass" v-show="isActive">
+      <router-link v-if="!authStore.getMemberId" :to="{ name: 'member-signup' }">회원가입</router-link>
+      <router-link v-if="!authStore.getMemberId" :to="{ name: 'member-signin' }">로그인</router-link>
+      <router-link v-if="authStore.getMemberId" :to="{ name: 'mypage', params: { memberId: authStore.getMemberId } }"
+        >마이페이지</router-link
+      >
+      <a v-if="authStore.getMemberId" @click="signout" href="#">로그아웃</a>
     </div>
-  </header>
-  <div id="member-menu-container" v-show="isActive">
-    <router-link :to="{ name: 'member-signup' }">회원가입</router-link>
-    <router-link :to="{ name: 'member-signin' }">로그인</router-link>
-    <a @click="signout" href="#">로그아웃</a>
-    <router-link :to="{ name: 'mypage', params: { memberId: authStore.getMemberId } }"
-      >마이페이지</router-link
-    >
+    
+    
   </div>
+  </header>
 </template>
 
 <style scoped>
@@ -189,10 +196,29 @@ header {
 }
 
 .trip-menu {
-  margin-left: 15px;
   text-decoration: none;
   font-weight: bold;
   color: white;
+  padding: 15px;
+  position: relative;
+}
+
+.trip-menu:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 3px;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  background: black;
+  transition: all 0.3s ease;
+  border-radius: 7px;
+}
+
+.trip-menu:hover:after {
+  left: 0;
+  width: 100%;
 }
 
 #mate-chat {
@@ -200,45 +226,66 @@ header {
 }
 
 .menu-white {
-  margin-left: 15px;
   text-decoration: none;
   font-weight: bold;
   color: black;
 }
 
 #profile {
-  width: 70px;
-  height: 70px;
+  width: 150px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #profile img {
-  width: 100%;
-  height: 100%;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-#member-menu-container {
-  position: fixed;
+#profile img:hover {
+  transform: scale(120%);
+}
+
+
+.member-menu {
+  position: absolute;
   background-color: rgba(125, 180, 220, 0.8);
   color: black;
   width: 200px;
-  height: 300px;
   border-radius: 15px;
-  top: 100px;
+  top: 70px;
   right: 50px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
   z-index: 100000;
+  padding: 15px;
 }
 
-#member-menu-container a {
+.member-memu-white {
+  background: linear-gradient(to bottom, #ffffff, #f2f2f2);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 8px 8px rgba(0,0,0,0.23);
+}
+
+
+.member-menu a {
   text-align: center;
-  width: 100px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-  padding-bottom: 10px;
+  width: 100%;
+  padding: 10px;
   font-weight: bold;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.member-menu a:hover {
+  background-color: black;
+  color: white;
 }
 
 .chat-list-bg {
