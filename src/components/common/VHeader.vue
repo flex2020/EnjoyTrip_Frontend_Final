@@ -57,7 +57,7 @@ const enterChatRoom = (matchId) => {
 
 const leaveMatching = async (matchId) => {
   if (!window.confirm("정말 해당 매칭에서 나가시겠습니까?")) return;
-  const memberId = authStore.getMemberId();
+  const memberId = authStore.memberId;
   await removeMatchOfMember(memberId, matchId);
   chatList.value = chatList.value.filter((match) => match.matchId != matchId);
   if (route.params.matchId == matchId) {
@@ -92,7 +92,7 @@ const signout = async () => {
     // Redirect to the main page
     alert("로그아웃이 완료되었습니다.");
     router.push("/");
-    
+    profileImage.value = '/src/assets/img/profileDefault.png';
   } catch (error) {
     console.error(error);
     isActive.value = false;
@@ -203,6 +203,7 @@ header {
   color: white;
   padding: 15px;
   position: relative;
+  font-size: 18px;
 }
 
 .trip-menu:after {

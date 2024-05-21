@@ -16,11 +16,12 @@ const props = defineProps({ type: String });
 const isUseId = ref(false);
 const inputHashtag = ref("");
 const hashtagArray = ref([]);
+const files = ref([]);
 
 if (props.type === "update") {
-  let { viewid } = route.params;
-  http.get(`match/update/${viewid}`).then((response) => {
-    review_article.value = response.data;
+  let { matchid } = route.params;
+  http.get(`match/find/${matchid}`).then((response) => {
+    match_article.value = response.data.resdata;
   });
   isUseId.value = true;
 }
@@ -39,21 +40,27 @@ const match_article = ref({
   deleted: 0,
   content: "",
   hashtags: hashtagArray.value,
+  fileId: 0,
 });
 
 const courses = ref([]);
 
 const matchWrite = async () => {
+  const formData = new FormData();
+  formData.append("file", files.value);
+  const fileRes = await http.post("/files", formData);
+  match_article.value.fileId = fileRes.data.fileId;
+
   await http.post("/match", match_article.value);
 
-  router.push({ name: "review-list" });
+  router.push({ name: "match-list" });
 };
 
-// const reviewUpdate = async () => {
-//   await http.put("review", review_article.value);
+const matchUpdate = async () => {
+  await http.put("match", match_article.value);
 
-//   router.push({ name: "review-list" });
-// };
+  router.push({ name: "match-list" });
+};
 
 // const reviewDelete = () => {
 //   http.delete(`review/${review_article.value.reviewId}`);
@@ -66,14 +73,18 @@ onMounted(async () => {
 });
 
 const moveList = () => {
-  router.push({ name: "review-list" });
+  router.push({ name: "match-list" });
 };
 
 const addHashtag = () => {
   hashtagArray.value.push(inputHashtag.value);
   inputHashtag.value = "";
-  console.log(hashtagArray.value);
+  // console.log(hashtagArray.value);
 };
+
+const handleFileChange = (event) => {
+  files.value = event.target.files[0];
+}
 </script>
 
 <template>
@@ -81,15 +92,23 @@ const addHashtag = () => {
     <div id="match-input-title">
       <label id="match-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input type="text" v-model="match_article.matchTitle" placeholder="제목..." />
+      <input
+        type="text"
+        v-model="match_article.matchTitle"
+        placeholder="제목..."
+      />
     </div>
     <div id="match-input-select">
       <div>
         <label>여행 코스</label>
         <label class="red-star">*</label>
-        <select :disabled="isUseId" v-model="match_article.courseId">
+        <select v-model="match_article.courseId">
           <option value="0" hidden>코스를 선택해주세요.</option>
-          <option v-for="course in courses" :key="course.courseId" :value="course.courseId">
+          <option
+            v-for="course in courses"
+            :key="course.courseId"
+            :value="course.courseId"
+          >
             {{ course.courseName }}
           </option>
         </select>
@@ -111,8 +130,8 @@ const addHashtag = () => {
 
         <label>성별 제한</label>
         <label class="red-star">*</label>
-        <select :disabled="isUseId" v-model="match_article.genderType">
-          <option value="0" hidden>성별 제한 선택</option>
+        <select v-model="match_article.genderType">
+          <option value="-1" hidden>성별 제한 선택</option>
           <option value="0">성별 무관</option>
           <option value="1">남성만</option>
           <option value="2">여성만</option>
@@ -126,7 +145,13 @@ const addHashtag = () => {
       <div id="match-hashtag-container">
         <div>해시태그</div>
         <input type="text" v-model="inputHashtag" @keyup.enter="addHashtag" />
-        <button type="button" @click="addHashtag">해시태그 추가하기</button>
+        <span v-for="hashtag in hashtagArray">{{ hashtag }}</span>
+        <span v-for="hashtag in match_article.hashtags">{{ hashtag }}</span>
+      </div>
+
+      <div id="match-image-container">
+        <div>썸네일 선택</div>
+        <input type="file" @change="handleFileChange" />
       </div>
     </div>
   </form>
@@ -134,8 +159,10 @@ const addHashtag = () => {
   <div id="btn-container">
     <div id="divider"></div>
     <div id="btns">
-      <button type="button" v-show="!isUseId" @click="matchWrite">작성하기</button>
-      <button type="button" v-show="isUseId">수정하기</button>
+      <button type="button" v-show="!isUseId" @click="matchWrite">
+        작성하기
+      </button>
+      <button type="button" v-show="isUseId" @click="matchUpdate">수정하기</button>
       <button type="button" v-show="isUseId">삭제하기</button>
       <button type="button" @click="moveList">목록으로</button>
     </div>
@@ -211,6 +238,12 @@ const addHashtag = () => {
   flex-direction: column;
   align-items: flex-start;
 }
+
+#match-image-container {
+  display: flex;
+  flex-direction: column;
+}
+
 
 #btn-container {
   width: 100%;
