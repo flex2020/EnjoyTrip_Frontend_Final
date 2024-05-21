@@ -54,6 +54,11 @@ table {
 	border-spacing: 0;
 }
 
+.blur {
+	filter: blur(3px);
+	-webkit-filter: blur(3px);
+}
+
 :root {
 	--brand-color: #49A3F2;
 }
