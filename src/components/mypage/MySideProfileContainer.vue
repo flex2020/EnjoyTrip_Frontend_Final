@@ -1,40 +1,61 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { Axios } from '@/api/http-common';
+import { ref, onMounted } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { Axios } from "@/api/http-common";
+import { useRoute } from "vue-router";
 
 const http = Axios();
 const authStore = useAuthStore();
+const route = useRoute();
 
 const props = defineProps({
   activeTab: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
+  profileImageFile: {
+    type: File,
+    default: null,
+  },
 });
+
+const emit = defineEmits(["update-profile-image"]);
 
 // 데이터 정의
 const nickname = ref("사용자");
 const followers = ref(0);
 const following = ref(0);
 const posts = ref(0);
-const profileImage = ref('/src/assets/img/profileEX.png');
-const newProfileImageFile = ref(null);
-const fileInputRef = ref(null);  // 파일 입력 필드 참조
+const profileImage = ref("/src/assets/img/profileDefault.png"); // 프로필 이미지 초기화
+const fileInputRef = ref(null); // 파일 입력 필드 참조
 
 // API 호출 메소드
 const fetchUserData = async () => {
   try {
     const followerCount = await http.post("/follow/followers/count", {
-      email: authStore.getEmail,
+      memberId: route.params.memberId,
     });
     const followeeCount = await http.post("/follow/followees/count", {
-      email: authStore.getEmail,
+      memberId: route.params.memberId,
     });
-    nickname.value = authStore.getNickname;
+    const profileResponse = await http.post("/member/profile", {
+      memberId: route.params.memberId,
+    });
+
+    const memberInfo = await http.post("/member/info", {
+      memberId: route.params.memberId,
+    });
+
+    nickname.value = memberInfo.data.nickname;
     followers.value = followerCount.data.count;
     following.value = followeeCount.data.count;
-    // posts.value = data.posts; // 게시글 수 업데이트 로직 필요
+
+    console.log(profileResponse);
+    // 프로필 이미지가 존재하면 업데이트
+    if (profileResponse.data) {
+      profileImage.value = profileResponse.data;
+      authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
+    }
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
@@ -54,24 +75,8 @@ const onImageUpload = (event) => {
       profileImage.value = e.target.result;
     };
     reader.readAsDataURL(file);
-    newProfileImageFile.value = file; // 새 이미지 파일 저장
-  }
-};
-
-// 프로필 이미지 저장 메소드
-const saveProfileImage = async () => {
-  if (!newProfileImageFile.value) return;
-
-  try {
-    // 프로필 이미지를 서버에 저장하는 API 호출
-    const formData = new FormData();
-    formData.append('email', authStore.getEmail);
-    formData.append('profileImage', newProfileImageFile.value);
-
-    const response = await http.post('/profile/upload', formData);
-    console.log('프로필 이미지 저장 성공:', response.data);
-  } catch (error) {
-    console.error('프로필 이미지 저장 실패:', error);
+    emit("update-profile-image", file);
+    console.log("MySideProfileContainer: profileImageFile updated:", file);
   }
 };
 
@@ -86,9 +91,20 @@ const onFileInputClick = () => {
 <template>
   <div class="profile-sidebar">
     <div class="profile-pic-container">
-      <img :src="profileImage" alt="Profile Picture" class="profile-pic" @click="onFileInputClick" />
+      <img
+        :src="profileImage"
+        alt="Profile Picture"
+        class="profile-pic"
+        @click="onFileInputClick"
+      />
       <label v-if="activeTab === 'profileUpdate'" class="upload-icon" @click="onFileInputClick">
-        <input ref="fileInputRef" type="file" accept="image/*" @change="onImageUpload" style="display: none;" />
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept="image/*"
+          @change="onImageUpload"
+          style="display: none"
+        />
         <span>+</span>
       </label>
     </div>

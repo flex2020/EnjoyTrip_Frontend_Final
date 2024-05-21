@@ -1,12 +1,17 @@
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, defineEmits, computed } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRoute } from "vue-router";
+
+const authStore = useAuthStore();
+const route = useRoute();
 
 // Props 정의
 const props = defineProps({
   activeTab: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const hoverTab = ref(null);
@@ -15,13 +20,29 @@ const setHoverTab = (tab) => {
   hoverTab.value = tab;
 };
 
+// 자기껀지 남에껀지에 따라서 보여주는 탭 개수 조정
+const filteredTabs = computed(() => {
+  const currentMemberId = route.params.memberId;
+  const loggedInMemberId = authStore.getMemberId;
+
+  if (currentMemberId === loggedInMemberId) {
+    return tabs;
+  }
+
+  return tabs.filter(
+    (tab) => tab.name === "profile" || tab.name === "matches" || tab.name === "reviews"
+  );
+});
+
 const tabs = [
-  { name: 'profile', label: '회원정보 조회' },
-  { name: 'profileUpdate', label: '회원정보 수정' },
-  { name: 'matches', label: '매칭 게시물 목록' },
-  { name: 'reviews', label: '여행 후기 목록' },
-  { name: 'signout', label: '회원 탈퇴' },
+  { name: "profile", label: "회원정보 조회" },
+  { name: "profileUpdate", label: "회원정보 수정" },
+  { name: "matches", label: "매칭 게시물 목록" },
+  { name: "reviews", label: "여행 후기 목록" },
+  { name: "withdraw", label: "회원 탈퇴" },
 ];
+
+const emit = defineEmits(["update-active-tab", "open-modal"]);
 </script>
 
 <template>
@@ -29,12 +50,14 @@ const tabs = [
     <nav>
       <ul>
         <li
-          v-for="tab in tabs"
+          v-for="tab in filteredTabs"
           :key="tab.name"
           :class="{ active: props.activeTab === tab.name, hover: hoverTab === tab.name }"
           @mouseenter="setHoverTab(tab.name)"
           @mouseleave="setHoverTab(null)"
-          @click="$emit('update-active-tab', tab.name)"
+          @click="
+            tab.name === 'withdraw' ? emit('open-modal') : emit('update-active-tab', tab.name)
+          "
         >
           {{ tab.label }}
         </li>

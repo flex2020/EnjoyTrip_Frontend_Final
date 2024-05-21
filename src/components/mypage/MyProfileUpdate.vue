@@ -1,12 +1,20 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { Axios } from "/src/api/http-common";
 import { useAuthStore } from "@/stores/auth";
 
 const http = Axios();
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
+
+const props = defineProps({
+  profileImageFile: {
+    type: File,
+    default: null,
+  },
+});
 
 // 사용자 정보 상태 정의
 const email = ref("");
@@ -17,7 +25,12 @@ const intro = ref("");
 const phoneNumber = ref("");
 const phoneError = ref("");
 const activeTab = ref("profile"); // 기본 활성 탭 설정
-const profileImageFile = ref(null); // 프로필 이미지 파일
+const profileImageFile = ref(props.profileImageFile); // 프로필 이미지 파일
+
+// 프로필 제대로 바뀌었는지 테스트 출력 메소드
+watch(profileImageFile, (newVal) => {
+  console.log("MyProfileUpdate: profileImageFile updated:", newVal);
+});
 
 // 전화번호 형식 검사 메소드
 const validatePhoneNumber = () => {
@@ -44,7 +57,7 @@ const formatPhoneNumber = () => {
 const fetchUserData = async () => {
   try {
     const response = await http.post("/member/info", {
-      email: authStore.getEmail,
+      memberId: route.params.memberId,
     });
     const data = response.data;
     email.value = data.email;
@@ -67,26 +80,42 @@ const updateProfile = async () => {
   }
 
   try {
-    // 사진 데이터 포함 저장해보기
-    // const formData = new FormData();
-    // formData.append('nickname', nickname.value);
-    // formData.append('email', email.value);
-    // if (profileImageFile.value) {
-    //   formData.append('profileImage', profileImageFile.value);
-    // }
-
-    // const response = await http.post('/profile/update', formData);
-    // console.log('프로필 데이터 저장 성공:', response.data);
-
-
-    await http.put("/member/update", {
+    const memberData = {
+      memberId: authStore.getMemberId,
       email: email.value,
       memberName: memberName.value,
       nickname: nickname.value,
       mbti: mbti.value,
       intro: intro.value,
       phoneNumber: phoneNumber.value,
+    };
+
+    const formData = new FormData();
+    const jsonBlob = new Blob([JSON.stringify(memberData)], { type: "application/json" });
+    formData.append("data", jsonBlob);
+    if (props.profileImageFile) {
+      formData.append("profileImage", props.profileImageFile);
+    }
+
+    // 콘솔에 formData 출력
+    for (const pair of formData.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
+
+    // 실제 API 호출 (주석 해제)
+    await http.put("/member/update", formData);
+
+    const profileResponse = await http.post("/member/profile", {
+      memberId: authStore.getMemberId,
     });
+
+    if (profileResponse.data) {
+      authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
+    }
+
+    // 업데이트된 닉네임을 핀아에 반영
+    authStore.updateNickname(nickname.value);
+
     alert("회원 정보가 성공적으로 수정되었습니다.");
     router.push("/mypage/profile"); // 프로필 페이지로 리다이렉트
     location.reload(); // 페이지 새로고침
@@ -140,7 +169,9 @@ onMounted(() => {
       </div>
       <div class="button-group">
         <button type="submit" class="btn btn-update">수정</button>
-        <router-link :to="{ name: 'member-findpassword' }" class="btn btn-reset">비밀번호 재설정</router-link>
+        <router-link :to="{ name: 'member-findpassword' }" class="btn btn-reset"
+          >비밀번호 재설정</router-link
+        >
       </div>
     </form>
   </div>

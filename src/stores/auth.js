@@ -16,6 +16,7 @@ export const useAuthStore = defineStore("auth", {
     email: null,
     nickname: null,
     memberId: null,
+    profileImage: "/src/assets/img/profileDefault.png", // 프로필 이미지 추가
   }),
 
   getters: {
@@ -23,6 +24,7 @@ export const useAuthStore = defineStore("auth", {
     getEmail: (state) => state.email,
     getNickname: (state) => state.nickname,
     getMemberId: (state) => state.memberId,
+    getProfileImage: (state) => state.profileImage, // 프로필 이미지 getter 추가
   },
 
   actions: {
@@ -38,6 +40,14 @@ export const useAuthStore = defineStore("auth", {
       this.email = null;
       this.nickname = null;
       this.memberId = null;
+      this.profileImage = "/src/assets/img/profileDefault.png"; // 로그아웃 시 프로필 이미지 초기화
+    },
+    updateNickname(newNickname) {
+      this.nickname = newNickname;
+    },
+    updateProfileImage(newProfileImage) {
+      // 프로필 이미지 업데이트 메소드 추가
+      this.profileImage = newProfileImage;
     },
   },
 

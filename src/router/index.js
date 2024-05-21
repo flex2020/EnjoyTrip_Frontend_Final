@@ -109,7 +109,7 @@ const router = createRouter({
       ],
     },
     {
-      path: "/mypage",
+      path: "/mypage/:memberId",
       name: "mypage",
       component: () => import("@/views/MyPageView.vue"),
       redirect: { name: "mypage-profile" },
@@ -125,11 +125,6 @@ const router = createRouter({
           component: () => import("@/components/mypage/MyReviews.vue"),
         },
         {
-          path: "courses",
-          name: "mypage-courses",
-          component: () => import("@/components/mypage/MyCourses.vue"),
-        },
-        {
           path: "matches",
           name: "mypage-matches",
           component: () => import("@/components/mypage/MyMatches.vue"),
@@ -138,6 +133,11 @@ const router = createRouter({
           path: "profileupdate",
           name: "mypage-profileupdate",
           component: () => import("@/components/mypage/MyProfileUpdate.vue"),
+        },
+        {
+          path: "withdraw",
+          name: "mypage-withdraw",
+          component: () => import("@/components/mypage/MyWithdraw.vue"),
         },
       ],
     },
@@ -189,7 +189,7 @@ async function canEnterChat(to, from, next) {
   }
   if (!flag) {
     alert("입장할 수 없는 채팅방입니다.");
-      router.push({ name: "main" });
+    router.push({ name: "main" });
   }
 }
 export default router;
