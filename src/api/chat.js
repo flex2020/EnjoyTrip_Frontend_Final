@@ -14,7 +14,8 @@ class ChatApi {
   connect() {
     return new Promise((resolve, reject) => {
       const WebSocketURL = import.meta.env.VITE_WEB_SOCKET_URL;
-      this.socket = new WebSocket(WebSocketURL);
+      const host = window.location.host;
+      this.socket = new WebSocket(`ws://${host}${WebSocketURL}`);
 
       this.socket.onopen = () => {
         this.isConnected = true;

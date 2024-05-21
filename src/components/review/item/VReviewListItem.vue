@@ -72,10 +72,12 @@ const moveView = (viewId) => {
       :key="review.reviewId"
       @click="moveView(review.reviewId)"
       v-show="review.deleted === 0 ? true : false"
-    >
+      :style="{backgroundImage: `url('${review.firstImage}')`}"
+    > 
+    <div class="review-list-item-grad"></div>
       <div class="review-list-item-intro">
         <div>{{ review.reviewTitle }}</div>
-        <div v-html="review.content"></div>
+        <div>{{ review.previewContent }}</div>
       </div>
       <div class="review-list-item-info">
         <div>
@@ -83,7 +85,7 @@ const moveView = (viewId) => {
           <div>{{ review.likeCount }}</div>
         </div>
         <div>
-          <img src="@/assets/img/fontawesome/eye-solid.svg" />
+          <img src="@/assets/img/fontawesome/eye-solid-white.svg" />
           <div>{{ review.hit }}</div>
         </div>
       </div>
@@ -107,24 +109,43 @@ const moveView = (viewId) => {
   display: flex;
   align-items: flex-end;
   width: 30%;
-  height: 350px;
-  background-color: gray;
+  height: 350px; 
   border-radius: 20px;
   margin: 1.667%;
-  padding: 20px;
   color: white;
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: relative;
+  overflow: hidden;
+}
+
+.review-list-item-grad {
+  width: 100%;
+  background: linear-gradient(to top, #000000FF, #00000000);
+  height: 30%;
+  position: absolute;
 }
 
 .review-list-item-intro {
   width: 70%;
   display: flex;
   flex-direction: column;
+  z-index: 10;
+  margin: 20px;
+  text-overflow: ellipsis;
+   overflow: hidden;
+   word-break: break-word;
+    
+   display: -webkit-box;
+   -webkit-line-clamp: 3;
+   -webkit-box-orient: vertical;
 }
 
 .review-list-item-intro div:first-child {
   font-weight: bold;
   font-size: 24px;
   margin-bottom: 10px;
+  
 }
 
 .review-list-item-info {
@@ -132,6 +153,8 @@ const moveView = (viewId) => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  margin: 20px;
+  z-index: 10;
 }
 
 .review-list-item-info div {
