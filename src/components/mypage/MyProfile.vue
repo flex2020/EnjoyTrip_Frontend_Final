@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "@/api/http-common";
 import { useRoute, useRouter } from "vue-router";
@@ -77,6 +77,8 @@ const goToReview = (reviewId) => {
 onMounted(() => {
   fetchProfileData();
 });
+
+watch(() => route.params.memberId, fetchProfileData);
 </script>
 
 <template>

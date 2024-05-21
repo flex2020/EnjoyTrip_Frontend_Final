@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useAuthStore } from "@/stores/auth";
-import { Axios } from "@/api/http-common";
-import { useRoute } from "vue-router";
-import MyFollower from "@/components/mypage/MyFollower.vue";
-import MyFollowing from "@/components/mypage/MyFollowing.vue";
+import { ref, onMounted, watch } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { Axios } from '@/api/http-common';
+import { useRoute } from 'vue-router';
+import MyFollower from '@/components/mypage/MyFollower.vue';
+import MyFollowing from '@/components/mypage/MyFollowing.vue';
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -34,27 +34,26 @@ const showModal = ref(false);
 const modalType = ref("");
 
 // API 호출 메소드
-const fetchUserData = async () => {
+const fetchUserData = async (memberId) => {
   try {
     const followerCount = await http.post("/follow/followers/count", {
-      memberId: route.params.memberId,
+      memberId: memberId,
     });
     const followeeCount = await http.post("/follow/followees/count", {
-      memberId: route.params.memberId,
+      memberId: memberId,
     });
     const profileResponse = await http.post("/member/profile", {
-      memberId: route.params.memberId,
+      memberId: memberId,
     });
 
     const memberInfo = await http.post("/member/info", {
-      memberId: route.params.memberId,
+      memberId: memberId,
     });
 
     nickname.value = memberInfo.data.nickname;
     followers.value = followerCount.data.count;
     following.value = followeeCount.data.count;
 
-    console.log(profileResponse);
     // 프로필 이미지가 존재하면 업데이트
     if (profileResponse.data) {
       profileImage.value = profileResponse.data;
@@ -67,7 +66,12 @@ const fetchUserData = async () => {
 
 // 컴포넌트가 마운트될 때 API 호출
 onMounted(() => {
-  fetchUserData();
+  fetchUserData(route.params.memberId);
+});
+
+// route 변경 시 API 호출
+watch(() => route.params.memberId, (newMemberId) => {
+  fetchUserData(newMemberId);
 });
 
 // 이미지 업로드 핸들러
@@ -80,7 +84,6 @@ const onImageUpload = (event) => {
     };
     reader.readAsDataURL(file);
     emit("update-profile-image", file);
-    console.log("MySideProfileContainer: profileImageFile updated:", file);
   }
 };
 
@@ -107,6 +110,22 @@ const onFollowingClick = () => {
 
 const closeModal = () => {
   showModal.value = false;
+};
+
+const handleUpdateCount = ({ type, relation }) => {
+  if (relation === 'following') {
+    if (type === 'increment') {
+      following.value++;
+    } else if (type === 'decrement') {
+      following.value--;
+    }
+  } else if (relation === 'follower') {
+    if (type === 'increment') {
+      followers.value++;
+    } else if (type === 'decrement') {
+      followers.value--;
+    }
+  }
 };
 </script>
 
@@ -149,8 +168,8 @@ const closeModal = () => {
     </div>
 
     <!-- 모달 컴포넌트 렌더링 -->
-    <MyFollower v-if="showModal && modalType === 'followers'" @close-modal="closeModal" />
-    <MyFollowing v-if="showModal && modalType === 'following'" @close-modal="closeModal" />
+    <MyFollower v-if="showModal && modalType === 'followers'" @close-modal="closeModal" @update-count="handleUpdateCount"/>
+    <MyFollowing v-if="showModal && modalType === 'following'" @close-modal="closeModal" @update-count="handleUpdateCount"/>
   </div>
   <div v-if="showModal" class="modal-overlay" @click="closeModal"></div>
 </template>
@@ -230,17 +249,6 @@ const closeModal = () => {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-.follow-button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: auto;
-  font-size: 16px;
-}
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -249,27 +257,5 @@ const closeModal = () => {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: transform 0.3s cubic-bezier(0.77, 0, 0.175, 1),
-    opacity 0.3s cubic-bezier(0.77, 0, 0.175, 1);
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

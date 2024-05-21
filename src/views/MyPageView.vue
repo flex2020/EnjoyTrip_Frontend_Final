@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "@/api/http-common";
+import { useRouter, useRoute } from "vue-router";
 import VHeader from "@/components/common/VHeader.vue";
 import MySideProfileContainer from "@/components/mypage/MySideProfileContainer.vue";
 import MyTabContainer from "@/components/mypage/MyTabContainer.vue";
@@ -10,6 +11,9 @@ import MyWithdraw from "@/components/mypage/MyWithdraw.vue";
 
 const http = Axios();
 const authStore = useAuthStore();
+const route = useRoute();
+const router = useRouter();
+
 const activeTab = ref("profile");
 const profileImageFile = ref(null); // 프로필 이미지 파일
 const showModal = ref(false);
@@ -27,6 +31,14 @@ const updateProfileImage = (file) => {
   profileImageFile.value = file;
   console.log("MyPageView: profileImageFile updated:", profileImageFile.value);
 };
+
+// 라우트 변경 시 탭 업데이트
+watch(
+  () => route.params.memberId,
+  (newMemberId) => {
+    activeTab.value = "profile"; // memberId 변경 시 기본 탭으로 설정
+  }
+);
 </script>
 
 <template>
