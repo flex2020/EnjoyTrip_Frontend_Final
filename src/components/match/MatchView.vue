@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
 import VKakaoMapForReview from "@/components/common/VKakaoMapForReview.vue";
+import { postMatchesByMemberId } from "@/api/match";
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -23,8 +24,19 @@ onMounted(() => {
 
 const getMatch = async () => {
   const response = await http.get(`match/find/${matchId.value}`);
-  console.log(response.data.resdata);
+  // console.log(response.data.resdata);
   match.value = response.data.resdata;
+};
+
+const registerMatch = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("memberId", authStore.getMemberId);
+    formData.append("matchId", match.value.matchId);
+    await postMatchesByMemberId(formData);
+  } catch (e) {
+    console.log(e);
+  }
 };
 </script>
 
@@ -49,14 +61,13 @@ const getMatch = async () => {
         </div>
       </div>
     </div>
-    <div id="match-view-contents">{{match.content}}</div>
+    <div id="match-view-contents">{{ match.content }}</div>
     <div id="match-view-course">
       <div>여행 코스</div>
-      <VKakaoMapForReview v-if="match.matchId" :match-id="match.matchId"/>
+      <VKakaoMapForReview v-if="match.matchId" :match-id="match.matchId" />
     </div>
 
-    <div>마감 일자 : {{ match.deadline }}
-    </div>
+    <div>마감 일자 : {{ match.deadline }}</div>
     <div>성별 제한 : {{ match.genderType }}</div>
     <div v-for="hashtag in match.hashtags"># {{ hashtag }}</div>
 
@@ -72,6 +83,9 @@ const getMatch = async () => {
         <router-link :to="{ name: 'match-list' }" class="move-link">
           게시글 목록
         </router-link>
+        <button type="button" class="move-link" @click="registerMatch">
+          신청하기
+        </button>
       </div>
     </div>
   </div>

@@ -19,9 +19,9 @@ const hashtagArray = ref([]);
 const files = ref([]);
 
 if (props.type === "update") {
-  let { viewid } = route.params;
-  http.get(`match/update/${viewid}`).then((response) => {
-    review_article.value = response.data;
+  let { matchid } = route.params;
+  http.get(`match/find/${matchid}`).then((response) => {
+    match_article.value = response.data.resdata;
   });
   isUseId.value = true;
 }
@@ -56,11 +56,11 @@ const matchWrite = async () => {
   router.push({ name: "match-list" });
 };
 
-// const reviewUpdate = async () => {
-//   await http.put("review", review_article.value);
+const matchUpdate = async () => {
+  await http.put("match", match_article.value);
 
-//   router.push({ name: "review-list" });
-// };
+  router.push({ name: "match-list" });
+};
 
 // const reviewDelete = () => {
 //   http.delete(`review/${review_article.value.reviewId}`);
@@ -102,7 +102,7 @@ const handleFileChange = (event) => {
       <div>
         <label>여행 코스</label>
         <label class="red-star">*</label>
-        <select :disabled="isUseId" v-model="match_article.courseId">
+        <select v-model="match_article.courseId">
           <option value="0" hidden>코스를 선택해주세요.</option>
           <option
             v-for="course in courses"
@@ -130,8 +130,8 @@ const handleFileChange = (event) => {
 
         <label>성별 제한</label>
         <label class="red-star">*</label>
-        <select :disabled="isUseId" v-model="match_article.genderType">
-          <option value="0" hidden>성별 제한 선택</option>
+        <select v-model="match_article.genderType">
+          <option value="-1" hidden>성별 제한 선택</option>
           <option value="0">성별 무관</option>
           <option value="1">남성만</option>
           <option value="2">여성만</option>
@@ -146,6 +146,7 @@ const handleFileChange = (event) => {
         <div>해시태그</div>
         <input type="text" v-model="inputHashtag" @keyup.enter="addHashtag" />
         <span v-for="hashtag in hashtagArray">{{ hashtag }}</span>
+        <span v-for="hashtag in match_article.hashtags">{{ hashtag }}</span>
       </div>
 
       <div id="match-image-container">
@@ -161,7 +162,7 @@ const handleFileChange = (event) => {
       <button type="button" v-show="!isUseId" @click="matchWrite">
         작성하기
       </button>
-      <button type="button" v-show="isUseId">수정하기</button>
+      <button type="button" v-show="isUseId" @click="matchUpdate">수정하기</button>
       <button type="button" v-show="isUseId">삭제하기</button>
       <button type="button" @click="moveList">목록으로</button>
     </div>

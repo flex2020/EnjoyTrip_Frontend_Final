@@ -57,7 +57,7 @@ const enterChatRoom = (matchId) => {
 
 const leaveMatching = async (matchId) => {
   if (!window.confirm("정말 해당 매칭에서 나가시겠습니까?")) return;
-  const memberId = authStore.getMemberId();
+  const memberId = authStore.memberId;
   await removeMatchOfMember(memberId, matchId);
   chatList.value = chatList.value.filter((match) => match.matchId != matchId);
   if (route.params.matchId == matchId) {
