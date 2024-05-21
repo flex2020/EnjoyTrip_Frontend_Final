@@ -8,6 +8,7 @@ import { Axios } from "/src/api/http-common";
 const http = Axios();
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const isActive = ref(false);
 const chatListToggle = ref(false);
