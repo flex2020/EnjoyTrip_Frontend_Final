@@ -3,6 +3,8 @@ import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "@/api/http-common";
 import { useRoute } from "vue-router";
+import MyFollower from "@/components/mypage/MyFollower.vue";
+import MyFollowing from "@/components/mypage/MyFollowing.vue";
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -28,6 +30,8 @@ const following = ref(0);
 const posts = ref(0);
 const profileImage = ref("/src/assets/img/profileDefault.png"); // 프로필 이미지 초기화
 const fileInputRef = ref(null); // 파일 입력 필드 참조
+const showModal = ref(false);
+const modalType = ref("");
 
 // API 호출 메소드
 const fetchUserData = async () => {
@@ -86,6 +90,24 @@ const onFileInputClick = () => {
     fileInputRef.value.click();
   }
 };
+
+const onFollowersClick = () => {
+  if (authStore.getMemberId === route.params.memberId) {
+    modalType.value = "followers";
+    showModal.value = true;
+  }
+};
+
+const onFollowingClick = () => {
+  if (authStore.getMemberId === route.params.memberId) {
+    modalType.value = "following";
+    showModal.value = true;
+  }
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
 </script>
 
 <template>
@@ -125,7 +147,12 @@ const onFileInputClick = () => {
         <p>{{ posts }}</p>
       </div>
     </div>
+
+    <!-- 모달 컴포넌트 렌더링 -->
+    <MyFollower v-if="showModal && modalType === 'followers'" @close-modal="closeModal" />
+    <MyFollowing v-if="showModal && modalType === 'following'" @close-modal="closeModal" />
   </div>
+  <div v-if="showModal" class="modal-overlay" @click="closeModal"></div>
 </template>
 
 <style scoped>
@@ -212,5 +239,37 @@ const onFileInputClick = () => {
   cursor: pointer;
   margin-top: auto;
   font-size: 16px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: transform 0.3s cubic-bezier(0.77, 0, 0.175, 1),
+    opacity 0.3s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
