@@ -55,7 +55,7 @@ const matchWrite = async () => {
 
   const response = await http.post("/match", match_article.value);
 
-  match_article.value.matchId = response.data.matchId;
+  match_article.value.matchId = await response.data.matchId;
 
   console.log(match_article.value.matchId);
 
