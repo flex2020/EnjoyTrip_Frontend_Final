@@ -19,4 +19,25 @@ async function postMatchesByMemberId(map) {
   return data;
 }
 
-export { getMatchesByMemberId, removeMatchOfMember, postMatchesByMemberId };
+async function getMatesByMatchId(matchId) {
+  const response = await http.get(`/match/match-mates/${matchId}`);
+  const data = await response.data;
+  // console.log(data);
+  return data;
+}
+
+async function postMatesScore(dto) {
+  console.log(dto);
+  for (let index = 0; index < dto.length; index++) {
+    if (dto[index].score !== null) {
+      const data = {
+        memberId: dto[index].memberId,
+        score: dto[index].score,
+      }
+      
+      await http.post(`/member/score`, data);
+    }
+  }
+}
+
+export { getMatchesByMemberId, removeMatchOfMember, postMatchesByMemberId, getMatesByMatchId, postMatesScore };

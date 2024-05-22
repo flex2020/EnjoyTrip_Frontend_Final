@@ -3,11 +3,11 @@ import { ref, defineComponent, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
-import Quill from 'quill/core';
-import ImageUploader from 'quill-image-uploader';
-import { getMatchesByMemberId } from "@/api/match";
+import Quill from "quill/core";
+import ImageUploader from "quill-image-uploader";
+import { getMatchesByMemberId, getMatesByMatchId, postMatesScore } from "@/api/match";
 
-Quill.register('modules/imageUploader', ImageUploader);
+Quill.register("modules/imageUploader", ImageUploader);
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -44,31 +44,34 @@ const review_article = ref({
 
 function getTextContent(htmlString) {
   // Create a temporary DOM element
-  const tempElement = document.createElement('div');
+  const tempElement = document.createElement("div");
   // Set the HTML content
   tempElement.innerHTML = htmlString;
   // Get the text content
-  const textContent = tempElement.textContent || tempElement.innerText || '';
+  const textContent = tempElement.textContent || tempElement.innerText || "";
   // Return the first 200 characters
   return textContent.substring(0, 200);
 }
 
 function getFirstImage(htmlString) {
   // Create a temporary DOM element
-  const tempElement = document.createElement('div');
+  const tempElement = document.createElement("div");
   // Set the HTML content
   tempElement.innerHTML = htmlString;
-  
+
   // Find the first <img> tag
-  const imgTag = tempElement.querySelector('img');
-  console.log(imgTag)
+  const imgTag = tempElement.querySelector("img");
+  console.log(imgTag);
   // Return the src attribute of the first <img> tag, if it exists
-  return imgTag ? imgTag.getAttribute('src') : `/src/assets/img/card_image${Math.floor(Math.random() * 3) + 1}.png`;
+  return imgTag
+    ? imgTag.getAttribute("src")
+    : `/src/assets/img/card_image${Math.floor(Math.random() * 3) + 1}.png`;
 }
 
 const matches = ref([]);
+const mates = ref([]);
 
-const reviewWrite = () => {
+const reviewWrite = async () => {
   const data = review_article.value;
   data.review.previewContent = getTextContent(review_article.value.review.content);
   data.review.firstImage = getFirstImage(review_article.value.review.content);
@@ -78,6 +81,7 @@ const reviewWrite = () => {
       router.push({ name: "review-list" });
     })
     .catch((e) => console.log(e));
+  await postMatesScore(mates.value);
 };
 
 const reviewUpdate = async () => {
@@ -87,18 +91,16 @@ const reviewUpdate = async () => {
   const response = await http.put("review", data);
   if (response.status == 200) {
     router.push({ name: "review-list" });
-  }
-  else alert('수정 중 오류가 발생했습니다.');
-
+  } else alert("수정 중 오류가 발생했습니다.");
 };
 
 const reviewDelete = async () => {
-  if (!window.confirm('정말 게시물을 삭제하시겠습니까?')) return;
+  if (!window.confirm("정말 게시물을 삭제하시겠습니까?")) return;
   try {
     await http.delete(`review/${review_article.value.review.reviewId}`);
     router.push({ name: "review-list" });
   } catch {
-    alert('삭제 중 오류가 발생했습니다.');
+    alert("삭제 중 오류가 발생했습니다.");
   }
 };
 
@@ -106,33 +108,37 @@ onMounted(async () => {
   matches.value = await getMatchesByMemberId(authStore.getMemberId);
 });
 
+const getMates = async () => {
+  mates.value = await getMatesByMatchId(matches.value[0].matchId);
+};
+
 const moveList = () => {
   router.push({ name: "review-list" });
 };
 
 const modules = {
-  name: 'imageUploader',
+  name: "imageUploader",
   module: ImageUploader,
   options: {
-    upload: file => {
+    upload: (file) => {
       return new Promise((resolve, reject) => {
         const formData = new FormData();
         formData.append("file", file);
 
-        http.post('/files', formData)
-          .then(res => {
+        http
+          .post("/files", formData)
+          .then((res) => {
             review_article.value.fileIds.push(res.data.fileId);
             resolve(res.data.filePath);
           })
-          .catch(err => {
+          .catch((err) => {
             reject("Upload failed");
-            console.error("Error:", err)
-          })
-      })
-    }
-  }
-}
-
+            console.error("Error:", err);
+          });
+      });
+    },
+  },
+};
 </script>
 
 <template>
@@ -145,7 +151,7 @@ const modules = {
     <div id="review-input-select">
       <label>완료한 여행</label>
       <label class="red-star">*</label>
-      <select :disabled="isUseId" v-model="review_article.review.matchId">
+      <select :disabled="isUseId" v-model="review_article.review.matchId" @change="getMates">
         <option value="0" hidden>여행을 선택해주세요.</option>
         <option v-for="match in matches" :key="match.matchId" :value="match.matchId">
           {{ match.matchTitle }}
@@ -162,9 +168,11 @@ const modules = {
     </div>
 
     <div v-show="!isUseId">메이트 평가</div>
-    <div v-show="!isUseId" id="evaluate-mate">
-      <label>메이트 A</label>
-      <input type="text" />
+    <div id="evaluate-mate" v-for="mate in mates" :key="mate">
+      <div v-if="!isUseId && mate.memberId !== authStore.getMemberId">
+        <label>{{ mate.nickname }}</label>
+        <input type="text" v-model="mate.score" />
+      </div>
     </div>
   </form>
 
