@@ -148,7 +148,12 @@ const textClass = computed(() =>
         <img src="@/assets/img/fontawesome/robot-solid.svg" width="34px" />
       </button>
       <div id="match-list-search">
-        <input v-model="inputKeyword" type="text" placeholder="제목, 내용으로 검색해보세요" />
+        <input
+          v-model="inputKeyword"
+          type="text"
+          placeholder="제목, 해시태그, 내용으로 검색해보세요"
+          @keyup.enter="searchMatch"
+        />
         <button @click="searchMatch">
           <img src="/src/assets/img/fontawesome/magnifying-glass-solid-white.svg" width="25" />
         </button>

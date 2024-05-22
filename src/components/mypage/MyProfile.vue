@@ -50,8 +50,14 @@ const fetchProfileData = async () => {
     console.log(profileData);
     mbti.value = profileData.mbti;
     gender.value = profileData.gender; // 성별 데이터 추가
-    score.value = profileData.score;
     introduction.value = profileData.intro;
+
+    // score / valuedCount 계산 및 소수점 버리기
+    if (profileData.valuedCount > 0) {
+      score.value = Math.floor(profileData.score / profileData.valuedCount);
+    } else {
+      score.value = profileData.score; // valuedCount가 0인 경우 그대로 설정
+    }
 
     // 최근 여행 후기 불러오기
     const reviewResponse = await http.get("/review/recently", {
