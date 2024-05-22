@@ -9,7 +9,7 @@ const route = useRoute();
 const router = useRouter();
 const followers = ref([]);
 const authStore = useAuthStore();
-const emit = defineEmits(['update-count']);
+const emit = defineEmits(["update-count"]);
 
 const fetchFollowers = async () => {
   try {
@@ -25,7 +25,8 @@ const fetchFollowers = async () => {
 
 const toggleFollow = async (follower) => {
   try {
-    const apiUrl = follower.relation === 1 || follower.relation === 3 ? "/follow/unfollow" : "/follow/follow";
+    const apiUrl =
+      follower.relation === 1 || follower.relation === 3 ? "/follow/unfollow" : "/follow/follow";
     await http.post(apiUrl, {
       fromMemberId: authStore.getMemberId,
       toMemberId: follower.memberId,
@@ -33,16 +34,16 @@ const toggleFollow = async (follower) => {
 
     if (follower.relation === 1) {
       follower.relation = 0;
-      emit('update-count', { type: 'decrement', relation: 'following' });
+      emit("update-count", { type: "decrement", relation: "following" });
     } else if (follower.relation === 0) {
       follower.relation = 1;
-      emit('update-count', { type: 'increment', relation: 'following' });
+      emit("update-count", { type: "increment", relation: "following" });
     } else if (follower.relation === 3) {
       follower.relation = 2;
-      emit('update-count', { type: 'decrement', relation: 'following' });
+      emit("update-count", { type: "decrement", relation: "following" });
     } else if (follower.relation === 2) {
       follower.relation = 3;
-      emit('update-count', { type: 'increment', relation: 'following' });
+      emit("update-count", { type: "increment", relation: "following" });
     }
   } catch (error) {
     console.error("Error toggling follow:", error);
@@ -50,7 +51,7 @@ const toggleFollow = async (follower) => {
 };
 
 const goToUserPage = (memberId) => {
-  router.push({ name: 'mypage', params: { memberId: memberId } }).then(() => {
+  router.push({ name: "mypage", params: { memberId: memberId } }).then(() => {
     window.location.reload();
   });
 };
@@ -75,9 +76,11 @@ onMounted(() => {
         <button
           @click.stop="toggleFollow(follower)"
           class="btn follow-toggle-button"
-          :class="follower.relation === 1 || follower.relation === 3 ? 'unfollow-button' : 'follow-button'"
+          :class="
+            follower.relation === 1 || follower.relation === 3 ? 'unfollow-button' : 'follow-button'
+          "
         >
-          {{ follower.relation === 1 || follower.relation === 3 ? '언팔로우' : '팔로우' }}
+          {{ follower.relation === 1 || follower.relation === 3 ? "언팔로우" : "팔로우" }}
         </button>
       </li>
     </ul>
@@ -100,7 +103,8 @@ onMounted(() => {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  margin-top: -200px; /* 모달 창 높이의 절반 */
+  margin-left: -250px; /* 모달 창 너비의 절반 */
   display: flex;
   flex-direction: column;
 }

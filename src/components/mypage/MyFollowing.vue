@@ -9,7 +9,7 @@ const route = useRoute();
 const router = useRouter();
 const followings = ref([]);
 const authStore = useAuthStore();
-const emit = defineEmits(['update-count']);
+const emit = defineEmits(["update-count"]);
 
 const fetchFollowings = async () => {
   try {
@@ -32,15 +32,15 @@ const toggleFollow = async (following) => {
     });
 
     following.relation = 0;
-    emit('update-count', { type: 'decrement', relation: 'following' });
-    followings.value = followings.value.filter(f => f.memberId !== following.memberId);
+    emit("update-count", { type: "decrement", relation: "following" });
+    followings.value = followings.value.filter((f) => f.memberId !== following.memberId);
   } catch (error) {
     console.error("Error toggling follow:", error);
   }
 };
 
 const goToUserPage = (memberId) => {
-  router.push({ name: 'mypage', params: { memberId: memberId } }).then(() => {
+  router.push({ name: "mypage", params: { memberId: memberId } }).then(() => {
     window.location.reload();
   });
 };
@@ -89,7 +89,8 @@ onMounted(() => {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  margin-top: -200px; /* 모달 창 높이의 절반 */
+  margin-left: -250px; /* 모달 창 너비의 절반 */
   display: flex;
   flex-direction: column;
 }

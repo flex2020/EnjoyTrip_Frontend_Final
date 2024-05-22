@@ -14,7 +14,18 @@ const mbti = ref("ISTJ");
 const gender = ref("남"); // 예시 성별
 const score = ref(72);
 const introduction = ref("안녕하세요!! 같이 여행가요!");
-const recentMatch = ref("아직 매칭을 안하셨네요~^^");
+const recentMatch = ref({
+  matchTitle: "아직 매칭을 안하셨네요~^^",
+  travelStartDate: "",
+  travelEndDate: "",
+  nowPeople: 0,
+  maxPeople: 0,
+  deadline: "",
+  content: "",
+  hashtags: [],
+  hit: 0,
+  matchId: null,
+});
 const recentReview = ref({
   reviewTitle: "아직 후기를 안올리셨네요~^^",
   previewContent: "",
@@ -60,6 +71,29 @@ const fetchProfileData = async () => {
         reviewId: reviewData.reviewId,
       };
     }
+
+    // 최근 매칭 게시글 불러오기
+    const matchResponse = await http.get("/match/find/matches", {
+      params: {
+        memberId: route.params.memberId,
+      },
+    });
+    const matchData = matchResponse.data.matchByMemberId;
+    if (matchData && matchData.length > 0) {
+      const recent = matchData[0];
+      recentMatch.value = {
+        matchTitle: truncateText(recent.matchTitle, 13),
+        travelStartDate: new Date(recent.travelStartDate).toLocaleDateString(),
+        travelEndDate: new Date(recent.travelEndDate).toLocaleDateString(),
+        nowPeople: recent.nowPeople,
+        maxPeople: recent.maxPeople,
+        deadline: new Date(recent.deadline).toLocaleDateString(),
+        content: truncateText(recent.content, 30),
+        hashtags: recent.hashtags,
+        hit: recent.hit,
+        matchId: recent.matchId,
+      };
+    }
   } catch (error) {
     console.error("Error fetching profile data:", error);
   }
@@ -70,6 +104,14 @@ const goToReview = (reviewId) => {
   router.push({
     name: "review-view",
     params: { viewid: reviewId },
+  });
+};
+
+// 매칭 상세보기로 이동
+const goToMatch = (matchId) => {
+  router.push({
+    name: "match-view",
+    params: { matchid: matchId },
   });
 };
 
@@ -94,11 +136,6 @@ watch(() => route.params.memberId, fetchProfileData);
           <span>{{ score }}점</span>
         </div>
         <p class="mbti">MBTI : {{ mbti }}</p>
-        <p class="gender">
-          성별 :
-          <span v-if="gender === '1'">남</span>
-          <span v-if="gender === '0'">여</span>
-        </p>
       </div>
     </div>
     <div class="profile-section intro-section">
@@ -107,10 +144,42 @@ watch(() => route.params.memberId, fetchProfileData);
         <p>{{ introduction }}</p>
       </div>
     </div>
-    <div class="profile-section match-section">
+    <div class="profile-section match-section" @click="goToMatch(recentMatch.matchId)">
       <h3>최근 매칭 게시물</h3>
       <div class="card hover-card">
-        <p>{{ recentMatch }}</p>
+        <div class="match-header">
+          <h3>{{ recentMatch.matchTitle }}</h3>
+          <div class="match-meta">
+            <span class="match-dates"
+              >여행 기간: {{ recentMatch.travelStartDate }} - {{ recentMatch.travelEndDate }}</span
+            >
+            <span class="match-people"
+              >인원: {{ recentMatch.nowPeople }} / {{ recentMatch.maxPeople }}</span
+            >
+          </div>
+        </div>
+        <div class="match-content">
+          <p>{{ recentMatch.content }}</p>
+        </div>
+        <div class="match-footer">
+          <div class="match-hashtags">
+            <span v-for="hashtag in recentMatch.hashtags" :key="hashtag" class="hashtag"
+              >#{{ hashtag }}</span
+            >
+          </div>
+          <div class="match-deadline-status">
+            <span class="match-deadline">신청 마감: {{ recentMatch.deadline }}</span>
+            <span
+              class="recruitment-status"
+              :class="{
+                active: new Date() < new Date(recentMatch.deadline),
+                completed: new Date() >= new Date(recentMatch.deadline),
+              }"
+            >
+              {{ new Date() < new Date(recentMatch.deadline) ? "모집중" : "모집완료" }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
     <div
@@ -149,7 +218,7 @@ watch(() => route.params.memberId, fetchProfileData);
 }
 
 .profile-header {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .profile-header h2 {
@@ -167,9 +236,9 @@ watch(() => route.params.memberId, fetchProfileData);
   font-weight: bold;
 }
 
-.profile-info .mbti {
+/* .profile-info .mbti {
   margin-bottom: 20px;
-}
+} */
 
 .profile-info .gender {
   display: flex;
@@ -184,15 +253,15 @@ watch(() => route.params.memberId, fetchProfileData);
 .score-container {
   display: flex;
   align-items: center;
-  margin: 30px 0px 30px;
+  margin: 0px 0px 15px;
 }
 
 .score-bar {
   background: #e0e0e0;
   border-radius: 10px;
-  width: 70%;
-  height: 12px;
-  margin: 0 10px;
+  width: 75%;
+  height: 15px;
+  margin: 0 20px;
   overflow: hidden;
 }
 
@@ -203,7 +272,7 @@ watch(() => route.params.memberId, fetchProfileData);
 }
 
 .profile-section {
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
 .profile-section > h3 {
@@ -273,5 +342,90 @@ watch(() => route.params.memberId, fetchProfileData);
   margin: 0;
   font-size: 22px;
   color: #333;
+}
+
+.match-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.match-header h3 {
+  margin: 0;
+  font-size: 22px;
+  color: #333;
+}
+
+.match-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 14px;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+.match-dates,
+.match-people {
+  margin: 5px 0;
+}
+
+.match-content p {
+  margin-bottom: 25px;
+  font-size: 16px;
+  color: #555;
+}
+
+.match-hashtags {
+  margin-bottom: 0.5rem;
+}
+
+.hashtag {
+  display: inline-block;
+  background: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.match-footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 14px;
+  color: #555;
+}
+
+.match-deadline-status {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.match-deadline,
+.match-hit {
+  background: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.recruitment-status {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.recruitment-status.active {
+  background-color: #4caf50; /* Green */
+  color: white;
+}
+
+.recruitment-status.completed {
+  background-color: #f44336; /* Red */
+  color: white;
 }
 </style>

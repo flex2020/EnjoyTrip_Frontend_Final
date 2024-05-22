@@ -40,7 +40,8 @@ const login = async () => {
         authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
       }
 
-      alert("로그인에 성공하였습니다.");
+      // alert("로그인에 성공하였습니다.");
+      console.log("로그인에 성공하였습니다.");
       router.push("/");
     } else {
       throw new Error("로그인에 실패하였습니다. 다시 시도해주세요.");
@@ -77,7 +78,8 @@ const kakaoLogin = () => {
         } else {
           // 기존 사용자 - 로그인 처리
           authStore.setToken(response.data);
-          alert("카카오 로그인에 성공하였습니다.");
+          // alert("카카오 로그인에 성공하였습니다.");
+          console.log("카카오 로그인 성공");
           router.push("/");
         }
       } catch (error) {
@@ -103,7 +105,10 @@ const kakaoLogin = () => {
         <input type="password" v-model="password" placeholder="********" required />
         <button type="submit">로그인</button>
       </form>
-      <button @click="kakaoLogin" class="kakao-login-button">카카오 로그인</button>
+      <button @click="kakaoLogin" class="kakao-login-button">
+        <img src="/src/assets/img/kakaoicon.png" alt="Kakao" class="kakao-icon" />
+        카카오 아이디로 로그인
+      </button>
       <div class="links">
         <router-link :to="{ name: 'member-signup' }">회원가입</router-link> |
         <router-link :to="{ name: 'member-findpassword' }">비밀번호 찾기</router-link>
@@ -175,17 +180,26 @@ form button:hover {
   width: 100%;
   padding: 0.75rem;
   margin-top: 1rem;
-  background-color: #f7e600;
-  color: #3c1e1e;
-  border: none;
+  background-color: #ffeb00;
+  color: #381e1f;
+  border: 1px solid #e5d600;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
   font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .kakao-login-button:hover {
   background-color: #e5d600;
+}
+
+.kakao-icon {
+  margin-right: 8px;
+  width: 25px;
+  height: 25px;
 }
 
 .links {
