@@ -16,7 +16,7 @@ defineProps({
       <div class="chat-list-item-content">
         {{ chat.content }}
       </div>
-      <div>
+      <div class="chat-list-item-time">
         {{ chat.time }}
       </div>
     </div>
@@ -67,4 +67,10 @@ defineProps({
   padding: 7px;
 }
 
+.chat-list-item-time {
+  font-size: 12px;
+  width: 86%;
+  text-align: end;
+  margin: 5px;
+}
 </style>

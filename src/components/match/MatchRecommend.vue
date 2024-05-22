@@ -47,7 +47,7 @@ const props = defineProps({
       </div>
     </div>
     <div v-else>
-      <p>후기가 없습니다.</p>
+      <p>맞춤 매칭 게시물이 없습니다.</p>
     </div>
   </div>
 </template>
