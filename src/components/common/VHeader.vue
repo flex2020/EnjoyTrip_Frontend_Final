@@ -102,17 +102,8 @@ const signout = async () => {
     isActive.value = false;
     // Redirect to the main page
     alert("로그아웃이 완료되었습니다.");
-<<<<<<< HEAD
-<<<<<<< HEAD
-    router.push("/");
-    
-=======
-    profileImage.value = '/src/assets/img/profileDefault.png';
->>>>>>> 195e9c0f438821e99657eee0fe85b76cf2577d18
-=======
     router.push("/");
     profileImage.value = '/src/assets/img/profileDefault.png';
->>>>>>> 4215f6bbd034e7b4114e7e55d21513827eda2859
   } catch (error) {
     console.error(error);
     isActive.value = false;
