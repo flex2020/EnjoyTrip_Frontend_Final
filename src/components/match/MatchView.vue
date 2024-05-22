@@ -40,47 +40,49 @@ const registerMatch = async () => {
 
 <template>
   <div id="head-image">
-    <div>{{ match.matchTitle }}</div>
+    <div class="match-title">{{ match.matchTitle }}</div>
   </div>
   <div id="match-view-container">
     <div class="profile-section">
       <div class="profile-image">
         <img src="@/assets/img/profileDefault.png" alt="프로필 이미지" />
-    <div id="match-view-author-id">작성자 : {{ match.nickName }}</div>
-    <div id="match-view-info">
-      <div>
-        <div>여행 기간 : {{ match.travelStartDate }} ~ {{ match.travelEndDate }}</div>
-        <div>현재 인원 : {{ match.nowPeople }}</div>
-        <div>최대 인원 : {{ match.maxPeople }}</div>
       </div>
       <div class="profile-info">
         <div class="profile-name">{{ match.nickName }}</div>
         <div class="profile-hashtags">
-          <span v-for="hashtag in match.hashtags" :key="hashtag" class="hashtag"
-            >#{{ hashtag }}</span
-          >
+          <span v-for="hashtag in match.hashtags" :key="hashtag" class="hashtag">
+            #{{ hashtag }}
+          </span>
         </div>
       </div>
     </div>
     <div class="match-content-section">
+      <div class="match-course-section">
+        <div class="course-title">여행 코스</div>
+        <VKakaoMapForReview v-if="match.matchId" :match-id="match.matchId" />
+      </div>
       <div class="match-info-section">
-        <div class="match-info-item">
-          <div class="match-info-title">여행 기간</div>
-          <div class="match-info-content">
-            {{ match.travelStartDate }} ~ {{ match.travelEndDate }}
+        <div class="match-info-item two-columns">
+          <div>
+            <div class="match-info-title">여행 기간</div>
+            <div class="match-info-content">
+              {{ match.travelStartDate }} ~ {{ match.travelEndDate }}
+            </div>
+          </div>
+          <div>
+            <div class="match-info-title">성별 제한</div>
+            <div class="match-info-content">{{ match.genderType }}</div>
           </div>
         </div>
-        <div class="match-info-item">
-          <div class="match-info-title">성별 제한</div>
-          <div class="match-info-content">{{ match.genderType }}</div>
-        </div>
-        <div class="match-info-item">
-          <div class="match-info-title">모집마감 일자</div>
-          <div class="match-info-content">{{ match.deadline }}</div>
-        </div>
-        <div class="match-info-item">
-          <div class="match-info-title">현재 인원</div>
-          <div class="match-info-content">{{ match.nowPeople }} / {{ match.maxPeople }}</div>
+        <div class="match-info-item two-columns">
+          <div>
+            <div class="match-info-title">모집마감 일자</div>
+            <div class="match-info-content">{{ match.deadline }}</div>
+          </div>
+          <div>
+            <div class="match-info-title">현재 인원</div>
+            <div class="match-info-content">{{ match.nowPeople }} / {{ match.maxPeople }}</div>
+          </div>
         </div>
         <div class="match-info-item">
           <div class="match-info-title">조회수</div>
@@ -95,14 +97,7 @@ const registerMatch = async () => {
           <div class="match-info-content">{{ match.content }}</div>
         </div>
       </div>
-      <div class="match-course-section">
-        <div class="course-title">여행 코스</div>
-        <VKakaoMapForReview v-if="match.matchId" :match-id="match.matchId" />
-      </div>
     </div>
-    <div>마감 일자 : {{ match.deadline }}</div>
-    <div>성별 제한 : {{ match.genderType }}</div>
-    <div v-for="hashtag in match.hashtags" :key="hashtag"># {{ hashtag }}</div>
     <div id="btn-container">
       <div id="divider"></div>
       <div id="btns">
@@ -131,11 +126,12 @@ const registerMatch = async () => {
   align-items: center;
   color: white;
   font-weight: bold;
-  font-size: 56px;
   background-repeat: no-repeat;
   margin-bottom: 20px;
 }
-#head-image div {
+#head-image .match-title {
+  font-size: 56px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   margin-bottom: 30px;
 }
 
@@ -184,7 +180,7 @@ const registerMatch = async () => {
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-right: 20px;
+  margin-left: 20px;
 }
 
 .match-course-section {
@@ -198,11 +194,16 @@ const registerMatch = async () => {
   margin-bottom: 10px;
 }
 
+.match-info-item.two-columns {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .match-info-title {
-  font-size: 16px;
+  font-size: 24px;
   font-weight: bold;
-  color: #555;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
 }
 
 .match-info-content {
