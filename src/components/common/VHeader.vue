@@ -84,8 +84,10 @@ const props = defineProps({
   background: String,
 });
 
-const menuClass = computed(() => (props.background == 'white' ? 'menu-white trip-menu' : 'menu trip-menu'));
-const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu'));
+// const menuClass = computed(() => (props.background == 'white' ? 'menu-white trip-menu' : 'menu trip-menu'));
+const menuClass = computed(() => (props.background == 'white' ? 'menu-white trip-menu' : 'menu-white trip-menu'));
+// const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu'));
+const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu member-memu-white'));
 
 const signout = async () => {
   try {
@@ -120,8 +122,8 @@ watch(chatListToggle, async (newVal) => {
 </script>
 
 <template>
-  <header :class="background == 'white' ? 'header-white' : ''">
-  <!-- <header class="header-white"> -->
+  <!-- <header :class="background == 'white' ? 'header-white' : ''"> -->
+  <header class="header-white">
     <div class="chat-list-bg" v-show="chatListToggle" @click="chatListClickHandler"></div>
     <div
       class="chat-list"
@@ -148,7 +150,7 @@ watch(chatListToggle, async (newVal) => {
     <router-link :to="{ name: 'main' }" id="nav-logo">
       <img src="/src/assets/img/new_logo.png" />
     </router-link>
-    <div style="display: flex;">
+    <div style="display: flex; align-items: center;">
       <div id="trip-menu-container">
       <router-link :to="{ name: 'review' }" :class="menuClass + (firstSegment == 'review' ? ' trip-menu-selected' : '')"
         >여행 후기</router-link
@@ -163,7 +165,7 @@ watch(chatListToggle, async (newVal) => {
         >나만의 여행 계획</router-link
       >
       </div>
-      <div :class="menuClass" id="profile">
+      <div id="profile">
         <img :src="profileImage" @click="memberOption" />
       </div>
       <div :class="memberMenuClass" v-show="isActive">
@@ -198,7 +200,7 @@ header {
 }
 
 .header-white {
-  background-color: white;
+  background-color: #ffffff;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.19);
 }
 
@@ -215,6 +217,12 @@ header {
   padding: 15px;
   position: relative;
   font-size: 18px;
+}
+
+.menu-white {
+  text-decoration: none;
+  font-weight: bold;
+  color: #444444;
 }
 
 .trip-menu::after {
@@ -250,12 +258,6 @@ header {
 
 #mate-chat {
   cursor: pointer;
-}
-
-.menu-white {
-  text-decoration: none;
-  font-weight: bold;
-  color: black;
 }
 
 #profile {
@@ -336,7 +338,7 @@ header {
   width: 400px;
   height: 600px;
   z-index: 100001;
-  background-color: rgba(240, 248, 255, 0.85);
+  background-color: rgba(240, 248, 255, 0.90);
   border-radius: 15px;
   display: flex;
   flex-direction: column;
