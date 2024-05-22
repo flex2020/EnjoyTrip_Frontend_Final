@@ -9,8 +9,6 @@ import { getMatchRecommend } from "@/api/gpt";
 import { useAuthStore } from "@/stores/auth";
 
 const http = Axios();
-const authStore = useAuthStore();
-
 const router = useRouter();
 
 const authStore = useAuthStore();
