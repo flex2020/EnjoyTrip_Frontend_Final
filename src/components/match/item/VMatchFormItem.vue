@@ -48,10 +48,12 @@ const match_article = ref({
 const courses = ref([]);
 
 const matchWrite = async () => {
-  const formData = new FormData();
-  formData.append("file", files.value);
-  const fileRes = await http.post("/files", formData);
-  match_article.value.fileId = fileRes.data.fileId;
+  if (files.value.length !== 0) {
+    const formData = new FormData();
+    formData.append("file", files.value);
+    const fileRes = await http.post("/files", formData);
+    match_article.value.fileId = fileRes.data.fileId;
+  }
 
   const response = await http.post("/match", match_article.value);
 
