@@ -139,6 +139,7 @@ const searchReview = async () => {
 }
 
 #review-list-function {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
