@@ -1,22 +1,22 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
-import { Axios } from "@/api/http-common";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import VHeader from "@/components/common/VHeader.vue";
 import MySideProfileContainer from "@/components/mypage/MySideProfileContainer.vue";
 import MyTabContainer from "@/components/mypage/MyTabContainer.vue";
 import MyContentContainer from "@/components/mypage/MyContentContainer.vue";
 import MyWithdraw from "@/components/mypage/MyWithdraw.vue";
 
-const http = Axios();
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 
 const activeTab = ref("profile");
-const profileImageFile = ref(null); // 프로필 이미지 파일
+const profileImageFile = ref(null);
 const showModal = ref(false);
+const showLeftContainer = ref(true); // Add this
+const showRightContainer = ref(true); // Add this
 
 const openModal = () => {
   showModal.value = true;
@@ -26,27 +26,32 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-// 프로필 이미지 업데이트 핸들러
 const updateProfileImage = (file) => {
   profileImageFile.value = file;
   console.log("MyPageView: profileImageFile updated:", profileImageFile.value);
 };
 
-// 라우트 변경 시 탭 업데이트
 watch(
   () => route.params.memberId,
   (newMemberId) => {
-    activeTab.value = "profile"; // memberId 변경 시 기본 탭으로 설정
+    activeTab.value = "profile";
+    showLeftContainer.value = false; // Hide before changing
+    showRightContainer.value = false; // Hide before changing
+
+    setTimeout(() => {
+      showLeftContainer.value = true; // Show after changing
+      showRightContainer.value = true; // Show after changing
+    }, 50); // Small delay to trigger re-animation
   }
 );
 </script>
 
 <template>
-  <VHeader></VHeader>
+  <VHeader />
   <div class="background">
-    <transition name="fade">
-      <div class="profile-container">
-        <div class="left-container">
+    <div class="profile-container">
+      <transition name="fade" mode="out-in">
+        <div v-if="showLeftContainer" class="left-container">
           <MySideProfileContainer
             :active-tab="activeTab"
             :profile-image-file="profileImageFile"
@@ -56,16 +61,15 @@ watch(
             :active-tab="activeTab"
             @update-active-tab="activeTab = $event"
             @open-modal="openModal"
-          ></MyTabContainer>
+          />
         </div>
-        <div class="right-container">
-          <MyContentContainer
-            :active-tab="activeTab"
-            :profile-image-file="profileImageFile"
-          ></MyContentContainer>
+      </transition>
+      <transition name="fade" mode="out-in">
+        <div v-if="showRightContainer" class="right-container">
+          <MyContentContainer :active-tab="activeTab" :profile-image-file="profileImageFile" />
         </div>
-      </div>
-    </transition>
+      </transition>
+    </div>
   </div>
   <div v-if="showModal" class="modal-overlay" @click="closeModal"></div>
   <transition name="modal">
@@ -106,21 +110,21 @@ watch(
   max-width: 1200px;
   position: relative;
   z-index: 2;
-  align-items: stretch; /* 두 자식 컨테이너의 높이를 동일하게 설정 */
+  align-items: stretch;
 }
 
 .left-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 35%; /* 왼쪽 컨테이너 폭 */
+  width: 35%;
 }
 
 .right-container {
-  width: 65%; /* 오른쪽 컨테이너 폭 */
+  width: 65%;
   margin-left: 20px;
   display: flex;
-  flex-direction: column; /* 컨텐츠가 중앙에 정렬되도록 설정 */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -135,9 +139,9 @@ watch(
 }
 
 .content-container {
-  flex: 1; /* 오른쪽 컨테이너가 남은 공간을 모두 차지하도록 설정 */
-  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
-  max-height: 100%; /* 부모 컨테이너의 높이를 초과하지 않도록 설정 */
+  flex: 1;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .modal-overlay {
@@ -159,7 +163,7 @@ watch(
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
-  transform: translateY(20px); /* 아래에서 위로 나타남 */
+  transform: translateY(20px);
 }
 
 .fade-enter-active,
