@@ -29,20 +29,26 @@ const chatStore = useChatStore();
 }
 
 .chat-input-area input {
-  width: 70%;
+  width: 80%;
   border-radius: 12px;
   height: 25px;
-  font-size: 14px;
+  font-size: 15px;
   margin-right: 5px;
-  padding-left: 5px;
+  padding: 5px 10px;
+  border: none;
+}
+
+.chat-input-area input:focus {
+  outline: none;
 }
 
 .chat-input-area button {
-  width: 15%;
-  height: 30px;
-  background-color: white;
-  border-radius: 7px;
-  border: 1px solid var(--brand-color);
+  width: 20%;
+  height: 100%;
+  background-color: var(--brand-color);
+  border: none;
   cursor: pointer;
+  color: white;
+  font-size: 15px;
 }
 </style>
