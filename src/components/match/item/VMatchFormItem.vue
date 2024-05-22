@@ -57,8 +57,6 @@ const matchWrite = async () => {
 
   match_article.value.matchId = await response.data.matchId;
 
-  console.log(match_article.value.matchId);
-
   const formData2 = new FormData();
   formData2.append("matchId", match_article.value.matchId);
   formData2.append("memberId", authStore.getMemberId);
@@ -69,15 +67,26 @@ const matchWrite = async () => {
 };
 
 const matchUpdate = async () => {
-  await http.put("match", match_article.value);
+  if (files.value.length !== 0) {
+    const formData = new FormData();
+    formData.append("file", files.value);
+    const fileRes = await http.post("/files", formData);
+    match_article.value.fileId = fileRes.data.fileId;
+  }
+
+  match_article.value.hashtags = hashtagArray;
+
+  const response = await http.put("match/update", match_article.value);
+
+  match_article.value.matchId = response.data.matchId;
 
   router.push({ name: "match-list" });
 };
 
-// const reviewDelete = () => {
-//   http.delete(`review/${review_article.value.reviewId}`);
-//   router.push({ name: "review-list" });
-// };
+const matchDelete = () => {
+  http.delete(`match/${match_article.value.matchId}`);
+  router.push({ name: "match-list" });
+};
 
 onMounted(async () => {
   courses.value = await getCourseListByMember(authStore.memberId);
@@ -167,7 +176,7 @@ const handleFileChange = (event) => {
     <div id="btns">
       <button type="button" v-show="!isUseId" @click="matchWrite">작성하기</button>
       <button type="button" v-show="isUseId" @click="matchUpdate">수정하기</button>
-      <button type="button" v-show="isUseId">삭제하기</button>
+      <button type="button" v-show="isUseId" @click="matchDelete">삭제하기</button>
       <button type="button" @click="moveList">목록으로</button>
     </div>
   </div>

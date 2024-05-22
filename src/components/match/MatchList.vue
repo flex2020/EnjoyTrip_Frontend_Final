@@ -8,8 +8,8 @@ import { Axios } from "/src/api/http-common";
 import { getMatchRecommend } from "@/api/gpt";
 import { useAuthStore } from "@/stores/auth";
 
-
 const http = Axios();
+const authStore = useAuthStore();
 
 const router = useRouter();
 
@@ -28,6 +28,7 @@ const param = ref({
   spp: VITE_ARTICLE_LIST_SIZE,
   sortKey: sortSelect.value,
   keyword: inputKeyword.value,
+  memberId: authStore.getMemberId,
 });
 
 onMounted(async () => {
@@ -41,6 +42,9 @@ const getMatchList = async () => {
   const data = response.data.resdata;
   currentPage.value = data.currentPage;
   totalPageCount.value = data.totalPageCount;
+
+  console.log(data);
+
   return data;
 };
 
