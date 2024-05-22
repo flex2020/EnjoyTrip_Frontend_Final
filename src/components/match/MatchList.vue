@@ -33,6 +33,9 @@ const getMatchList = async () => {
   const data = response.data.resdata;
   currentPage.value = data.currentPage;
   totalPageCount.value = data.totalPageCount;
+
+  console.log(data);
+
   return data;
 };
 
