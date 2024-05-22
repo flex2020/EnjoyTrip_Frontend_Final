@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import { useKakaoStore } from '@/stores/kakao';
+import { useKakaoStore } from "@/stores/kakao";
 import { Axios } from "/src/api/http-common";
 
 const http = Axios();
@@ -16,7 +16,7 @@ const password = ref("");
 
 const login = async () => {
   try {
-    const response = await http.post("/api/member/signin", {
+    const response = await http.post("/member/signin", {
       email: email.value,
       password: password.value,
     });
@@ -32,7 +32,7 @@ const login = async () => {
       console.log("Nickname:", authStore.getNickname);
       console.log("memberId:", authStore.getMemberId);
 
-      const profileResponse = await http.post("/api/member/profile", {
+      const profileResponse = await http.post("/member/profile", {
         memberId: authStore.getMemberId,
       });
 
@@ -57,12 +57,12 @@ const kakaoLogin = () => {
       try {
         // 카카오 SDK를 통해 얻은 액세스 토큰으로 사용자 정보 가져오기
         const userInfo = await Kakao.API.request({
-          url: '/v2/user/me'
+          url: "/v2/user/me",
         });
 
         const response = await http.post("/member/oauth2/kakao", {
           email: userInfo.kakao_account.email,
-          nickname: userInfo.kakao_account.profile.nickname
+          nickname: userInfo.kakao_account.profile.nickname,
         });
 
         console.log(response.data);
@@ -71,10 +71,9 @@ const kakaoLogin = () => {
         console.log(response.data.nickname);
 
         if (response.data.newUser) {
-
           kakaoStore.setEmail(response.data.email);
           kakaoStore.setNickname(response.data.nickname);
-          router.push({ name: 'member-signup' });
+          router.push({ name: "member-signup" });
         } else {
           // 기존 사용자 - 로그인 처리
           authStore.setToken(response.data);
@@ -89,7 +88,7 @@ const kakaoLogin = () => {
     fail: (err) => {
       console.error("카카오 로그인 실패:", err);
       alert("카카오 로그인에 실패하였습니다. 다시 시도해주세요.");
-    }
+    },
   });
 };
 </script>
@@ -176,8 +175,8 @@ form button:hover {
   width: 100%;
   padding: 0.75rem;
   margin-top: 1rem;
-  background-color: #F7E600;
-  color: #3C1E1E;
+  background-color: #f7e600;
+  color: #3c1e1e;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -186,7 +185,7 @@ form button:hover {
 }
 
 .kakao-login-button:hover {
-  background-color: #E5D600;
+  background-color: #e5d600;
 }
 
 .links {

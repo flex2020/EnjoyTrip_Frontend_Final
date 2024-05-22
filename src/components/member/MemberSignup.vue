@@ -143,7 +143,6 @@ const selectGender = (value) => {
 };
 
 const register = async () => {
-
   console.log("register 완료");
 
   if (password.value !== confirmPassword.value) {
@@ -186,7 +185,7 @@ onMounted(() => {
   email.value = kakaoStore.email;
   nickname.value = kakaoStore.nickname;
 
-  if (kakaoStore.email !== '' || kakaoStore.nickname !== '') {
+  if (kakaoStore.email !== "" || kakaoStore.nickname !== "") {
     verificationCodeValid.value = true;
   }
 });
@@ -203,18 +202,8 @@ onMounted(() => {
             <div class="form-group">
               <label for="email">이메일 *</label>
               <div class="inline-input">
-                <input
-                  type="email"
-                  id="email"
-                  v-model="email"
-                  required
-                  :disabled="true"
-                />
-                <button
-                  type="button"
-                  @click="sendEmailVerification"
-                  :disabled="true"
-                >
+                <input type="email" id="email" v-model="email" required :disabled="true" />
+                <button type="button" @click="sendEmailVerification" :disabled="true">
                   {{ verificationCodeSent ? "인증번호 재발송" : "인증번호 발송" }}
                 </button>
               </div>
@@ -228,13 +217,7 @@ onMounted(() => {
                   v-model="verificationCode"
                   :disabled="true"
                 />
-                <button
-                  type="button"
-                  @click="verifyEmailCode"
-                  :disabled="true"
-                >
-                  인증
-                </button>
+                <button type="button" @click="verifyEmailCode" :disabled="true">인증</button>
                 <div v-if="countdown > 0" class="countdown">
                   {{ Math.floor(countdown / 60) }}:{{ ("0" + (countdown % 60)).slice(-2) }}
                 </div>
