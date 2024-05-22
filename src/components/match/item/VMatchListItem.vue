@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { defineEmits, defineProps } from "vue";
 import { useRouter } from "vue-router";
 
@@ -62,6 +62,10 @@ const moveView = (matchId) => {
     params: { matchid: matchId },
   });
 };
+
+const getRandomImage = () => {
+  return `/src/assets/img/card_image${Math.floor(Math.random() * 3) + 1}.png`;
+}
 </script>
 
 <template>
@@ -71,7 +75,7 @@ const moveView = (matchId) => {
       v-for="match in matches"
       :key="match.matchId"
       @click="moveView(match.matchId)"
-      :style="{backgroundImage: `url('${match.filePath ? match.filePath : '/src/assets/img/card_image1.png'}')`}"
+      :style="{backgroundImage: `url('${match.filePath ? match.filePath : getRandomImage()}')`}"
     >
     <div class="match-list-item-grad"></div>
       <div class="match-list-item-intro">
