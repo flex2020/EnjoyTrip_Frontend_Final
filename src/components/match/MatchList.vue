@@ -25,7 +25,7 @@ const param = ref({
 onMounted(async () => {
   const response = await getMatchList();
   matches.value = await response.matches;
-  // console.log(matches.value);
+  console.log(matches.value);
 });
 
 const getMatchList = async () => {
