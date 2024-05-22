@@ -23,6 +23,8 @@ const login = async () => {
 
     const token = response.data; // Assuming the token is in response.data.token
 
+    console.log(token);
+
     if (token) {
       // Log the state
       authStore.setToken(token);

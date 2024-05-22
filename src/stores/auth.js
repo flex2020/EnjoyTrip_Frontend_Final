@@ -2,6 +2,14 @@
 import { defineStore } from "pinia";
 
 function base64DecodeUnicode(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/'); // Base64 URL Safe 변환
+  const pad = str.length % 4;
+  if (pad) {
+    if (pad === 1) {
+      throw new Error('InvalidLengthError: Input base64url string is the wrong length to determine padding');
+    }
+    str += new Array(5 - pad).join('=');
+  }
   const binaryString = atob(str);
   const chars = [];
   for (let i = 0; i < binaryString.length; i++) {
@@ -9,6 +17,7 @@ function base64DecodeUnicode(str) {
   }
   return decodeURIComponent(chars.join(""));
 }
+
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -31,6 +40,7 @@ export const useAuthStore = defineStore("auth", {
     setToken(token) {
       this.token = token;
       const payload = JSON.parse(base64DecodeUnicode(token.split(".")[1]));
+      console.log(payload);
       this.email = payload.email;
       this.nickname = payload.nickname;
       this.memberId = payload.memberId;
