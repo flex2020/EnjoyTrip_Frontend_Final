@@ -5,9 +5,11 @@ import { useAuthStore } from "@/stores/auth";
 import { Axios } from "@/api/http-common";
 import VKakaoMapForReview from "@/components/common/VKakaoMapForReview.vue";
 import { postMatchesByMemberId } from "@/api/match";
+import { useMatchStore } from "@/stores/match";
 
 const http = Axios();
 const authStore = useAuthStore();
+const matchStore = useMatchStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -16,6 +18,8 @@ const matchId = ref(route.params.matchid);
 
 const match = ref({});
 const isMyMatch = ref(false);
+const profileImage = ref('/src/assets/img/profileDefault.png');
+const authorId = ref('');
 
 onMounted(() => {
   getMatch();
@@ -24,6 +28,16 @@ onMounted(() => {
 const getMatch = async () => {
   const response = await http.get(`match/find/${matchId.value}`);
   match.value = response.data.resdata;
+  authorId.value = match.value.authorId;
+
+  const profileResponse = await http.get(`/match/profile/${matchId.value}`);
+
+  // 프로필 이미지가 존재하면 업데이트
+  if (profileResponse.data) {
+    profileImage.value = profileResponse.data;
+    authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
+  }
+
 };
 
 const registerMatch = async () => {
@@ -32,9 +46,19 @@ const registerMatch = async () => {
     formData.append("memberId", authStore.getMemberId);
     formData.append("matchId", match.value.matchId);
     await postMatchesByMemberId(formData);
+    alert("신청이 완료되었습니다.");
   } catch (e) {
     console.log(e);
   }
+};
+
+const goToMyPage = () => {
+  router.push({ name: 'mypage', params: { memberId: authorId.value } });
+};
+
+const searchByHashtag = (hashtag) => {
+  matchStore.setHashtag(hashtag);
+  router.push({ name: 'match-list'});
 };
 </script>
 
@@ -44,9 +68,9 @@ const registerMatch = async () => {
   </div>
   <div id="match-view-container">
     <div class="profile-section">
-      <div class="profile-info">
+      <div class="profile-info" @click="goToMyPage">
         <div class="profile-image">
-          <img src="@/assets/img/profileDefault.png" alt="프로필 이미지" />
+          <img :src="profileImage" alt="프로필 이미지" />
         </div>
         <div>
           <div class="profile-name">{{ match.nickName }}</div>
@@ -61,7 +85,7 @@ const registerMatch = async () => {
     </div>
     <div class="hashtag-section">
       <div class="profile-hashtags">
-        <span v-for="hashtag in match.hashtags" :key="hashtag" class="hashtag">
+        <span v-for="hashtag in match.hashtags" :key="hashtag" class="hashtag" @click="searchByHashtag(hashtag)">
           #{{ hashtag }}
         </span>
       </div>
@@ -81,7 +105,9 @@ const registerMatch = async () => {
           </div>
           <div class="right-column">
             <div class="match-info-title">성별 제한</div>
-            <div class="match-info-content">{{ match.genderType }}</div>
+            <div class="match-info-content">
+              {{ match.genderType === 0 ? '성별 무관' : (match.genderType === 1 ? '남성만' : '여성만') }}
+            </div>
           </div>
         </div>
         <div class="match-info-item">
@@ -104,13 +130,14 @@ const registerMatch = async () => {
       <div id="divider"></div>
       <div id="btns">
         <router-link
+          v-if="authorId === authStore.getMemberId"
           :to="{ name: 'match-update', params: { matchid: match.matchId } }"
           class="move-link btn"
         >
           게시글 수정
         </router-link>
         <router-link :to="{ name: 'match-list' }" class="move-link btn"> 게시글 목록 </router-link>
-        <button type="button" class="move-link btn" @click="registerMatch">신청하기</button>
+        <button v-if="authorId !== authStore.getMemberId" type="button" class="move-link btn" @click="registerMatch">신청하기</button>
       </div>
     </div>
   </div>
@@ -153,6 +180,7 @@ const registerMatch = async () => {
 .profile-info {
   display: flex;
   align-items: center;
+  cursor: pointer; /* 클릭 가능하게 커서 변경 */
 }
 
 .profile-image img {
@@ -209,6 +237,7 @@ const registerMatch = async () => {
   color: #333;
   border: 1px solid #ddd;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .hashtag:hover {
@@ -312,7 +341,7 @@ const registerMatch = async () => {
   padding: 2px 20px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   font-family: inherit;
   text-align: center;
   text-decoration: none;
@@ -321,7 +350,7 @@ const registerMatch = async () => {
   z-index: 2;
   transition: background-color 0.3s, color 0.3s;
   margin: 0px 20px;
-  width: 200px;
+  width: 250px;
 }
 
 .move-link.btn:hover {

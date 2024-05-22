@@ -117,11 +117,7 @@ const handleFileChange = (event) => {
     <div id="match-input-title">
       <label id="match-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input
-        type="text"
-        v-model="match_article.matchTitle"
-        placeholder="제목..."
-      />
+      <input type="text" v-model="match_article.matchTitle" placeholder="제목을 입력해주세요  " />
     </div>
     <div id="match-input-select">
       <div>
@@ -212,7 +208,7 @@ const handleFileChange = (event) => {
 #match-input-form div {
   width: 70%;
   display: flex;
-  /* align-items: center; */
+  align-items: center;
   margin-bottom: 20px;
   font-size: 24px;
   font-weight: bold;
@@ -220,6 +216,7 @@ const handleFileChange = (event) => {
 
 #match-input-title {
   display: flex;
+  margin-bottom: 15px;
 }
 
 #match-input-title-lable {
@@ -233,10 +230,21 @@ const handleFileChange = (event) => {
   font-size: 28px;
   margin-left: 20px;
   padding-left: 10px;
+  border: 1px solid black;
+}
+
+#match-input-title input:focus {
+  outline: none;
 }
 
 .red-star {
   color: red;
+}
+
+input[type='date'] {
+  margin: 7px;
+  height: 40px;
+  font-size: 16px;
 }
 
 #match-input-select {

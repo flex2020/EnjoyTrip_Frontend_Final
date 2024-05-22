@@ -86,11 +86,11 @@ const searchReview = async () => {
 
     <div id="review-list-function">
       <div id="review-list-select-container">
-        <select v-model="scopeSecelct" @change="changeScopeSelect">
+        <select v-model="scopeSecelct" @change="changeScopeSelect" class="custom-select">
           <option :value="0">전체보기</option>
           <option :value="1">팔로잉 게시물</option>
         </select>
-        <select v-model="sortSelect" @change="changeSortSelect">
+        <select v-model="sortSelect" @change="changeSortSelect" class="custom-select">
           <option :value="0">최신순</option>
           <option :value="1">좋아요순</option>
           <option :value="2">조회수순</option>
@@ -107,7 +107,7 @@ const searchReview = async () => {
           <img src="/src/assets/img/fontawesome/magnifying-glass-solid-white.svg" width="25" />
         </button>
       </div>
-      <router-link :to="{ name: 'review-write' }" id="review-list-move-write">
+      <router-link v-if="authStore.isLogin" :to="{ name: 'review-write' }" id="review-list-move-write">
         <img src="@/assets/img/fontawesome/pen-to-square-solid.svg" />
         게시글 작성
       </router-link>
@@ -203,10 +203,57 @@ const searchReview = async () => {
 }
 
 #review-list-select-container select {
-  width: 120px;
-  height: 30px;
+  width: 140px;
+  height: 40px;
   border-radius: 5px;
   padding-left: 5px;
   margin-right: 5px;
+}
+
+.custom-select {
+  width: 100%;
+  height: 40px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  color: #333;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.custom-select:hover {
+  border-color: #555;
+}
+
+.custom-select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.custom-select option {
+  padding: 10px;
+  background-color: #fff;
+  color: #333;
+  font-size: 16px;
+}
+
+.custom-select option:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.custom-select option:focus {
+  background-color: #0056b3;
+  color: #fff;
 }
 </style>
