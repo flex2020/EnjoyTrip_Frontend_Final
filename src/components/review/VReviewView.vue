@@ -5,8 +5,6 @@ import VReviewCommentItem from "@/components/review/item/VReviewCommentItem.vue"
 import VKakaoMapForReview from "@/components/common/VKakaoMapForReview.vue";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
-import { getCourseByCourseId } from "@/api/plan";
-import { getMatchCourse } from "@/api/trip";
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -14,13 +12,14 @@ const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 
-// const articleno = ref(route.params.articleno);
 const viewId = ref(route.params.viewid);
 
 const review = ref({});
 const isLike = ref(false);
 const comments = ref([]);
 const isMyReview = ref(false);
+const profileImage = ref('/src/assets/img/profileDefault.png');
+const authorId = ref('');
 
 onMounted(async () => {
   await getReview();
@@ -47,6 +46,14 @@ const getReview = async () => {
     isLike.value = false;
   }
   console.log(response2);
+  console.log(review.value.memberId);
+  // 프로필 이미지 및 작성자 ID 가져오기
+  const profileResponse = await http.post("/member/profile", {
+    memberId: review.value.memberId,
+  });
+  if (profileResponse.data) {
+    profileImage.value = profileResponse.data;
+  }
 };
 
 const updateLikeCount = async () => {
@@ -67,6 +74,10 @@ const updateLikeCount = async () => {
 const getComment = () => {
   getReview();
 };
+
+const goToMyPage = () => {
+  router.push({ name: 'mypage', params: { memberId: review.value.memberId } });
+};
 </script>
 
 <template>
@@ -74,7 +85,16 @@ const getComment = () => {
     <div>{{ review.reviewTitle }}</div>
   </div>
   <div id="review-view-container">
-    <div id="review-view-author-id">작성자 : {{ review.nickName }}</div>
+    <div class="profile-section">
+      <div class="profile-info" @click="goToMyPage">
+        <div class="profile-image">
+          <img :src="profileImage" alt="프로필 이미지" />
+        </div>
+        <div>
+          <div class="profile-name">{{ review.nickName }}</div>
+        </div>
+      </div>
+    </div>
     <div id="review-view-info">
       <div>
         <div>여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}</div>
@@ -159,11 +179,33 @@ const getComment = () => {
   margin-bottom: 30px;
 }
 
-/* #head-image div:last-child {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 30px;
-} */
+.profile-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  cursor: pointer; /* 클릭 가능하게 커서 변경 */
+}
+
+.profile-image img {
+  width: 80px; /* 이미지 사이즈 조정 */
+  height: 80px; /* 이미지 사이즈 조정 */
+  border-radius: 50%;
+}
+
+.profile-info > div {
+  margin-left: 20px;
+}
+
+.profile-name {
+  font-size: 24px;
+  font-weight: bold;
+}
 
 #review-view-author-id {
   font-size: 24px;

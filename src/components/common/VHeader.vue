@@ -148,7 +148,7 @@ watch(chatListToggle, async (newVal) => {
       </div>
     </div>
     <router-link :to="{ name: 'main' }" id="nav-logo">
-      <img src="/src/assets/img/new_logo.png" />
+      <img src="/src/assets/img/navlog.png" />
     </router-link>
     <div style="display: flex; align-items: center;">
       <div id="trip-menu-container">
