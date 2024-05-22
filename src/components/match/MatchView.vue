@@ -46,6 +46,12 @@ const registerMatch = async () => {
     <div class="profile-section">
       <div class="profile-image">
         <img src="@/assets/img/profileDefault.png" alt="프로필 이미지" />
+    <div id="match-view-author-id">작성자 : {{ match.nickName }}</div>
+    <div id="match-view-info">
+      <div>
+        <div>여행 기간 : {{ match.travelStartDate }} ~ {{ match.travelEndDate }}</div>
+        <div>현재 인원 : {{ match.nowPeople }}</div>
+        <div>최대 인원 : {{ match.maxPeople }}</div>
       </div>
       <div class="profile-info">
         <div class="profile-name">{{ match.nickName }}</div>
@@ -94,6 +100,9 @@ const registerMatch = async () => {
         <VKakaoMapForReview v-if="match.matchId" :match-id="match.matchId" />
       </div>
     </div>
+    <div>마감 일자 : {{ match.deadline }}</div>
+    <div>성별 제한 : {{ match.genderType }}</div>
+    <div v-for="hashtag in match.hashtags" :key="hashtag"># {{ hashtag }}</div>
     <div id="btn-container">
       <div id="divider"></div>
       <div id="btns">
