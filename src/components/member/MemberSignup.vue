@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { Axios } from "/src/api/http-common";
+import { Axios } from "@/api/http-common";
 import { useKakaoStore } from "@/stores/kakao";
 
 const http = Axios();
@@ -50,6 +50,7 @@ const startCountdown = () => {
       verificationCode.value = "";
       verificationError.value = "";
       emailVerifyCode.value = "";
+      verificationCodeValid.value = false; // 인증 실패 시 인증번호 입력칸과 인증 버튼 비활성화
     }
   }, 1000);
 };
@@ -72,7 +73,6 @@ const sendEmailVerification = async () => {
 };
 
 const verifyEmailCode = async () => {
-  console.log("하하");
   try {
     const response = await http.post("/email/signup/verify", {
       email: email.value,
@@ -84,9 +84,10 @@ const verifyEmailCode = async () => {
       clearInterval(countdownInterval.value);
 
       // Disable the input fields and buttons
-      verificationCodeSent.value = true; // Keeps email input and send button disabled
-      verificationCode.value = verificationCode.value; // Keeps verification code input value
-      countdown.value = 0; // Clear countdown display
+      verificationCodeSent.value = true;
+      email.value = email.value;
+      verificationCode.value = verificationCode.value;
+      countdown.value = 0;
 
       alert("이메일 인증에 성공했습니다.");
     }
@@ -124,12 +125,9 @@ const formatPhoneNumber = () => {
 };
 
 const generateNickname = async () => {
-  console.log("generateNickname");
   try {
     const response = await http.post("/gpt/generate/nickname");
     if (response.status === 200) {
-      console.log(response);
-      // 대괄호를 제거하고 닉네임을 설정합니다.
       nickname.value = response.data.nickname.replace(/\[|\]/g, "");
     }
   } catch (error) {
@@ -139,13 +137,9 @@ const generateNickname = async () => {
 
 const selectGender = (value) => {
   gender.value = value;
-  console.log(gender.value);
 };
 
 const register = async () => {
-
-  console.log("register 완료");
-
   if (password.value !== confirmPassword.value) {
     alert("비밀번호가 일치하지 않습니다.");
     return;
@@ -182,12 +176,13 @@ const register = async () => {
 
 // onMounted 훅을 사용하여 컴포넌트가 마운트될 때 route params를 확인하여 값을 설정합니다.
 onMounted(() => {
-  console.log(kakaoStore.email + " " + kakaoStore.nickname);
   email.value = kakaoStore.email;
   nickname.value = kakaoStore.nickname;
 
-  if (kakaoStore.email !== '' || kakaoStore.nickname !== '') {
+  if (kakaoStore.email !== "" || kakaoStore.nickname !== "") {
     verificationCodeValid.value = true;
+    kakaoStore.clearEmail();
+    kakaoStore.clearNickname();
   }
 });
 </script>
@@ -208,12 +203,12 @@ onMounted(() => {
                   id="email"
                   v-model="email"
                   required
-                  :disabled="true"
+                  :disabled="verificationCodeValid || kakaoStore.email !== ''"
                 />
                 <button
                   type="button"
                   @click="sendEmailVerification"
-                  :disabled="true"
+                  :disabled="verificationCodeValid || kakaoStore.email !== ''"
                 >
                   {{ verificationCodeSent ? "인증번호 재발송" : "인증번호 발송" }}
                 </button>
@@ -226,12 +221,12 @@ onMounted(() => {
                   type="text"
                   id="verificationCode"
                   v-model="verificationCode"
-                  :disabled="true"
+                  :disabled="verificationCodeValid || !verificationCodeSent"
                 />
                 <button
                   type="button"
                   @click="verifyEmailCode"
-                  :disabled="true"
+                  :disabled="verificationCodeValid || !verificationCodeSent"
                 >
                   인증
                 </button>

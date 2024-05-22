@@ -24,7 +24,6 @@ const isMyReview = ref(false);
 
 onMounted(async () => {
   await getReview();
-  console.log('matchid = ', review.value.matchId)
 });
 
 const likeInfo = ref({
@@ -33,7 +32,7 @@ const likeInfo = ref({
 });
 
 const getReview = async () => {
-  const response1 =  await http.get(`review/${viewId.value}`)
+  const response1 = await http.get(`review/${viewId.value}`);
   review.value = await response1.data.reviewView;
   comments.value = await response1.data.comments;
   if (review.value.memberId === authStore.memberId) {
@@ -78,9 +77,7 @@ const getComment = () => {
     <div id="review-view-author-id">작성자 : {{ review.nickName }}</div>
     <div id="review-view-info">
       <div>
-        <div>
-          여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}
-        </div>
+        <div>여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}</div>
         <div>여행인원 : {{ review.memberCount }}</div>
       </div>
       <div>
@@ -108,7 +105,7 @@ const getComment = () => {
     <div id="review-view-contents" v-html="review.content"></div>
     <div id="review-view-course">
       <div>여행 코스</div>
-      <VKakaoMapForReview v-if="review.matchId" :match-id="review.matchId"/>
+      <VKakaoMapForReview v-if="review.matchId" :match-id="review.matchId" />
     </div>
 
     <div id="btn-container">
@@ -121,17 +118,11 @@ const getComment = () => {
         >
           게시글 수정
         </router-link>
-        <router-link :to="{ name: 'review-list' }" class="move-link">
-          게시글 목록
-        </router-link>
+        <router-link :to="{ name: 'review-list' }" class="move-link"> 게시글 목록 </router-link>
       </div>
     </div>
 
-    <VReviewCommentItem
-      :viewId="viewId"
-      :comments="comments"
-      @getComment="getComment"
-    />
+    <VReviewCommentItem :viewId="viewId" :comments="comments" @getComment="getComment" />
   </div>
 </template>
 

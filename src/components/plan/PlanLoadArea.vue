@@ -22,6 +22,7 @@ const courseChangeHandler = async () => {
   planStore.refreshCoursePath();
   planStore.prevCourseId = planStore.courseId;
   planStore.courseName = planStore.getCourseNameByCourseId(planStore.courseId);
+  if (planStore.courseList) planStore.setCenter(planStore.planLatLng[0].lat, planStore.planLatLng[0].lng);
   console.log(planStore.courseName);
 }
 

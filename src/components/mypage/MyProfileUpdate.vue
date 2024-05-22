@@ -116,7 +116,8 @@ const updateProfile = async () => {
     // 업데이트된 닉네임을 핀아에 반영
     authStore.updateNickname(nickname.value);
 
-    alert("회원 정보가 성공적으로 수정되었습니다.");
+    // alert("회원 정보가 성공적으로 수정되었습니다.");
+    console.log("회원정보 수정 완료");
     router.push("/mypage/profile"); // 프로필 페이지로 리다이렉트
     location.reload(); // 페이지 새로고침
   } catch (error) {

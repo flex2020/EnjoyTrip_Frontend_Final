@@ -15,6 +15,13 @@ const chatListToggle = ref(false);
 const chatList = ref([]);
 const chatListElement = ref(null);
 const profileImage = ref(authStore.getProfileImage);
+const currentPath = ref(route.path);
+
+const firstSegment = computed(() => {
+  const path = route.path;
+  const segments = path.split('/').filter(Boolean); // 빈 문자열 제거
+  return segments[0] || ''; // 첫 번째 세그먼트가 없으면 빈 문자열 반환
+});
 
 onMounted(async () => {
   const memberId = authStore.getMemberId;
@@ -35,8 +42,12 @@ const memberOption = () => {
   isActive.value = !isActive.value;
 };
 
-const chatListToggleHandler = () => {
+const chatListToggleHandler = async () => {
+  const memberId = authStore.getMemberId;
   chatListToggle.value = !chatListToggle.value;
+  if (chatListToggle.value) {
+    chatList.value = await getMatchesByMemberId(memberId);
+  }
 };
 
 const chatListClickHandler = () => {
@@ -73,7 +84,7 @@ const props = defineProps({
   background: String,
 });
 
-const menuClass = computed(() => (props.background == 'white' ? 'menu-white' : 'menu'));
+const menuClass = computed(() => (props.background == 'white' ? 'menu-white trip-menu' : 'menu trip-menu'));
 const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu'));
 
 const signout = async () => {
@@ -92,11 +103,16 @@ const signout = async () => {
     // Redirect to the main page
     alert("로그아웃이 완료되었습니다.");
 <<<<<<< HEAD
+<<<<<<< HEAD
     router.push("/");
     
 =======
     profileImage.value = '/src/assets/img/profileDefault.png';
 >>>>>>> 195e9c0f438821e99657eee0fe85b76cf2577d18
+=======
+    router.push("/");
+    profileImage.value = '/src/assets/img/profileDefault.png';
+>>>>>>> 4215f6bbd034e7b4114e7e55d21513827eda2859
   } catch (error) {
     console.error(error);
     isActive.value = false;
@@ -114,6 +130,7 @@ watch(chatListToggle, async (newVal) => {
 
 <template>
   <header :class="background == 'white' ? 'header-white' : ''">
+  <!-- <header class="header-white"> -->
     <div class="chat-list-bg" v-show="chatListToggle" @click="chatListClickHandler"></div>
     <div
       class="chat-list"
@@ -138,20 +155,20 @@ watch(chatListToggle, async (newVal) => {
       </div>
     </div>
     <router-link :to="{ name: 'main' }" id="nav-logo">
-      <img src="/src/assets/img/navlog.png" />
+      <img src="/src/assets/img/new_logo.png" />
     </router-link>
     <div style="display: flex;">
       <div id="trip-menu-container">
-      <router-link :to="{ name: 'review' }" :class="menuClass" class="trip-menu"
+      <router-link :to="{ name: 'review' }" :class="menuClass + (firstSegment == 'review' ? ' trip-menu-selected' : '')"
         >여행 후기</router-link
       >
-      <div id="mate-chat" :class="menuClass" class="trip-menu" @click="chatListClickHandler">
+      <div id="mate-chat" :class="menuClass + (firstSegment == 'chat' ? ' trip-menu-selected' : '')" @click="chatListClickHandler">
         메이트 채팅
       </div>
-      <router-link :to="{ name: 'match' }" :class="menuClass" class="trip-menu"
+      <router-link :to="{ name: 'match' }" :class="menuClass + (firstSegment == 'match' ? ' trip-menu-selected' : '')"
         >여행 메이트 찾기</router-link
       >
-      <router-link :to="{ name: 'plan' }" :class="menuClass" class="trip-menu"
+      <router-link :to="{ name: 'plan' }" :class="menuClass + (firstSegment == 'plan' ? ' trip-menu-selected' : '')"
         >나만의 여행 계획</router-link
       >
       </div>
@@ -170,9 +187,8 @@ watch(chatListToggle, async (newVal) => {
 
 <style scoped>
 #nav-logo {
-  width: 100px;
-  height: 60px;
-  margin-left: 50px;
+  width: 150px;
+  margin-left: 150px;
 }
 
 #nav-logo img {
@@ -210,22 +226,35 @@ header {
   font-size: 18px;
 }
 
-.trip-menu:after {
+.trip-menu::after {
   position: absolute;
   content: "";
   width: 0;
   height: 3px;
   bottom: 0;
-  left: 0;
+  right: 0;
   z-index: -1;
   background: black;
   transition: all 0.3s ease;
   border-radius: 7px;
 }
 
-.trip-menu:hover:after {
+.trip-menu:hover::after {
   left: 0;
   width: 100%;
+}
+
+.trip-menu-selected::after {
+  position: absolute;
+  content: "";
+  left: 0;
+  width: 100%;
+  height: 3px;
+  bottom: 0;
+  z-index: -1;
+  background: black;
+  transition: all 0.3s ease;
+  border-radius: 7px;
 }
 
 #mate-chat {

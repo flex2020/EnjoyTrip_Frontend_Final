@@ -137,7 +137,6 @@ const moveView = (viewId) => {
   z-index: 10;
   margin: 20px;
   text-overflow: ellipsis;
-  
 }
 
 .review-list-item-intro div:first-child {

@@ -17,7 +17,7 @@ import VHeader from "@/components/common/VHeader.vue";
   width: 100vw;
   height: 100vh;
   background-repeat: no-repeat; /* 이미지 반복 방지 */
-  background-image: url("/src/assets/img/mainpage.png");
+  background-image: url("/src/assets/img/main-bg-2.jpg");
   position: relative;
   z-index: -1; /* VHeader 위에 배치되도록 함 */
 }

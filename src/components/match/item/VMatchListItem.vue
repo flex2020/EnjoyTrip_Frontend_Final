@@ -71,25 +71,27 @@ const moveView = (matchId) => {
       v-for="match in matches"
       :key="match.matchId"
       @click="moveView(match.matchId)"
-      v-show="match.deleted === 0 ? true : false"
+      :style="{backgroundImage: `url('${match.filePath ? match.filePath : '/src/assets/img/card_image1.png'}')`}"
     >
+    <div class="match-list-item-grad"></div>
       <div class="match-list-item-intro">
         <div>{{ match.matchTitle }}</div>
+        <div>
+          <span v-for="hashtag in match.hashtags" :key="hashtag" style="margin-left: 3px;">#{{ hashtag }}</span>
+        </div>
       </div>
       <div class="match-list-item-info">
         <div>
-          <img src="@/assets/img/fontawesome/heart-solid.svg" />
-          <div>{{ match.hit }}</div>
-        </div>
-        <div>
-          <img src="@/assets/img/fontawesome/eye-solid.svg" />
+          <img src="@/assets/img/fontawesome/eye-solid-white.svg" />
           <div>{{ match.hit }}</div>
         </div>
       </div>
     </div>
   </div>
   <div v-if="loading" class="loading">마지막 페이지 입니다.</div>
-  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">맨 위로</button>
+  <button v-if="showScrollTopButton" @click="scrollToTop" class="scroll-to-top">
+    <img src="/src/assets/img/fontawesome/chevron-up-solid.svg">
+  </button>
 </template>
 
 <style scoped>
@@ -106,24 +108,56 @@ const moveView = (matchId) => {
   display: flex;
   align-items: flex-end;
   width: 30%;
-  height: 350px;
-  background-color: gray;
+  height: 350px; 
   border-radius: 20px;
   margin: 1.667%;
-  padding: 20px;
   color: white;
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: relative;
+  overflow: hidden;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.match-list-item:hover {
+  transform: scale(103%);
+}
+
+.match-list-item-grad {
+  width: 100%;
+  background: linear-gradient(to top, #000000FF, #00000000);
+  height: 30%;
+  position: absolute;
 }
 
 .match-list-item-intro {
   width: 70%;
   display: flex;
   flex-direction: column;
+  z-index: 10;
+  margin: 20px;
+  text-overflow: ellipsis;
 }
 
 .match-list-item-intro div:first-child {
   font-weight: bold;
   font-size: 24px;
   margin-bottom: 10px;
+  overflow: hidden;
+  word-break: break-word;
+  
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.match-list-item-intro div:last-child {
+  overflow: hidden;
+  word-break: break-word;
+  
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .match-list-item-info {
@@ -131,6 +165,8 @@ const moveView = (matchId) => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  margin: 20px;
+  z-index: 10;
 }
 
 .match-list-item-info div {
@@ -151,9 +187,9 @@ const moveView = (matchId) => {
 .loading {
   width: 100%;
   text-align: center;
-  font-size: 1.5em;
-  color: white;
-  background-color: gray;
+  font-size: 1.2em;
+  color: black;
+  background-color: white;
   padding: 20px;
   border-radius: 20px;
   margin-bottom: 34px;
@@ -163,5 +199,12 @@ const moveView = (matchId) => {
   position: fixed;
   bottom: 50px;
   right: 50px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+  border: none;
+  cursor: pointer;
 }
 </style>

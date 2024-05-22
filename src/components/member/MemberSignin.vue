@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import { useKakaoStore } from '@/stores/kakao';
+import { useKakaoStore } from "@/stores/kakao";
 import { Axios } from "/src/api/http-common";
 
 const http = Axios();
@@ -16,7 +16,7 @@ const password = ref("");
 
 const login = async () => {
   try {
-    const response = await http.post("/api/member/signin", {
+    const response = await http.post("/member/signin", {
       email: email.value,
       password: password.value,
     });
@@ -32,7 +32,7 @@ const login = async () => {
       console.log("Nickname:", authStore.getNickname);
       console.log("memberId:", authStore.getMemberId);
 
-      const profileResponse = await http.post("/api/member/profile", {
+      const profileResponse = await http.post("/member/profile", {
         memberId: authStore.getMemberId,
       });
 
@@ -40,7 +40,8 @@ const login = async () => {
         authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
       }
 
-      alert("로그인에 성공하였습니다.");
+      // alert("로그인에 성공하였습니다.");
+      console.log("로그인에 성공하였습니다.");
       router.push("/");
     } else {
       throw new Error("로그인에 실패하였습니다. 다시 시도해주세요.");
@@ -57,12 +58,12 @@ const kakaoLogin = () => {
       try {
         // 카카오 SDK를 통해 얻은 액세스 토큰으로 사용자 정보 가져오기
         const userInfo = await Kakao.API.request({
-          url: '/v2/user/me'
+          url: "/v2/user/me",
         });
 
         const response = await http.post("/member/oauth2/kakao", {
           email: userInfo.kakao_account.email,
-          nickname: userInfo.kakao_account.profile.nickname
+          nickname: userInfo.kakao_account.profile.nickname,
         });
 
         console.log(response.data);
@@ -71,14 +72,14 @@ const kakaoLogin = () => {
         console.log(response.data.nickname);
 
         if (response.data.newUser) {
-
           kakaoStore.setEmail(response.data.email);
           kakaoStore.setNickname(response.data.nickname);
-          router.push({ name: 'member-signup' });
+          router.push({ name: "member-signup" });
         } else {
           // 기존 사용자 - 로그인 처리
           authStore.setToken(response.data);
-          alert("카카오 로그인에 성공하였습니다.");
+          // alert("카카오 로그인에 성공하였습니다.");
+          console.log("카카오 로그인 성공");
           router.push("/");
         }
       } catch (error) {
@@ -89,7 +90,7 @@ const kakaoLogin = () => {
     fail: (err) => {
       console.error("카카오 로그인 실패:", err);
       alert("카카오 로그인에 실패하였습니다. 다시 시도해주세요.");
-    }
+    },
   });
 };
 </script>
@@ -104,7 +105,10 @@ const kakaoLogin = () => {
         <input type="password" v-model="password" placeholder="********" required />
         <button type="submit">로그인</button>
       </form>
-      <button @click="kakaoLogin" class="kakao-login-button">카카오 로그인</button>
+      <button @click="kakaoLogin" class="kakao-login-button">
+        <img src="/src/assets/img/kakaoicon.png" alt="Kakao" class="kakao-icon" />
+        카카오 아이디로 로그인
+      </button>
       <div class="links">
         <router-link :to="{ name: 'member-signup' }">회원가입</router-link> |
         <router-link :to="{ name: 'member-findpassword' }">비밀번호 찾기</router-link>
@@ -176,17 +180,26 @@ form button:hover {
   width: 100%;
   padding: 0.75rem;
   margin-top: 1rem;
-  background-color: #F7E600;
-  color: #3C1E1E;
-  border: none;
+  background-color: #ffeb00;
+  color: #381e1f;
+  border: 1px solid #e5d600;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
   font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .kakao-login-button:hover {
-  background-color: #E5D600;
+  background-color: #e5d600;
+}
+
+.kakao-icon {
+  margin-right: 8px;
+  width: 25px;
+  height: 25px;
 }
 
 .links {

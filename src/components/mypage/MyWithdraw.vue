@@ -1,8 +1,8 @@
 <script setup>
-import { defineEmits } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { Axios } from '/src/api/http-common';
+import { defineEmits } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { Axios } from "/src/api/http-common";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -11,22 +11,22 @@ const http = Axios();
 const confirmWithdraw = async () => {
   try {
     // 회원탈퇴 API 호출
-    await http.post('/member/withdraw', {
+    await http.post("/member/withdraw", {
       memberId: authStore.getMemberId(),
     });
     // 로그아웃 처리
     authStore.signout();
     // 메인 페이지로 이동
-    router.push('/');
+    router.push("/");
   } catch (error) {
-    console.error('Error withdrawing member:', error);
+    console.error("Error withdrawing member:", error);
   }
 };
 
-const emit = defineEmits(['close-modal']);
+const emit = defineEmits(["close-modal"]);
 
 const cancelWithdraw = () => {
-  emit('close-modal');
+  emit("close-modal");
 };
 </script>
 

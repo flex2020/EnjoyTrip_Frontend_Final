@@ -9,5 +9,13 @@ async function getAttractionRecommend(attractionName) {
   return data;
 }
 
+async function getMatchRecommend(email) {
+  const response = await http.post("/gpt/generate/match-recommend", {email: email});
+  const data = await response.data;
+  return data;
+}
 
-export { getAttractionRecommend, };
+export {
+  getAttractionRecommend,
+  getMatchRecommend,
+};

@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { Axios } from '@/api/http-common';
-import { useRoute } from 'vue-router';
-import MyFollower from '@/components/mypage/MyFollower.vue';
-import MyFollowing from '@/components/mypage/MyFollowing.vue';
+import { ref, onMounted, watch } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { Axios } from "@/api/http-common";
+import { useRoute } from "vue-router";
+import MyFollower from "@/components/mypage/MyFollower.vue";
+import MyFollowing from "@/components/mypage/MyFollowing.vue";
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -32,6 +32,8 @@ const profileImage = ref("/src/assets/img/profileDefault.png"); // 프로필 이
 const fileInputRef = ref(null); // 파일 입력 필드 참조
 const showModal = ref(false);
 const modalType = ref("");
+const relation = ref(0); // 팔로우 관계 상태
+const showFollowButton = ref(false); // 팔로우 버튼 표시 여부
 
 // API 호출 메소드
 const fetchUserData = async (memberId) => {
@@ -50,14 +52,33 @@ const fetchUserData = async (memberId) => {
       memberId: memberId,
     });
 
+    const postCountResponse = await http.post("/review/count", {
+      memberId: memberId,
+    });
+
     nickname.value = memberInfo.data.nickname;
     followers.value = followerCount.data.count;
     following.value = followeeCount.data.count;
+    posts.value = postCountResponse.data; // Update posts count
 
     // 프로필 이미지가 존재하면 업데이트
     if (profileResponse.data) {
       profileImage.value = profileResponse.data;
       authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
+    }
+
+    // 팔로우 상태 확인
+    if (authStore.getMemberId !== memberId) {
+      showFollowButton.value = true;
+      const followStatus = await http.post("/follow/relation", {
+        memberId: authStore.getMemberId,
+        targetId: memberId,
+      });
+
+      console.log(followStatus.data);
+      relation.value = followStatus.data.relation;
+    } else {
+      showFollowButton.value = false;
     }
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -70,9 +91,12 @@ onMounted(() => {
 });
 
 // route 변경 시 API 호출
-watch(() => route.params.memberId, (newMemberId) => {
-  fetchUserData(newMemberId);
-});
+watch(
+  () => route.params.memberId,
+  (newMemberId) => {
+    fetchUserData(newMemberId);
+  }
+);
 
 // 이미지 업로드 핸들러
 const onImageUpload = (event) => {
@@ -113,18 +137,48 @@ const closeModal = () => {
 };
 
 const handleUpdateCount = ({ type, relation }) => {
-  if (relation === 'following') {
-    if (type === 'increment') {
+  if (relation === "following") {
+    if (type === "increment") {
       following.value++;
-    } else if (type === 'decrement') {
+    } else if (type === "decrement") {
       following.value--;
     }
-  } else if (relation === 'follower') {
-    if (type === 'increment') {
+  } else if (relation === "follower") {
+    if (type === "increment") {
       followers.value++;
-    } else if (type === 'decrement') {
+    } else if (type === "decrement") {
       followers.value--;
     }
+  }
+};
+
+// 팔로우/언팔로우 핸들러
+const toggleFollow = async () => {
+  try {
+    const apiUrl =
+      relation.value === 1 || relation.value === 3 ? "/follow/unfollow" : "/follow/follow";
+    const response = await http.post(apiUrl, {
+      fromMemberId: authStore.getMemberId,
+      toMemberId: route.params.memberId,
+    });
+    console.log(response.data);
+    if (response.data) {
+      if (relation.value === 1) {
+        relation.value = 0;
+        followers.value--;
+      } else if (relation.value === 0) {
+        relation.value = 1;
+        followers.value++;
+      } else if (relation.value === 3) {
+        relation.value = 2;
+        followers.value--;
+      } else if (relation.value === 2) {
+        relation.value = 3;
+        followers.value++;
+      }
+    }
+  } catch (error) {
+    console.error("Error toggling follow status:", error);
   }
 };
 </script>
@@ -161,15 +215,38 @@ const handleUpdateCount = ({ type, relation }) => {
         <p>{{ following }}</p>
       </div>
       <div class="stat-divider"></div>
-      <div class="stat-item" @click="onPostsClick">
+      <div class="stat-item">
         <p>게시글</p>
         <p>{{ posts }}</p>
       </div>
     </div>
 
+    <!-- 팔로우/언팔로우 버튼 -->
+    <div v-if="showFollowButton" class="follow-button-container">
+      <button
+        @click="toggleFollow"
+        class="btn follow-toggle-button"
+        :class="relation === 1 || relation === 3 ? 'unfollow-button' : 'follow-button'"
+      >
+        {{ relation === 1 || relation === 3 ? "언팔로우" : "팔로우" }}
+      </button>
+    </div>
+
     <!-- 모달 컴포넌트 렌더링 -->
-    <MyFollower v-if="showModal && modalType === 'followers'" @close-modal="closeModal" @update-count="handleUpdateCount"/>
-    <MyFollowing v-if="showModal && modalType === 'following'" @close-modal="closeModal" @update-count="handleUpdateCount"/>
+    <transition name="modal">
+      <MyFollower
+        v-if="showModal && modalType === 'followers'"
+        @close-modal="closeModal"
+        @update-count="handleUpdateCount"
+      />
+    </transition>
+    <transition name="modal">
+      <MyFollowing
+        v-if="showModal && modalType === 'following'"
+        @close-modal="closeModal"
+        @update-count="handleUpdateCount"
+      />
+    </transition>
   </div>
   <div v-if="showModal" class="modal-overlay" @click="closeModal"></div>
 </template>
@@ -257,5 +334,74 @@ const handleUpdateCount = ({ type, relation }) => {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.btn {
+  position: relative;
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000;
+  padding: 2px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: inherit;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  line-height: 30px;
+  z-index: 2;
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: bold;
+}
+
+.btn:hover {
+  color: #fff;
+  background-color: #000;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: #000;
+  border-radius: 5px;
+  z-index: -1;
+  transition: height 0.3s ease;
+}
+
+.btn:hover::before {
+  height: 100%;
+}
+
+.follow-toggle-button {
+  font-size: 14px;
+  padding: 2px 10px;
+}
+
+.follow-button {
+  background-color: #000;
+  color: #fff;
+  border: 2px solid #000;
+}
+
+.unfollow-button {
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000;
 }
 </style>
