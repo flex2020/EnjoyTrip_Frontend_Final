@@ -3,10 +3,11 @@ import { usePlanStore } from "@/stores/plan";
 const planStore = usePlanStore();
 const props = defineProps({
   attraction: Object,
+  from: String,
 });
 
 console.log('props', props.attraction)
-
+console.log(props.from)
 </script>
 
 <template>
@@ -19,10 +20,10 @@ console.log('props', props.attraction)
       <p>
         {{ attraction.addr1 + " " + attraction.addr2 }}
       </p>
-      <button class="btn-add" v-if="!planStore.checkIncludes(attraction)" @click="planStore.addPlan(attraction)">
+      <button class="btn-add" v-if="from != 'review' && from != 'match' && !planStore.checkIncludes(attraction)" @click="planStore.addPlan(attraction)">
         여행 코스에 추가
       </button>
-      <button class="btn-remove" v-if="planStore.checkIncludes(attraction)" @click="planStore.removePlan(attraction)">
+      <button class="btn-remove" v-if="from != 'review' && from != 'match' && planStore.checkIncludes(attraction)" @click="planStore.removePlan(attraction)">
         여행 코스에서 삭제
       </button>
     </div>

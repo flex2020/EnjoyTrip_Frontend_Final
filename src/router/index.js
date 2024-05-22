@@ -152,21 +152,21 @@ const router = createRouter({
           name: "match-list",
           component: () => import("@/components/match/MatchList.vue"),
         },
-        // {
-        //   path: "write",
-        //   name: "review-write",
-        //   component: () => import("@/components/review/VReviewWrite.vue"),
-        // },
-        // {
-        //   path: "update/:viewid",
-        //   name: "review-update",
-        //   component: () => import("@/components/review/VReviewUpdate.vue"),
-        // },
-        // {
-        //   path: "view/:viewid",
-        //   name: "review-view",
-        //   component: () => import("@/components/review/VReviewView.vue"),
-        // },
+        {
+          path: "write",
+          name: "match-write",
+          component: () => import("@/components/match/MatchWrite.vue"),
+        },
+        {
+          path: "update/:matchid",
+          name: "match-update",
+          component: () => import("@/components/match/MatchUpdate.vue"),
+        },
+        {
+          path: "view/:matchid",
+          name: "match-view",
+          component: () => import("@/components/match/MatchView.vue"),
+        },
       ],
     },
   ],
