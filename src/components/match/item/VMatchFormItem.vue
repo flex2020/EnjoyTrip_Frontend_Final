@@ -34,7 +34,7 @@ const match_article = ref({
   matchTitle: "",
   travelStartDate: "",
   travelEndDate: "",
-  maxPeople: 0,
+  maxPeople: "",
   genderType: 0,
   deadine: "",
   hit: 0,
@@ -48,10 +48,12 @@ const match_article = ref({
 const courses = ref([]);
 
 const matchWrite = async () => {
-  const formData = new FormData();
-  formData.append("file", files.value);
-  const fileRes = await http.post("/files", formData);
-  match_article.value.fileId = fileRes.data.fileId;
+  if (files.value.length !== 0) {
+    const formData = new FormData();
+    formData.append("file", files.value);
+    const fileRes = await http.post("/files", formData);
+    match_article.value.fileId = fileRes.data.fileId;
+  }
 
   const response = await http.post("/match", match_article.value);
 
@@ -74,8 +76,6 @@ const matchUpdate = async () => {
     match_article.value.fileId = fileRes.data.fileId;
   }
 
-  console.log( match_article.value.hashtags);
-  console.log(hashtagArray.value);
   for (let i = 0; i < hashtagArray.value.length; i++) {
     if (!match_article.value.hashtags.includes(hashtagArray.value[i])) {
       match_article.value.hashtags.push(hashtagArray.value[i]);
@@ -102,8 +102,27 @@ const moveList = () => {
 };
 
 const addHashtag = () => {
-  hashtagArray.value.push(inputHashtag.value);
+  if (
+    !match_article.value.hashtags.includes(inputHashtag.value) &&
+    !hashtagArray.value.includes(inputHashtag.value) &&
+    match_article.value.hashtags.length + hashtagArray.value.length < 5
+  ) {
+    console.log(hashtagArray.value);
+    match_article.value.hashtags.push(inputHashtag.value);
+  }
+  // console.log("추가",match_article.value.hashtags);
+  // console.log(hashtagArray.value);
+
   inputHashtag.value = "";
+};
+
+const deleteHashtag = (h) => {
+  match_article.value.hashtags = match_article.value.hashtags.filter(
+    (hashtag) => hashtag !== h
+  );
+  hashtagArray.value = hashtagArray.value.filter((hashtag) => hashtag !== h);
+
+  // console.log(match_article.value.hashtags);
   // console.log(hashtagArray.value);
 };
 
@@ -117,7 +136,11 @@ const handleFileChange = (event) => {
     <div id="match-input-title">
       <label id="match-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input type="text" v-model="match_article.matchTitle" placeholder="제목을 입력해주세요  " />
+      <input
+        type="text"
+        v-model="match_article.matchTitle"
+        placeholder="제목을 입력해주세요  "
+      />
     </div>
     <div id="match-input-select">
       <div>
@@ -159,19 +182,36 @@ const handleFileChange = (event) => {
         </select>
       </div>
       <div id="match-content-container">
-        <div>이런 분을 원해요</div>
+        <div>이런 분을 원해요
+          <span class="desc">Tip! 자세히 작성할수록 원하는 사람과 매칭될 확률이 올라가요!</span>
+        </div>
+        
         <textarea v-model="match_article.content"></textarea>
       </div>
 
       <div id="match-hashtag-container">
-        <div>해시태그</div>
-        <input type="text" v-model="inputHashtag" @keyup.enter="addHashtag" />
-        <span v-for="hashtag in match_article.hashtags" :key="hashtag">{{
-          hashtag
-        }}</span>
-        <span v-for="(hashtag, index) in hashtagArray" :key="index">
-          <span v-if="isUseId">{{ hashtag }}</span>
-        </span>
+        <div>해시태그
+          <span class="desc">Enter 키를 통해 해시태그를 등록하세요.</span>
+        </div>
+        
+        <div id="match-hashtag-input">
+          <input type="text" v-model="inputHashtag" @keyup.enter="addHashtag" />
+          <div class="profile-hashtags">
+            <span
+              v-for="hashtag in match_article.hashtags"
+              :key="hashtag"
+              @click="deleteHashtag(hashtag)"
+              class="hashtag"
+            >
+              #{{ hashtag }}
+            </span>
+            <span v-for="(hashtag, index) in hashtagArray" :key="index"  >
+              <span v-if="isUseId" @click="deleteHashtag(hashtag)"class="hashtag"
+                >#{{ hashtag }}</span
+              >
+            </span>
+          </div>
+        </div>
       </div>
 
       <div id="match-image-container">
@@ -199,6 +239,38 @@ const handleFileChange = (event) => {
 </template>
 
 <style scoped>
+
+
+.profile-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 0 !important;
+}
+
+input[type='text'] {
+  border: 1px solid black;
+}
+
+input[type='text']:focus {
+  outline: none;
+}
+
+.hashtag {
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 5px 15px;
+  font-size: 14px;
+  color: #333;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hashtag:hover {
+  background-color: #e0e0e0;
+  border-color: #ccc;
+}
+
 #match-input-form {
   width: 100%;
   display: flex;
@@ -226,7 +298,6 @@ const handleFileChange = (event) => {
 #match-input-title input {
   width: 100%;
   height: 40px;
-  border-radius: 10px;
   font-size: 28px;
   margin-left: 20px;
   padding-left: 10px;
@@ -239,9 +310,10 @@ const handleFileChange = (event) => {
 
 .red-star {
   color: red;
+  margin-right: 10px;
 }
 
-input[type='date'] {
+input[type="date"] {
   margin: 7px;
   height: 40px;
   font-size: 16px;
@@ -257,32 +329,52 @@ input[type='date'] {
 }
 
 #match-input-select select {
-  width: 20%;
+  width: 15%;
   height: 40px;
-  margin-left: 10px;
   margin-right: 20px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+}
+
+#match-input-select input {
+  width: 15%;
+  height: 40px;
+  margin-right: 20px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
 }
 
 #match-content-container {
   width: 100%;
   display: flex;
   flex-direction: column;
+  margin-top: 20px;
 }
 
 #match-content-container textarea {
   width: 100%;
   height: 200px;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  color: #333;
 }
 
 #match-hashtag-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start !important;
+}
+
+#match-hashtag-container span {
+  cursor: pointer;
 }
 
 #match-image-container {
   display: flex;
   flex-direction: column;
+  align-items: flex-start !important;
+}
+#match-image-container input {
 }
 
 #btn-container {
@@ -315,5 +407,24 @@ input[type='date'] {
   color: white;
   font-size: 18px;
   font-weight: bold;
+}
+
+#match-hashtag-input {
+  display: flex;
+  align-items: center;
+}
+#match-hashtag-input span {
+  margin-right: 5px;
+  font-size: 18px;
+}
+.desc {
+  font-size: 15px;
+  font-weight: 400;
+  color: #9d9d9d;
+  margin-left: 7px;
+}
+
+input[type='file'] {
+  width: auto !important;
 }
 </style>
