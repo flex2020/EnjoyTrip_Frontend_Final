@@ -74,8 +74,6 @@ const matchUpdate = async () => {
     match_article.value.fileId = fileRes.data.fileId;
   }
 
-  console.log( match_article.value.hashtags);
-  console.log(hashtagArray.value);
   for (let i = 0; i < hashtagArray.value.length; i++) {
     if (!match_article.value.hashtags.includes(hashtagArray.value[i])) {
       match_article.value.hashtags.push(hashtagArray.value[i]);
@@ -102,10 +100,19 @@ const moveList = () => {
 };
 
 const addHashtag = () => {
-  hashtagArray.value.push(inputHashtag.value);
+
+  if (!match_article.value.hashtags.includes(inputHashtag.value) && !hashtagArray.value.includes(inputHashtag.value)
+   && (match_article.value.hashtags.length + hashtagArray.value.length < 5)) {
+    hashtagArray.value.push(inputHashtag.value);
+  }
+
   inputHashtag.value = "";
-  // console.log(hashtagArray.value);
 };
+
+const deleteHashtag = (h) => {
+  match_article.value.hashtags = match_article.value.hashtags.filter(hashtag => hashtag !== h);
+  hashtagArray.value = hashtagArray.value.filter(hashtag => hashtag !== h);
+}
 
 const handleFileChange = (event) => {
   files.value = event.target.files[0];
@@ -117,7 +124,11 @@ const handleFileChange = (event) => {
     <div id="match-input-title">
       <label id="match-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input type="text" v-model="match_article.matchTitle" placeholder="제목을 입력해주세요  " />
+      <input
+        type="text"
+        v-model="match_article.matchTitle"
+        placeholder="제목을 입력해주세요  "
+      />
     </div>
     <div id="match-input-select">
       <div>
@@ -166,11 +177,11 @@ const handleFileChange = (event) => {
       <div id="match-hashtag-container">
         <div>해시태그</div>
         <input type="text" v-model="inputHashtag" @keyup.enter="addHashtag" />
-        <span v-for="hashtag in match_article.hashtags" :key="hashtag">{{
+        <span v-for="hashtag in match_article.hashtags" :key="hashtag" @click="deleteHashtag(hashtag)">{{
           hashtag
         }}</span>
         <span v-for="(hashtag, index) in hashtagArray" :key="index">
-          <span v-if="isUseId">{{ hashtag }}</span>
+          <span v-if="isUseId" @click="deleteHashtag(hashtag)">{{ hashtag }}</span>
         </span>
       </div>
 
@@ -241,7 +252,7 @@ const handleFileChange = (event) => {
   color: red;
 }
 
-input[type='date'] {
+input[type="date"] {
   margin: 7px;
   height: 40px;
   font-size: 16px;
@@ -278,6 +289,10 @@ input[type='date'] {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+#match-hashtag-container span {
+  cursor: pointer;
 }
 
 #match-image-container {
