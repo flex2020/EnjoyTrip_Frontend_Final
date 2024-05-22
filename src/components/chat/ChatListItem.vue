@@ -1,13 +1,17 @@
 <script setup>
+import { useAuthStore } from "@/stores/auth";
+
 defineProps({
   chat: Object,
 });
+
+const authStore = useAuthStore();
 </script>
 
 <template>
   <div class="chat-list-item">
     <div class="chat-list-item-profile">
-      <img src="/src/assets/img/sample_img.jpg"/>
+      <img :src="authStore.getProfileImage"/>
     </div>
     <div style="width: 80%;">
       <div class="chat-list-item-name">
@@ -38,7 +42,8 @@ defineProps({
   height: 40px;
   overflow: hidden;
   border-radius: 50%;
-  border: 2px solid black;
+  border: 1px solid var(--brand-color);
+  background-color: white;
 }
 
 .chat-list-item-profile img {
