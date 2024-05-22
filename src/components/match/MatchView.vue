@@ -48,9 +48,7 @@ const registerMatch = async () => {
     <div id="match-view-author-id">작성자 : {{ match.nickName }}</div>
     <div id="match-view-info">
       <div>
-        <div>
-          여행 기간 : {{ match.travelStartDate }} ~ {{ match.travelEndDate }}
-        </div>
+        <div>여행 기간 : {{ match.travelStartDate }} ~ {{ match.travelEndDate }}</div>
         <div>현재 인원 : {{ match.nowPeople }}</div>
         <div>최대 인원 : {{ match.maxPeople }}</div>
       </div>
@@ -69,7 +67,7 @@ const registerMatch = async () => {
 
     <div>마감 일자 : {{ match.deadline }}</div>
     <div>성별 제한 : {{ match.genderType }}</div>
-    <div v-for="hashtag in match.hashtags"># {{ hashtag }}</div>
+    <div v-for="hashtag in match.hashtags" :key="hashtag"># {{ hashtag }}</div>
 
     <div id="btn-container">
       <div id="divider"></div>
@@ -80,12 +78,8 @@ const registerMatch = async () => {
         >
           게시글 수정
         </router-link>
-        <router-link :to="{ name: 'match-list' }" class="move-link">
-          게시글 목록
-        </router-link>
-        <button type="button" class="move-link" @click="registerMatch">
-          신청하기
-        </button>
+        <router-link :to="{ name: 'match-list' }" class="move-link"> 게시글 목록 </router-link>
+        <button type="button" class="move-link" @click="registerMatch">신청하기</button>
       </div>
     </div>
   </div>

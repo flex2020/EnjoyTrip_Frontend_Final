@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
 import { getCourseListByMember } from "@/api/plan";
+import { postMatchesByMemberId } from "@/api/match";
 
 const http = Axios();
 const authStore = useAuthStore();
@@ -27,6 +28,7 @@ if (props.type === "update") {
 }
 
 const match_article = ref({
+  matchId: 0,
   courseId: 0,
   authorId: authStore.getMemberId,
   matchTitle: "",
@@ -51,7 +53,17 @@ const matchWrite = async () => {
   const fileRes = await http.post("/files", formData);
   match_article.value.fileId = fileRes.data.fileId;
 
-  await http.post("/match", match_article.value);
+  const response = await http.post("/match", match_article.value);
+
+  match_article.value.matchId = response.data.matchId;
+
+  console.log(match_article.value.matchId);
+
+  const formData2 = new FormData();
+  formData2.append("matchId", match_article.value.matchId);
+  formData2.append("memberId", authStore.getMemberId);
+
+  await postMatchesByMemberId(formData2);
 
   router.push({ name: "match-list" });
 };
@@ -84,7 +96,7 @@ const addHashtag = () => {
 
 const handleFileChange = (event) => {
   files.value = event.target.files[0];
-}
+};
 </script>
 
 <template>
@@ -92,11 +104,7 @@ const handleFileChange = (event) => {
     <div id="match-input-title">
       <label id="match-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input
-        type="text"
-        v-model="match_article.matchTitle"
-        placeholder="제목..."
-      />
+      <input type="text" v-model="match_article.matchTitle" placeholder="제목..." />
     </div>
     <div id="match-input-select">
       <div>
@@ -104,11 +112,7 @@ const handleFileChange = (event) => {
         <label class="red-star">*</label>
         <select v-model="match_article.courseId">
           <option value="0" hidden>코스를 선택해주세요.</option>
-          <option
-            v-for="course in courses"
-            :key="course.courseId"
-            :value="course.courseId"
-          >
+          <option v-for="course in courses" :key="course.courseId" :value="course.courseId">
             {{ course.courseName }}
           </option>
         </select>
@@ -145,8 +149,10 @@ const handleFileChange = (event) => {
       <div id="match-hashtag-container">
         <div>해시태그</div>
         <input type="text" v-model="inputHashtag" @keyup.enter="addHashtag" />
-        <span v-for="hashtag in hashtagArray">{{ hashtag }}</span>
-        <span v-for="hashtag in match_article.hashtags">{{ hashtag }}</span>
+        <span v-for="hashtag in match_article.hashtags" :key="hashtag">{{ hashtag }}</span>
+        <span v-for="(hashtag, index) in hashtagArray" :key="index">
+          <span v-if="isUseId">{{ hashtag }}</span>
+        </span>
       </div>
 
       <div id="match-image-container">
@@ -159,9 +165,7 @@ const handleFileChange = (event) => {
   <div id="btn-container">
     <div id="divider"></div>
     <div id="btns">
-      <button type="button" v-show="!isUseId" @click="matchWrite">
-        작성하기
-      </button>
+      <button type="button" v-show="!isUseId" @click="matchWrite">작성하기</button>
       <button type="button" v-show="isUseId" @click="matchUpdate">수정하기</button>
       <button type="button" v-show="isUseId">삭제하기</button>
       <button type="button" @click="moveList">목록으로</button>
@@ -243,7 +247,6 @@ const handleFileChange = (event) => {
   display: flex;
   flex-direction: column;
 }
-
 
 #btn-container {
   width: 100%;

@@ -71,7 +71,6 @@ const moveView = (matchId) => {
       v-for="match in matches"
       :key="match.matchId"
       @click="moveView(match.matchId)"
-      v-show="match.deleted === 0 ? true : false"
     >
       <div class="match-list-item-intro">
         <div>{{ match.matchTitle }}</div>
