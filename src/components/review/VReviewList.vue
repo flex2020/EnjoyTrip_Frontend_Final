@@ -3,10 +3,12 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import VReviewListItem from "@/components/review/item/VReviewListItem.vue";
 import { Axios } from "/src/api/http-common";
+import { useAuthStore } from "@/stores/auth";
 
 const http = Axios();
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const reviews = ref([]);
 const currentPage = ref(1);
@@ -22,6 +24,7 @@ const param = ref({
   sortKey: sortSelect.value,
   scopeKey: scopeSecelct.value,
   keyword: inputKeyword.value,
+  loginMemberId: authStore.getMemberId,
 });
 
 onMounted(async () => {
@@ -85,8 +88,7 @@ const searchReview = async () => {
       <div id="review-list-select-container">
         <select v-model="scopeSecelct" @change="changeScopeSelect">
           <option :value="0">전체보기</option>
-          <option :value="1">팔로잉한 사람</option>
-          <option :value="2">나의 후기</option>
+          <option :value="1">팔로잉 게시물</option>
         </select>
         <select v-model="sortSelect" @change="changeSortSelect">
           <option :value="0">최신순</option>
@@ -95,9 +97,14 @@ const searchReview = async () => {
         </select>
       </div>
       <div id="review-list-search">
-        <input v-model="inputKeyword" type="text" placeholder="제목, 내용으로 검색해보세요" @keyup.enter="searchReview" />
+        <input
+          v-model="inputKeyword"
+          type="text"
+          placeholder="제목, 내용으로 검색해보세요"
+          @keyup.enter="searchReview"
+        />
         <button id="review-search-btn" @click="searchReview">
-          <img src="/src/assets/img/fontawesome/magnifying-glass-solid-white.svg" width="25">
+          <img src="/src/assets/img/fontawesome/magnifying-glass-solid-white.svg" width="25" />
         </button>
       </div>
       <router-link :to="{ name: 'review-write' }" id="review-list-move-write">
@@ -202,5 +209,4 @@ const searchReview = async () => {
   padding-left: 5px;
   margin-right: 5px;
 }
-
 </style>
