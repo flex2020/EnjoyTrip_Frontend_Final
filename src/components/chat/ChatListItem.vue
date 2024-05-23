@@ -11,7 +11,7 @@ const authStore = useAuthStore();
 <template>
   <div class="chat-list-item">
     <div class="chat-list-item-profile">
-      <img :src="authStore.getProfileImage"/>
+      <img :src="chat.profileImage"/>
     </div>
     <div style="width: 80%;">
       <div class="chat-list-item-name">

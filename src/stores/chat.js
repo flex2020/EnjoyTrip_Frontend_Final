@@ -13,6 +13,7 @@ export const useChatStore = defineStore('chatStore', () => {
     chatApi.sendMessage({
       type: 'chat',
       username: authStore.getNickname,
+      profileImage: authStore.profileImage,
       matchId: chatApi.matchId,
       content: chatText.value,
     });

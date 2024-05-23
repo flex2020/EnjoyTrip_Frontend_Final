@@ -16,6 +16,7 @@ const dragOptions = computed(() => ({
 
 // 드래그 이벤트 핸들러
 const onEnd = (event) => {
+  drag.value = false;
   tripStore.refreshCoursePath();
   const content = {
     tabIndex: tripStore.currentTab,
@@ -43,7 +44,7 @@ const onEnd = (event) => {
         v-model="tripStore.tabItems[tripStore.currentTab]"
         v-bind="dragOptions"
         @start="drag = true"
-        @end="drag = false"
+        @end="onEnd"
         item-key="order"
       >
       <template #item="{ element }">

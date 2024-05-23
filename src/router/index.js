@@ -31,6 +31,7 @@ const router = createRouter({
       path: "/plan",
       name: "plan",
       component: PlanView,
+      beforeEnter: login,
     },
     {
       path: "/review",
@@ -46,16 +47,19 @@ const router = createRouter({
         {
           path: "write",
           name: "review-write",
+          beforeEnter: login,
           component: () => import("@/components/review/VReviewWrite.vue"),
         },
         {
           path: "update/:viewid",
           name: "review-update",
+          beforeEnter: login,
           component: () => import("@/components/review/VReviewUpdate.vue"),
         },
         {
           path: "view/:viewid",
           name: "review-view",
+          beforeEnter: login,
           component: () => import("@/components/review/VReviewView.vue"),
         },
       ],
@@ -79,21 +83,25 @@ const router = createRouter({
         {
           path: "signout",
           name: "member-signout",
+          beforeEnter: login,
           component: () => import("@/components/member/MemberSignout.vue"),
         },
         {
           path: "update",
           name: "member-update",
+          beforeEnter: login,
           component: () => import("@/components/member/MemberUpdate.vue"),
         },
         {
           path: "delete",
           name: "member-delete",
+          beforeEnter: login,
           component: () => import("@/components/member/MemberDelete.vue"),
         },
         {
           path: "mypage",
           name: "member-mypage",
+          beforeEnter: login,
           component: () => import("@/components/member/MemberMypage.vue"),
         },
         {
@@ -112,6 +120,7 @@ const router = createRouter({
       path: "/mypage/:memberId",
       name: "mypage",
       component: () => import("@/views/MyPageView.vue"),
+      beforeEnter: login,
       redirect: { name: "mypage-profile" },
       children: [
         {
@@ -144,6 +153,7 @@ const router = createRouter({
     {
       path: "/match",
       name: "match",
+      beforeEnter: login,
       component: () => import("@/views/MatchView.vue"),
       redirect: { name: "match-list" },
       children: [
@@ -191,5 +201,16 @@ async function canEnterChat(to, from, next) {
     alert("입장할 수 없는 채팅방입니다.");
     router.push({ name: "main" });
   }
+}
+
+function login(to, from, next) {
+  const authStore = useAuthStore();
+  const memberId = authStore.getMemberId;
+  if (!memberId) {
+    alert('로그인 후 이용하실 수 있습니다.');
+    router.push({ name: 'member-signin'})
+    return;
+  }
+  next();
 }
 export default router;

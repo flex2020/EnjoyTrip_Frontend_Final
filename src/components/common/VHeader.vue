@@ -283,7 +283,9 @@ header {
   border-radius: 50%;
   cursor: pointer;
   transition: 0.2s;
+  background-color: #d9d9d9;
 }
+
 
 #profile img:hover {
   transform: scale(120%);
