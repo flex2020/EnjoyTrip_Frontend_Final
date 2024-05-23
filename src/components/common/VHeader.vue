@@ -4,6 +4,7 @@ import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
+import { useChatListStore } from "@/stores/chatlist";
 
 const http = Axios();
 
@@ -12,10 +13,10 @@ const route = useRoute();
 const authStore = useAuthStore();
 const isActive = ref(false);
 const chatListToggle = ref(false);
-const chatList = ref([]);
 const chatListElement = ref(null);
 const profileImage = ref(authStore.getProfileImage);
 const currentPath = ref(route.path);
+const chatlistStore = useChatListStore();
 
 const firstSegment = computed(() => {
   const path = route.path;
@@ -26,7 +27,7 @@ const firstSegment = computed(() => {
 onMounted(async () => {
   const memberId = authStore.getMemberId;
   if (memberId) {
-    chatList.value = await getMatchesByMemberId(memberId);
+    chatlistStore.chatList = await getMatchesByMemberId(memberId);
     const profileResponse = await http.post("/member/profile", {
       memberId: authStore.getMemberId,
     });
@@ -46,7 +47,7 @@ const chatListToggleHandler = async () => {
   const memberId = authStore.getMemberId;
   chatListToggle.value = !chatListToggle.value;
   if (chatListToggle.value) {
-    chatList.value = await getMatchesByMemberId(memberId);
+    chatlistStore.chatList = await getMatchesByMemberId(memberId);
   }
 };
 
@@ -55,7 +56,7 @@ const chatListClickHandler = () => {
     alert("로그인 후 이용가능합니다.");
     return;
   }
-  if (chatList.value.length == 0) {
+  if (chatlistStore.chatList.length == 0) {
     alert("현재 연결된 채팅이 없습니다.");
     return;
   }
@@ -70,7 +71,7 @@ const leaveMatching = async (matchId) => {
   if (!window.confirm("정말 해당 매칭에서 나가시겠습니까?")) return;
   const memberId = authStore.memberId;
   await removeMatchOfMember(memberId, matchId);
-  chatList.value = chatList.value.filter((match) => match.matchId != matchId);
+  chatlistStore.chatList = chatlistStore.chatList.filter((match) => match.matchId != matchId);
   if (route.params.matchId == matchId) {
     router.push({ name: "main" });
   }
@@ -135,7 +136,7 @@ watch(chatListToggle, async (newVal) => {
       <div class="chat-list-top">
         <h2>채팅 목록</h2>
       </div>
-      <div class="chat-list-item-container" v-for="chat in chatList" :key="chat.matchId">
+      <div class="chat-list-item-container" v-for="chat in chatlistStore.chatList" :key="chat.matchId">
         <div class="chat-list-item">
           <div class="chat-list-item-title">
             <h2>{{ chat.matchTitle }}</h2>

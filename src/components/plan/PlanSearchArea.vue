@@ -59,14 +59,16 @@ const changeSidoHandler = async () => {
 
 .plan-search-area-top {
   width: 100%;
-  height: 90px;
+  height: 120px;
 }
 
 .plan-search-area select {
-  width: 120px;
+  width: 45%;
   height: 30px;
   border-radius: 5px;
   padding-left: 5px;
-  margin: 5px 7px;
+  margin: 15px 7px 10px;
+  font-size: 16px;
 }
+
 </style>

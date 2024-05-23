@@ -24,7 +24,7 @@ const tripStore = useTripStore();
         </p>
       </div>
       <button @click="tripStore.removeTripPlan(tripPlan)">
-        <img src="/src/assets/img/fontawesome/trash-solid.svg" width="20"/>
+        <img src="/src/assets/img/fontawesome/trash-solid.svg" width="16px"/>
       </button>
     </div>
   </div>
@@ -37,8 +37,8 @@ const tripStore = useTripStore();
   box-shadow: 0 0 5px #333;
   border-radius: 7px;
   padding: 10px;
-  margin: 2px;
-  cursor: pointer;
+  margin: 2px auto;
+  cursor: grab;
   transition: 0.2s;
 }
 .trip-plan-list-item:hover {
@@ -68,8 +68,8 @@ const tripStore = useTripStore();
   border: none;
   border-radius: 50%;
   background-color: rgb(223, 48, 48);
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
 }
 
