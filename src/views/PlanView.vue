@@ -107,7 +107,7 @@ watch(nameInputToggle, async (newVal) => {
 
 .course-name-modal button {
   border: 1px solid var(--brand-color);
-  border-radius: 15px;
+  border-radius: 5px;
   background-color: white;
   color: var(--brand-color);
   cursor: pointer;

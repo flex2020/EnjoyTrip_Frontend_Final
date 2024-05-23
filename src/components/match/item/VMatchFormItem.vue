@@ -23,7 +23,7 @@ if (props.type === "update") {
   let { matchid } = route.params;
   http.get(`match/find/${matchid}`).then((response) => {
     match_article.value = response.data.resdata;
-    match_article.value.content = match_article.value.content.replace("<br>", "\r\n");
+    match_article.value.content = match_article.value.content.replaceAll("<br>", "\r\n");
   });
   isUseId.value = true;
 }
