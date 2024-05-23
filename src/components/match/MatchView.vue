@@ -32,9 +32,10 @@ const getMatch = async () => {
   authorId.value = match.value.authorId;
 
   const profileResponse = await http.get(`/match/profile/${matchId.value}`);
-
+  console.log('profile', profileResponse)
   // 프로필 이미지가 존재하면 업데이트
   if (profileResponse.data) {
+    
     profileImage.value = profileResponse.data;
   }
 
