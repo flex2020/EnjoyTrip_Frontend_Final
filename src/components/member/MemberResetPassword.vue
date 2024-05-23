@@ -91,8 +91,7 @@ const validatePassword = () => {
 }
 
 .logo {
-  width: 120px;
-  height: 60px;
+  width: 110px;
   margin-bottom: 1.5rem;
 }
 

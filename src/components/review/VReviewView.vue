@@ -39,14 +39,12 @@ const getReview = async () => {
   }
 
   const response2 = await http.post(`review/get/likecount`, likeInfo.value);
-  console.log(response2.data);
   if (response2.data) {
     isLike.value = true;
   } else {
     isLike.value = false;
   }
-  console.log(response2);
-  console.log(review.value.memberId);
+
   // 프로필 이미지 및 작성자 ID 가져오기
   const profileResponse = await http.post("/member/profile", {
     memberId: review.value.memberId,
@@ -94,32 +92,34 @@ const goToMyPage = () => {
           <div class="profile-name">{{ review.nickName }}</div>
         </div>
       </div>
-    </div>
-    <div id="review-view-info">
-      <div>
-        <div>여행기간 : {{ review.travelStartDate }} ~ {{ review.travelEndDate }}</div>
-        <div>여행인원 : {{ review.memberCount }}</div>
-      </div>
-      <div>
-        <div>
-          <div class="like-container" @click="updateLikeCount">
-            <img
-              :class="{ fade: true, active: isLike }"
-              src="@/assets/img/fontawesome/heart-solid.svg"
-              width="30px"
-            />
-            <img
-              :class="{ fade: true, active: !isLike }"
-              src="@/assets/img/fontawesome/heart-regular.svg"
-              width="30px"
-            />
-          </div>
+      <div class="profile-stats">
+        <div class="like-container" @click="updateLikeCount">
+          <img
+            :class="{ fade: true, active: isLike }"
+            src="@/assets/img/fontawesome/heart-solid.svg"
+            width="30px"
+            class="icon"
+          />
+          <img
+            :class="{ fade: true, active: !isLike }"
+            src="@/assets/img/fontawesome/heart-regular.svg"
+            width="30px"
+            class="icon"
+          />
           {{ review.likeCount }}
         </div>
-        <div>
-          <img src="@/assets/img/fontawesome/eye-solid.svg" width="30px" />
+        <div class="view-container">
+          <img src="@/assets/img/fontawesome/eye-solid.svg" width="30px" class="icon" />
           {{ review.hit }}
         </div>
+      </div>
+    </div>
+    <div id="review-view-info">
+      <div class="info-item">
+        <strong>여행기간:</strong> {{ review.travelStartDate }} ~ {{ review.travelEndDate }}
+      </div>
+      <div class="info-item">
+        <strong>여행인원:</strong> {{ review.memberCount }}
       </div>
     </div>
     <div id="review-view-contents" v-html="review.content"></div>
@@ -133,12 +133,12 @@ const goToMyPage = () => {
       <div id="btns">
         <router-link
           :to="{ name: 'review-update', params: { viewid: review.reviewId } }"
-          class="move-link"
+          class="btn move-link"
           v-show="isMyReview"
         >
           게시글 수정
         </router-link>
-        <router-link :to="{ name: 'review-list' }" class="move-link"> 게시글 목록 </router-link>
+        <router-link :to="{ name: 'review-list' }" class="btn move-link"> 게시글 목록 </router-link>
       </div>
     </div>
 
@@ -150,11 +150,14 @@ const goToMyPage = () => {
 #review-view-container {
   width: 50%;
   padding-top: 30px;
-  margin: 0px 25% 30px;
+  margin: 0 auto 30px;
+  font-family: inherit;
 }
 
 #review-view-contents {
   width: 100%;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 #review-view-contents * {
@@ -163,7 +166,7 @@ const goToMyPage = () => {
 
 #head-image {
   width: 100%;
-  height: 500px;
+  height: 400px;
   background-image: url("/src/assets/img/reviewpage.png");
   display: flex;
   flex-direction: column;
@@ -171,12 +174,17 @@ const goToMyPage = () => {
   align-items: center;
   color: white;
   font-weight: bold;
-  font-size: 56px;
-  background-repeat: no-repeat; /* 이미지 반복 방지 */
+  font-size: 48px;
+  background-repeat: no-repeat;
+  background-size: cover;
   margin-bottom: 20px;
+  border-radius: 10px;
+  overflow: hidden;
 }
+
 #head-image div {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .profile-section {
@@ -189,48 +197,58 @@ const goToMyPage = () => {
 .profile-info {
   display: flex;
   align-items: center;
-  cursor: pointer; /* 클릭 가능하게 커서 변경 */
+  cursor: pointer;
 }
 
 .profile-image img {
-  width: 80px; /* 이미지 사이즈 조정 */
-  height: 80px; /* 이미지 사이즈 조정 */
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
 }
 
 .profile-info > div {
-  margin-left: 20px;
+  margin-left: 15px;
 }
 
 .profile-name {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
+  color: #333;
 }
 
-#review-view-author-id {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
+.profile-stats {
+  display: flex;
+  align-items: center;
 }
+
+.like-container {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.view-container {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 5px;
+}
+
 #review-view-info {
   display: flex;
   justify-content: space-between;
-  font-size: 20px;
+  font-size: 18px;
   margin-bottom: 30px;
 }
 
-#review-view-info div:first-child div:first-child {
+.info-item {
   margin-bottom: 10px;
-}
-
-#review-view-info > div:last-child {
-  display: flex;
-  align-items: center;
-}
-#review-view-info > div:last-child > div {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
+  font-weight: 500;
 }
 
 #review-view-course {
@@ -241,6 +259,7 @@ const goToMyPage = () => {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 15px;
+  color: #555;
 }
 
 #btn-container {
@@ -248,47 +267,67 @@ const goToMyPage = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 40px;
 }
 
 #divider {
   width: 100%;
   height: 1px;
-  background-color: rgba(0, 0, 0, 0.3);
-  margin-top: 50px;
+  background-color: rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
 }
 
 #btns {
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  margin: 50px 0px;
+  margin: 20px 0;
 }
 
-.move-link {
-  width: 100px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 10px;
-  border: none;
-  border-radius: 10px;
-  background-color: black;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.like-container {
+.btn {
   position: relative;
-  width: 30px;
-  height: 30px;
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000;
+  padding: 2px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: inherit;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  line-height: 30px;
+  z-index: 2;
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: bold;
+  margin-left : 10px;
+}
+
+.btn:hover {
+  color: #fff;
+  background-color: #000;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: #000;
+  border-radius: 5px;
+  z-index: -1;
+  transition: height 0.3s ease;
+}
+
+.btn:hover::before {
+  height: 100%;
 }
 
 .like-container img {
-  position: absolute;
-  top: 5px;
-  left: 0;
+  position: relative;
   transition: opacity 0.5s ease;
   opacity: 0;
   cursor: pointer;
