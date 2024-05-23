@@ -34,6 +34,8 @@ const updateComment = ref({
   content: "",
 });
 
+const isToggle = ref(false);
+
 const addComment = async () => {
   await http.post("review/comments", newComment.value);
   newComment.value.content = "";
@@ -100,6 +102,20 @@ const cancelReply = () => {
   newReply.value.replyTo = -1;
   newReply.value.content = "";
   newReply.value.replyParentId = -1;
+  isToggle.value = !isToggle.value;
+};
+
+// const cancelUpdate = () => {
+//   newReply.value.commentGroup = -1;
+//   newReply.value.depth = -1;
+//   newReply.value.replyTo = -1;
+//   newReply.value.content = "";
+//   newReply.value.replyParentId = -1;
+//   isToggle.value = !isToggle.value;
+// };
+
+const toggleFunc = () => {
+  isToggle.value = !isToggle.value;
 };
 </script>
 
@@ -126,14 +142,22 @@ const cancelReply = () => {
         </div>
         <div class="comment-anchor-container">
           <a
+            v-if="!isToggle"
             @click="
-              setCurrentReply(comment.commentGroup, Number(comment.depth) + 1, index, comment.commentId)
+              setCurrentReply(
+                comment.commentGroup,
+                Number(comment.depth) + 1,
+                index,
+                comment.commentId
+              );
+              toggleFunc();
             "
             class="anchor-link"
           >
             답글작성
           </a>
           <a
+            v-if="!isToggle"
             v-show="comment.memberId === authStore.memberId"
             @click="commentDelete(comment.commentId)"
             class="anchor-link"
@@ -141,11 +165,15 @@ const cancelReply = () => {
             삭제
           </a>
           <a
+            v-if="!isToggle"
             v-show="comment.memberId === authStore.memberId"
-            @click="setUpdateComment(comment.commentId, comment.content)"
+            @click="
+              setUpdateComment(comment.commentId, comment.content);
+              toggleFunc();
+            "
             class="anchor-link"
           >
-            {{ updateComment.commentId != comment.commentId ? "댓글수정" : "취소" }}
+            댓글수정
           </a>
         </div>
         <div v-show="updateComment.commentId == comment.commentId">
@@ -154,8 +182,17 @@ const cancelReply = () => {
               <textarea rows="2" v-model="updateComment.content" required></textarea>
             </div>
             <div id="comment-update-btns">
-              <button type="submit" class="btn update-btn">댓글 수정</button>
-              <button type="button" class="btn cancel-btn">취소</button>
+              <button type="submit" class="btn update-btn" @click="toggleFunc()">댓글 수정</button>
+              <button
+                type="button"
+                class="btn cancel-btn"
+                @click="
+                  updateComment.commentId = -1;
+                  toggleFunc();
+                "
+              >
+                취소
+              </button>
             </div>
           </form>
         </div>
@@ -166,10 +203,16 @@ const cancelReply = () => {
         >
           <form @submit.prevent="addReply" id="comment-reply-form">
             <div class="form-group">
-              <textarea id="commentContent" name="content" rows="2" v-model="newReply.content" required></textarea>
+              <textarea
+                id="commentContent"
+                name="content"
+                rows="2"
+                v-model="newReply.content"
+                required
+              ></textarea>
             </div>
             <div id="comment-reply-btns">
-              <button type="submit" class="btn reply-btn">답글 작성</button>
+              <button type="submit" class="btn reply-btn" @click="toggleFunc">답글 작성</button>
               <button type="button" class="btn cancel-btn" @click="cancelReply">취소</button>
             </div>
           </form>
