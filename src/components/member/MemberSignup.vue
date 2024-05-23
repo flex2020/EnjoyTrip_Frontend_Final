@@ -313,7 +313,7 @@ onMounted(() => {
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Flex alignment to start (top) */
   background-image: url("/src/assets/background.jpg"); /* Replace with the path to your background image */
   background-size: cover;
   background-position: center;
@@ -333,7 +333,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index:100000;
+  margin-top: 5%; /* Added margin-top to push the container down */
+  z-index: 100000;
 }
 
 .logo {
@@ -392,6 +393,10 @@ form {
   border-radius: 5px;
   font-size: 18px;
   font-family: inherit; /* Ensure consistent font family */
+}
+
+.form-group textarea {
+  resize: none;
 }
 
 button[type="button"],

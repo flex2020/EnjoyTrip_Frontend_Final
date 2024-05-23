@@ -19,8 +19,8 @@ const currentPath = ref(route.path);
 
 const firstSegment = computed(() => {
   const path = route.path;
-  const segments = path.split('/').filter(Boolean); // 빈 문자열 제거
-  return segments[0] || ''; // 첫 번째 세그먼트가 없으면 빈 문자열 반환
+  const segments = path.split("/").filter(Boolean); // 빈 문자열 제거
+  return segments[0] || ""; // 첫 번째 세그먼트가 없으면 빈 문자열 반환
 });
 
 onMounted(async () => {
@@ -84,28 +84,21 @@ const props = defineProps({
   background: String,
 });
 
-// const menuClass = computed(() => (props.background == 'white' ? 'menu-white trip-menu' : 'menu trip-menu'));
-const menuClass = computed(() => (props.background == 'white' ? 'menu-white trip-menu' : 'menu-white trip-menu'));
-// const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu'));
-const memberMenuClass = computed(() => (props.background == 'white' ? 'member-menu member-memu-white' : 'member-menu member-memu-white'));
+const menuClass = computed(() =>
+  props.background == "white" ? "menu-white trip-menu" : "menu-white trip-menu"
+);
+const memberMenuClass = computed(() =>
+  props.background == "white" ? "member-menu member-memu-white" : "member-menu member-memu-white"
+);
 
 const signout = async () => {
   try {
-    // pinia에 있던 토큰 파기
     authStore.signout();
-
-    // Log the state
-    console.log("isLogin:", authStore.isLogin);
-    console.log("Email:", authStore.getEmail);
-    console.log("Nickname:", authStore.getNickname);
-
-    // signout api 호출
     await http.post("/member/signout");
     isActive.value = false;
-    // Redirect to the main page
     alert("로그아웃이 완료되었습니다.");
     router.push("/");
-    profileImage.value = '/src/assets/img/profileDefault.png';
+    profileImage.value = "/src/assets/img/profileDefault.png";
   } catch (error) {
     console.error(error);
     isActive.value = false;
@@ -122,7 +115,6 @@ watch(chatListToggle, async (newVal) => {
 </script>
 
 <template>
-  <!-- <header :class="background == 'white' ? 'header-white' : ''"> -->
   <header class="header-white">
     <div class="chat-list-bg" v-show="chatListToggle" @click="chatListClickHandler"></div>
     <div
@@ -138,7 +130,7 @@ watch(chatListToggle, async (newVal) => {
       <div class="chat-list-item-container" v-for="chat in chatList" :key="chat.matchId">
         <div class="chat-list-item">
           <div class="chat-list-item-title">
-            <h2>{{ chat.matchTitle }}</h2>
+            <h3>{{ chat.matchTitle }}</h3>
           </div>
           <div class="chat-list-item-btn">
             <button @click="enterChatRoom(chat.matchId)">입장</button>
@@ -150,31 +142,47 @@ watch(chatListToggle, async (newVal) => {
     <router-link :to="{ name: 'main' }" id="nav-logo">
       <img src="/src/assets/img/navlog.png" />
     </router-link>
-    <div style="display: flex; align-items: center;">
+    <div style="display: flex; align-items: center">
       <div id="trip-menu-container">
-      <router-link :to="{ name: 'review' }" :class="menuClass + (firstSegment == 'review' ? ' trip-menu-selected' : '')"
-        >여행 후기</router-link
-      >
-      <div id="mate-chat" :class="menuClass + (firstSegment == 'chat' ? ' trip-menu-selected' : '')" @click="chatListClickHandler">
-        메이트 채팅
-      </div>
-      <router-link :to="{ name: 'match' }" :class="menuClass + (firstSegment == 'match' ? ' trip-menu-selected' : '')"
-        >여행 메이트 찾기</router-link
-      >
-      <router-link :to="{ name: 'plan' }" :class="menuClass + (firstSegment == 'plan' ? ' trip-menu-selected' : '')"
-        >나만의 여행 계획</router-link
-      >
+        <router-link
+          :to="{ name: 'review' }"
+          :class="menuClass + (firstSegment == 'review' ? ' trip-menu-selected' : '')"
+          >여행 후기</router-link
+        >
+        <div
+          id="mate-chat"
+          :class="menuClass + (firstSegment == 'chat' ? ' trip-menu-selected' : '')"
+          @click="chatListClickHandler"
+        >
+          메이트 채팅
+        </div>
+        <router-link
+          :to="{ name: 'match' }"
+          :class="menuClass + (firstSegment == 'match' ? ' trip-menu-selected' : '')"
+          >여행 메이트 찾기</router-link
+        >
+        <router-link
+          :to="{ name: 'plan' }"
+          :class="menuClass + (firstSegment == 'plan' ? ' trip-menu-selected' : '')"
+          >나만의 여행 계획</router-link
+        >
       </div>
       <div id="profile">
         <img :src="profileImage" @click="memberOption" />
       </div>
       <div :class="memberMenuClass" v-show="isActive">
-      <router-link v-if="!authStore.getMemberId" :to="{ name: 'member-signup' }">회원가입</router-link>
-      <router-link v-if="!authStore.getMemberId" :to="{ name: 'member-signin' }">로그인</router-link>
-      <a v-if="authStore.getMemberId" @click="() => goToMyPage(authStore.getMemberId)">마이페이지</a>
-      <a v-if="authStore.getMemberId" @click="signout" href="#">로그아웃</a>
+        <router-link v-if="!authStore.getMemberId" :to="{ name: 'member-signup' }"
+          >회원가입</router-link
+        >
+        <router-link v-if="!authStore.getMemberId" :to="{ name: 'member-signin' }"
+          >로그인</router-link
+        >
+        <a v-if="authStore.getMemberId" @click="() => goToMyPage(authStore.getMemberId)"
+          >마이페이지</a
+        >
+        <a v-if="authStore.getMemberId" @click="signout" href="#">로그아웃</a>
+      </div>
     </div>
-  </div>
   </header>
 </template>
 
@@ -280,7 +288,6 @@ header {
   transform: scale(120%);
 }
 
-
 .member-menu {
   position: absolute;
   background-color: rgba(125, 180, 220, 0.8);
@@ -299,9 +306,8 @@ header {
 
 .member-memu-white {
   background: linear-gradient(to bottom, #ffffff, #f2f2f2);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 8px 8px rgba(0,0,0,0.23);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 8px 8px rgba(0, 0, 0, 0.23);
 }
-
 
 .member-menu a {
   text-align: center;
@@ -335,14 +341,15 @@ header {
   top: 0;
   left: 50%;
   transform: translate(-50%, 25%);
-  width: 400px;
+  width: 450px;
   height: 600px;
   z-index: 100001;
-  background-color: rgba(240, 248, 255, 0.90);
+  background-color: #ffffff;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
 .chat-list:focus {
@@ -352,74 +359,70 @@ header {
 .chat-list-top {
   width: 100%;
   padding: 15px;
-  border-bottom: 1px solid var(--brand-color);
+  background-color: #4a90e2;
+  color: white;
 }
 
 .chat-list-top h2 {
   font-size: 25px;
   font-weight: 700;
   text-align: center;
+  margin: 0;
 }
 
 .chat-list-item-container {
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  border-bottom: 1px solid black;
 }
 
 .chat-list-item {
-  width: 100%;
-  padding: 10px;
+  width: 90%;
+  padding: 15px;
   display: flex;
-}
-
-.chat-list-item {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.chat-list-item-title {
-  width: 60%;
-  display: flex;
+  justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.chat-list-item-title h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  margin-right: 30px;
+  color: #333;
 }
 
 .chat-list-item-btn {
-  width: 40%;
   display: flex;
-  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
+
 .chat-list-item-btn button {
-  margin-right: 5px;
-  border: 5px;
-  background-color: white;
-  border-radius: 15px;
-  font-size: 18px;
-  padding: 2px 10px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.chat-list-item-btn button:first-child {
-  color: var(--brand-color);
-  border: 1px solid var(--brand-color);
-}
-
-.chat-list-item-btn button:first-child:hover {
-  background-color: var(--brand-color);
+  border: none;
+  background-color: #4a90e2;
   color: white;
+  border-radius: 5px;
+  font-size: 14px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.chat-list-item-btn button:hover {
+  background-color: #357ab8;
 }
 
 .chat-list-item-btn button:last-child {
-  color: rgb(220, 35, 35);
-  border: 1px solid rgb(220, 35, 35);
+  background-color: #d9534f;
 }
 
 .chat-list-item-btn button:last-child:hover {
-  background-color: rgb(220, 35, 35);
-  color: white;
+  background-color: #c9302c;
 }
 </style>

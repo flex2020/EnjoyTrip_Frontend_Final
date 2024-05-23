@@ -9,7 +9,10 @@ const tripStore = useTripStore();
 </script>
 
 <template>
-  <div class="trip-plan-list-item" @click="tripStore.setCenter(tripPlan.latitude, tripPlan.longitude)">
+  <div
+    class="trip-plan-list-item"
+    @click="tripStore.setCenter(tripPlan.latitude, tripPlan.longitude)"
+  >
     <div class="trip-plan-list-item-top">
       <h2>{{ tripPlan.title }}</h2>
       <img :src="tripPlan.firstImage" />
@@ -24,7 +27,7 @@ const tripStore = useTripStore();
         </p>
       </div>
       <button @click="tripStore.removeTripPlan(tripPlan)">
-        <img src="/src/assets/img/fontawesome/trash-solid.svg" width="20"/>
+        <img src="/src/assets/img/fontawesome/trash-solid.svg" width="20" />
       </button>
     </div>
   </div>
@@ -72,5 +75,4 @@ const tripStore = useTripStore();
   height: 40px;
   cursor: pointer;
 }
-
 </style>
