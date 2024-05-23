@@ -18,16 +18,16 @@ const dragOptions = computed(() => ({
 const onEnd = (event) => {
   tripStore.refreshCoursePath();
   const content = {
-      tabIndex: tripStore.currentTab,
-      data: tripStore.tabItems[tripStore.currentTab],
-    };
-    const message = {
-      type: 'update-tab',
-      username: chatApi.username,
-      content: JSON.stringify(content),
-      matchId: chatApi.matchId,
-    };
-    chatApi.sendMessage(message);
+    tabIndex: tripStore.currentTab,
+    data: tripStore.tabItems[tripStore.currentTab],
+  };
+  const message = {
+    type: "update-tab",
+    username: chatApi.username,
+    content: JSON.stringify(content),
+    matchId: chatApi.matchId,
+  };
+  chatApi.sendMessage(message);
 };
 </script>
 
@@ -79,10 +79,9 @@ const onEnd = (event) => {
   height: calc(100vh - 280px);
 }
 
-.trip-plan-list>p {
+.trip-plan-list > p {
   overflow: hidden;
 }
-
 .flip-list-move {
   transition: transform 0.5s;
 }

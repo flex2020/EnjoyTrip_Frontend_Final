@@ -117,9 +117,7 @@ const addHashtag = () => {
 };
 
 const deleteHashtag = (h) => {
-  match_article.value.hashtags = match_article.value.hashtags.filter(
-    (hashtag) => hashtag !== h
-  );
+  match_article.value.hashtags = match_article.value.hashtags.filter((hashtag) => hashtag !== h);
   hashtagArray.value = hashtagArray.value.filter((hashtag) => hashtag !== h);
 
   // console.log(match_article.value.hashtags);
@@ -136,11 +134,7 @@ const handleFileChange = (event) => {
     <div id="match-input-title">
       <label id="match-input-title-lable">제목</label>
       <label class="red-star">*</label>
-      <input
-        type="text"
-        v-model="match_article.matchTitle"
-        placeholder="제목을 입력해주세요  "
-      />
+      <input type="text" v-model="match_article.matchTitle" placeholder="제목을 입력해주세요  " />
     </div>
     <div id="match-input-select">
       <div>
@@ -148,11 +142,7 @@ const handleFileChange = (event) => {
         <label class="red-star">*</label>
         <select v-model="match_article.courseId">
           <option value="0" hidden>코스를 선택해주세요.</option>
-          <option
-            v-for="course in courses"
-            :key="course.courseId"
-            :value="course.courseId"
-          >
+          <option v-for="course in courses" :key="course.courseId" :value="course.courseId">
             {{ course.courseName }}
           </option>
         </select>
@@ -182,18 +172,20 @@ const handleFileChange = (event) => {
         </select>
       </div>
       <div id="match-content-container">
-        <div>이런 분을 원해요
+        <div>
+          이런 분을 원해요
           <span class="desc">Tip! 자세히 작성할수록 원하는 사람과 매칭될 확률이 올라가요!</span>
         </div>
-        
+
         <textarea v-model="match_article.content"></textarea>
       </div>
 
       <div id="match-hashtag-container">
-        <div>해시태그
+        <div>
+          해시태그
           <span class="desc">Enter 키를 통해 해시태그를 등록하세요.</span>
         </div>
-        
+
         <div id="match-hashtag-input">
           <input type="text" v-model="inputHashtag" @keyup.enter="addHashtag" />
           <div class="profile-hashtags">
@@ -205,8 +197,8 @@ const handleFileChange = (event) => {
             >
               #{{ hashtag }}
             </span>
-            <span v-for="(hashtag, index) in hashtagArray" :key="index"  >
-              <span v-if="isUseId" @click="deleteHashtag(hashtag)"class="hashtag"
+            <span v-for="(hashtag, index) in hashtagArray" :key="index">
+              <span v-if="isUseId" @click="deleteHashtag(hashtag)" class="hashtag"
                 >#{{ hashtag }}</span
               >
             </span>
@@ -224,34 +216,26 @@ const handleFileChange = (event) => {
   <div id="btn-container">
     <div id="divider"></div>
     <div id="btns">
-      <button type="button" v-show="!isUseId" @click="matchWrite">
-        작성하기
-      </button>
-      <button type="button" v-show="isUseId" @click="matchUpdate">
-        수정하기
-      </button>
-      <button type="button" v-show="isUseId" @click="matchDelete">
-        삭제하기
-      </button>
+      <button type="button" v-show="!isUseId" @click="matchWrite">작성하기</button>
+      <button type="button" v-show="isUseId" @click="matchUpdate">수정하기</button>
+      <button type="button" v-show="isUseId" @click="matchDelete">삭제하기</button>
       <button type="button" @click="moveList">목록으로</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-
-
 .profile-hashtags {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 0 !important;
 }
 
-input[type='text'] {
+input[type="text"] {
   border: 1px solid black;
 }
 
-input[type='text']:focus {
+input[type="text"]:focus {
   outline: none;
 }
 
@@ -424,7 +408,7 @@ input[type="date"] {
   margin-left: 7px;
 }
 
-input[type='file'] {
+input[type="file"] {
   width: auto !important;
 }
 </style>
