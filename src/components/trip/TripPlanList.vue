@@ -10,29 +10,40 @@ const tripStore = useTripStore();
 const onEnd = (event) => {
   tripStore.refreshCoursePath();
   const content = {
-      tabIndex: tripStore.currentTab,
-      data: tripStore.tabItems[tripStore.currentTab],
-    };
-    const message = {
-      type: 'update-tab',
-      username: chatApi.username,
-      content: JSON.stringify(content),
-      matchId: chatApi.matchId,
-    };
-    chatApi.sendMessage(message);
+    tabIndex: tripStore.currentTab,
+    data: tripStore.tabItems[tripStore.currentTab],
+  };
+  const message = {
+    type: "update-tab",
+    username: chatApi.username,
+    content: JSON.stringify(content),
+    matchId: chatApi.matchId,
+  };
+  chatApi.sendMessage(message);
 };
 </script>
 
 <template>
   <div class="trip-plan-list">
-    <draggable group="tripplan" v-model="tripStore.tabItems[tripStore.currentTab]" @end="onEnd" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-      <template #item="{element}">
-        <TripPlanListItem :trip-plan="element"/>
+    <draggable
+      group="tripplan"
+      v-model="tripStore.tabItems[tripStore.currentTab]"
+      @end="onEnd"
+      style="width: 100%; display: flex; flex-direction: column; align-items: center"
+    >
+      <template #item="{ element }">
+        <TripPlanListItem :trip-plan="element" />
       </template>
-      
     </draggable>
-    
-    <p v-if="!tripStore.tabItems[tripStore.currentTab] || tripStore.tabItems[tripStore.currentTab].length == 0">아직 여행계획이 없습니다.</p>
+
+    <p
+      v-if="
+        !tripStore.tabItems[tripStore.currentTab] ||
+        tripStore.tabItems[tripStore.currentTab].length == 0
+      "
+    >
+      아직 여행계획이 없습니다.
+    </p>
   </div>
 </template>
 
@@ -45,7 +56,7 @@ const onEnd = (event) => {
   height: calc(100vh - 280px);
 }
 
-.trip-plan-list>p {
+.trip-plan-list > p {
   overflow: hidden;
 }
 </style>
