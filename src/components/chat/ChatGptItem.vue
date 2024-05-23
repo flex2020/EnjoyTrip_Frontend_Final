@@ -38,7 +38,7 @@ defineProps({
   height: 40px;
   overflow: hidden;
   border-radius: 50%;
-  border: 2px solid black;
+  border: 1px solid var(--brand-color);
 }
 
 .chat-list-item-profile img {

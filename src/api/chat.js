@@ -69,8 +69,8 @@ class ChatApi {
       // GPT 여행지 정보 호출
       if (message.content.startsWith('!여행지정보')) {
         const attractionName = message.content.substring('!여행지정보'.length).trim();
-        const gptAnswer = 'gpt 답변';
-        //const gptAnswer = await getAttractionRecommend(attractionName);
+        // const gptAnswer = 'gpt 답변';
+        const gptAnswer = await getAttractionRecommend(attractionName);
         // GPT답변 전송
         this.sendMessage({
           type: 'gpt-answer',

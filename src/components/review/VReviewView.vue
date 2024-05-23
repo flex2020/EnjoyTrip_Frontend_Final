@@ -228,6 +228,7 @@ const goToMyPage = () => {
   align-items: center;
   margin-right: 15px;
   cursor: pointer;
+  position: relative;
 }
 
 .view-container {
@@ -327,10 +328,11 @@ const goToMyPage = () => {
 }
 
 .like-container img {
-  position: relative;
+  position: absolute;
   transition: opacity 0.5s ease;
   opacity: 0;
   cursor: pointer;
+  left: -35px;
 }
 
 .like-container img.active {
