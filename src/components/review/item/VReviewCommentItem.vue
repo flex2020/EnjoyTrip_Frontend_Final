@@ -83,7 +83,6 @@ const setUpdateComment = (commentId, content) => {
 };
 
 const commentUpdate = async () => {
-  // console.log(updateComment.value);
   await http.put("review/comments", updateComment.value);
   updateComment.value.commentId = -1;
   updateComment.value.content = "";
@@ -92,59 +91,62 @@ const commentUpdate = async () => {
 
 const commentDelete = async (commentId) => {
   await http.delete(`/review/comments/${commentId}`);
-
   emit("getComment");
+};
+
+const cancelReply = () => {
+  newReply.value.commentGroup = -1;
+  newReply.value.depth = -1;
+  newReply.value.replyTo = -1;
+  newReply.value.content = "";
+  newReply.value.replyParentId = -1;
 };
 </script>
 
 <template>
-  <div>댓글</div>
+  <div id="comment-title">댓글</div>
   <form @submit.prevent="addComment" id="review-comment-input-container">
     <textarea v-model="newComment.content" type="text" placeholder="댓글을 입력하세요"></textarea>
-    <button type="submit" class="reply-btn">댓글 작성</button>
+    <button type="submit" class="btn comment-submit-btn">댓글 작성</button>
   </form>
   <div>
     <div
       class="comment"
       v-for="(comment, index) in comments"
       :key="comment.commentId"
-      :style="{
-        marginLeft: Number(comment.depth) > 0 ? '20px' : '0',
-      }"
+      :style="{ marginLeft: Number(comment.depth) > 0 ? '20px' : '0' }"
     >
       <div v-if="comment.deleted == 0" id="comment-container">
         <div id="comment-nickname">{{ comment.nickName }}</div>
         <div class="comment-content-container">
-          <span id="comment-replyParentName">{{
-            comment.replyParentName == null ? "" : "@" + comment.replyParentName
-          }}</span>
+          <span id="comment-replyParentName">
+            {{ comment.replyParentName == null ? "" : "@" + comment.replyParentName }}
+          </span>
           {{ comment.content }}
         </div>
         <div class="comment-anchor-container">
           <a
             @click="
-              setCurrentReply(
-                comment.commentGroup,
-                Number(comment.depth) + 1,
-                index,
-                comment.commentId
-              )
+              setCurrentReply(comment.commentGroup, Number(comment.depth) + 1, index, comment.commentId)
             "
+            class="anchor-link"
           >
-            {{ newReply.replyTo == index ? "취소" : "답글작성" }}</a
-          >
+            답글작성
+          </a>
           <a
-            v-show="comment.memberId === authStore.memberId ? true : false"
-            style="margin-left: 7px"
+            v-show="comment.memberId === authStore.memberId"
             @click="commentDelete(comment.commentId)"
-            >삭제</a
+            class="anchor-link"
           >
+            삭제
+          </a>
           <a
-            v-show="comment.memberId === authStore.memberId ? true : false"
-            style="margin-left: 7px"
+            v-show="comment.memberId === authStore.memberId"
             @click="setUpdateComment(comment.commentId, comment.content)"
-            >{{ updateComment.commentId != comment.commentId ? "댓글수정" : "취소" }}</a
+            class="anchor-link"
           >
+            {{ updateComment.commentId != comment.commentId ? "댓글수정" : "취소" }}
+          </a>
         </div>
         <div v-show="updateComment.commentId == comment.commentId">
           <form @submit.prevent="commentUpdate" id="comment-update-form">
@@ -152,30 +154,23 @@ const commentDelete = async (commentId) => {
               <textarea rows="2" v-model="updateComment.content" required></textarea>
             </div>
             <div id="comment-update-btns">
-              <button type="submit">댓글 수정</button>
-              <button type="button">취소</button>
+              <button type="submit" class="btn update-btn">댓글 수정</button>
+              <button type="button" class="btn cancel-btn">취소</button>
             </div>
           </form>
         </div>
         <!-- 대댓글 작성 -->
         <div
           :id="`comment${comment.commentId}`"
-          :style="{
-            display: index === newReply.replyTo ? 'block' : 'none',
-          }"
+          :style="{ display: index === newReply.replyTo ? 'block' : 'none' }"
         >
           <form @submit.prevent="addReply" id="comment-reply-form">
             <div class="form-group">
-              <textarea
-                id="commentContent"
-                name="content"
-                rows="2"
-                v-model="newReply.content"
-                required
-              ></textarea>
+              <textarea id="commentContent" name="content" rows="2" v-model="newReply.content" required></textarea>
             </div>
             <div id="comment-reply-btns">
-              <button type="submit">답글 작성</button>
+              <button type="submit" class="btn reply-btn">답글 작성</button>
+              <button type="button" class="btn cancel-btn" @click="cancelReply">취소</button>
             </div>
           </form>
         </div>
@@ -189,128 +184,210 @@ const commentDelete = async (commentId) => {
 </template>
 
 <style scoped>
+#comment-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
 #review-comment-input-container {
   display: flex;
   width: 100%;
   flex-direction: column;
   align-items: flex-end;
   margin-top: 10px;
+  font-family: inherit;
 }
 
 #review-comment-input-container textarea {
   width: 100%;
-  height: 100px;
+  height: 120px;
   padding: 14px;
   border-radius: 8px;
   margin-bottom: 10px;
+  font-family: inherit;
+  resize: none; /* 크기 조정 막기 */
+  border: 1px solid #ddd;
 }
 
 #review-comment-input-container button {
   width: 15%;
-  height: 30px;
+  height: 35px;
+  font-family: inherit;
+  font-weight: bold;
+  border-radius: 5px;
 }
 
-.reply-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 10px;
-  border: none;
-  border-radius: 10px;
-  background-color: black;
+.comment-submit-btn {
+  background-color: #000;
   color: white;
-  font-size: 16px;
-  font-weight: bold;
+  border: 2px solid #000;
+}
+
+.comment-submit-btn:hover {
+  background-color: #333;
+  color: white;
 }
 
 .comment {
   margin-bottom: 10px;
+  font-family: inherit;
 }
 
 .comment-content-container {
   background-color: gainsboro;
-  height: 60px;
+  padding: 10px;
   border-radius: 5px;
-  padding-left: 5px;
-  padding-top: 5px;
   margin-top: 10px;
   margin-bottom: 10px;
-  display: flex;
+  font-family: inherit;
 }
 
 .comment-anchor-container {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 5px;
+  font-family: inherit;
 }
 
-.comment-anchor-container a {
-  border: 1px solid gray;
-  border-radius: 3px;
-  background-color: gray;
-  padding: 3px;
+.comment-anchor-container .anchor-link {
+  border: 2px solid #000;
+  border-radius: 5px;
+  background-color: #fff;
+  padding: 5px 10px;
   font-size: 14px;
-  color: white;
+  color: #000;
   cursor: pointer;
+  margin-left: 5px;
+  font-family: inherit;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.comment-anchor-container .anchor-link:hover {
+  background-color: #ddd;
+  color: #000;
 }
 
 #comment-nickname {
   font-weight: bold;
+  font-family: inherit;
 }
 
 #comment-replyParentName {
   color: rgb(0, 2, 150);
   font-weight: bold;
   margin-right: 5px;
+  font-family: inherit;
 }
 
 #comment-update-form {
   display: flex;
   flex-direction: column;
+  font-family: inherit;
 }
 
 #comment-update-form textarea {
   width: 100%;
-  height: 50px;
+  height: 80px;
+  font-family: inherit;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  resize: none; /* 크기 조정 막기 */
 }
+
 #comment-update-btns {
   display: flex;
   justify-content: flex-end;
+  font-family: inherit;
+  margin: 10px 0px;
 }
 
-#comment-update-btns button {
-  border: 1px solid gray;
-  border-radius: 3px;
-  background-color: gray;
-  padding: 3px;
+#comment-update-btns .btn {
+  border: 2px solid #000;
+  border-radius: 5px;
+  padding: 5px 10px;
   font-size: 14px;
-  color: white;
+  color: #000;
   cursor: pointer;
-  margin-left: 3px;
+  margin-left: 5px;
+  font-family: inherit;
+  font-weight: bold;
+}
+
+#comment-update-btns .cancel-btn {
+  background-color: #fff;
+  color: #000;
+}
+
+#comment-update-btns .cancel-btn:hover {
+  background-color: #ddd;
+  color: #000;
+}
+
+#comment-update-btns .update-btn {
+  background-color: #000;
+  color: #fff;
+}
+
+#comment-update-btns .update-btn:hover {
+  background-color: #333;
+  color: #fff;
 }
 
 #comment-reply-form {
   display: flex;
   flex-direction: column;
+  font-family: inherit;
 }
 
 #comment-reply-form textarea {
   width: 100%;
-  height: 50px;
+  height: 80px;
+  font-family: inherit;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  resize: none; /* 크기 조정 막기 */
 }
 
 #comment-reply-btns {
   display: flex;
   justify-content: flex-end;
+  font-family: inherit;
+  margin: 10px 0px;
 }
 
-#comment-reply-form button {
-  border: 1px solid gray;
-  border-radius: 3px;
-  background-color: gray;
-  padding: 3px;
+#comment-reply-btns .btn {
+  border: 2px solid #000;
+  border-radius: 5px;
+  padding: 5px 10px;
   font-size: 14px;
-  color: white;
+  color: #000;
   cursor: pointer;
+  margin-left: 5px;
+  font-family: inherit;
+  font-weight: bold;
+}
+
+#comment-reply-btns .cancel-btn {
+  background-color: #fff;
+  color: #000;
+}
+
+#comment-reply-btns .cancel-btn:hover {
+  background-color: #ddd;
+  color: #000;
+}
+
+#comment-reply-btns .reply-btn {
+  background-color: #000;
+  color: #fff;
+}
+
+#comment-reply-btns .reply-btn:hover {
+  background-color: #333;
+  color: #fff;
 }
 </style>
