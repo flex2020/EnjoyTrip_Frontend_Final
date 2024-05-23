@@ -110,6 +110,10 @@ onMounted(async () => {
 
 const getMates = async () => {
   mates.value = await getMatesByMatchId(matches.value[0].matchId);
+  console.log(mates.value);
+  mates.value = mates.value.filter((e) => e.memberId !== authStore.getMemberId);
+
+  console.log(mates.value);
 };
 
 const moveList = () => {
@@ -167,11 +171,20 @@ const modules = {
       </select>
     </div>
 
-    <div v-show="!isUseId">메이트 평가</div>
-    <div id="evaluate-mate" v-for="mate in mates" :key="mate">
-      <div v-if="!isUseId && mate.memberId !== authStore.getMemberId">
-        <label>{{ mate.nickname }}</label>
-        <input type="text" v-model="mate.score" />
+    <div class="evaluate-mate-container">
+      <div class="evaluate-title">
+        <div class="evaluate-mate-title" v-if="!isUseId">메이트 평가</div>
+        <div class="evaluate-mate-title" v-if="!isUseId">
+          함께 여행한 메이트를 1-100 사이의 점수로 평가해보세요
+        </div>
+      </div>
+    </div>
+    <div class="evaluate-mate-container">
+      <div class="evaluate-mate" v-for="mate in mates" :key="mate">
+        <div class="evaluate-mate-input" v-if="!isUseId && mate.memberId !== authStore.getMemberId">
+          <label>{{ mate.nickname }}</label>
+          <input type="text" v-model="mate.score" />
+        </div>
       </div>
     </div>
   </form>
@@ -248,18 +261,48 @@ const modules = {
   margin-right: 20px;
 }
 
-#evaluate-mate {
-  margin-left: 100px;
+.evaluate-mate-title:last-child {
+  width: 100% !important;
 }
 
-#evaluate-mate label {
-  margin-right: 20px;
+.evaluate-mate-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start !important;
 }
 
-#evaluate-mate input {
-  width: 5%;
+.evaluate-mate {
+  width: 25% !important;
+  display: flex !important;
+  font-size: 13px !important;
+  margin-bottom: 0px !important;
+}
+
+.evaluate-mate label {
+  font-size: 18px !important;
+}
+
+.evaluate-mate input {
+  width: 50%;
   height: 30px;
-  font-size: 24px;
+  font-size: 16px !important;
+  margin-left: 10px;
+  border-radius: 7px;
+}
+
+.evaluate-title div:first-child {
+  width: auto !important;
+  display: flex !important;
+  margin-bottom: 0px !important;
+  margin-right: 10px;
+}
+
+.evaluate-title div:last-child {
+  width: 80% !important;
+  display: flex !important;
+  font-size: 16px !important;
+  color: #9d9d9d;
+  margin-bottom: 0px !important;
 }
 
 #quill-editor-box {
