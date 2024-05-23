@@ -9,8 +9,12 @@ const route = useRoute();
 const removePlan = async () => {
   if (!window.confirm(`코스 [${planStore.courseName}] 를 삭제하시겠습니까?`)) return;
   await removeCourseByCourseId(planStore.courseId);
+  console.log(planStore.courseId)
+  console.log(planStore.courseList)
+  planStore.courseList = planStore.courseList.filter((course) => course.courseId != planStore.courseId);
   planStore.courseId = -1;
   planStore.plan = [];
+  planStore.planLatLng = [];
 }
 </script>
 
@@ -26,7 +30,7 @@ const removePlan = async () => {
   color: rgb(224, 35, 35);
   background-color: white;
   padding: 5px 15px;
-  border-radius: 15px;
+  border-radius: 5px;
   cursor: pointer;
   transition: 0.2s;
   font-size: 16px;

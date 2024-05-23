@@ -274,7 +274,7 @@ const modules = {
 }
 
 .evaluate-mate {
-  width: 25% !important;
+  width: 30% !important;
   display: flex !important;
   font-size: 13px !important;
   margin-bottom: 0px !important;
@@ -285,7 +285,7 @@ const modules = {
 }
 
 .evaluate-mate input {
-  width: 50%;
+  width: 25%;
   height: 30px;
   font-size: 16px !important;
   margin-left: 10px;
