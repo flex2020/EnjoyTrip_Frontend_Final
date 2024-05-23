@@ -8,6 +8,12 @@ async function getMatchesByMemberId(memberId) {
   return data;
 }
 
+async function getMemberMatchesFinish(memberId) {
+  const response = await http.get(`/match/finished-matches/${memberId}`);
+  const data = await response.data;
+  return data;
+}
+
 async function removeMatchOfMember(memberId, matchId) {
   await http.delete(`/match/member-matches/${memberId}/${matchId}`);
 }
@@ -40,4 +46,11 @@ async function postMatesScore(dto) {
   }
 }
 
-export { getMatchesByMemberId, removeMatchOfMember, postMatchesByMemberId, getMatesByMatchId, postMatesScore };
+export {
+  getMatchesByMemberId,
+  getMemberMatchesFinish,
+  removeMatchOfMember,
+  postMatchesByMemberId,
+  getMatesByMatchId,
+  postMatesScore
+};
