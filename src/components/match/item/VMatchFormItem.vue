@@ -23,6 +23,7 @@ if (props.type === "update") {
   let { matchid } = route.params;
   http.get(`match/find/${matchid}`).then((response) => {
     match_article.value = response.data.resdata;
+    match_article.value.content = match_article.value.content.replace("<br>", "\r\n");
   });
   isUseId.value = true;
 }
@@ -54,7 +55,8 @@ const matchWrite = async () => {
     const fileRes = await http.post("/files", formData);
     match_article.value.fileId = fileRes.data.fileId;
   }
-
+  const data = match_article.value;
+  data.content = data.content.replace(/\n/g, "<br>");
   const response = await http.post("/match", match_article.value);
 
   match_article.value.matchId = response.data.matchId;
@@ -105,7 +107,7 @@ const addHashtag = () => {
   if (
     !match_article.value.hashtags.includes(inputHashtag.value) &&
     !hashtagArray.value.includes(inputHashtag.value) &&
-    match_article.value.hashtags.length + hashtagArray.value.length < 5
+    match_article.value.hashtags.length + hashtagArray.value.length < 10
   ) {
     console.log(hashtagArray.value);
     match_article.value.hashtags.push(inputHashtag.value);

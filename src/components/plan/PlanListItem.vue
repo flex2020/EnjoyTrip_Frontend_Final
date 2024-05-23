@@ -37,7 +37,7 @@ const planStore = usePlanStore();
   box-shadow: 0 0 5px #333;
   border-radius: 7px;
   padding: 10px;
-  margin: 2px;
+  margin: 2px auto;
   cursor: pointer;
   transition: 0.2s;
 }

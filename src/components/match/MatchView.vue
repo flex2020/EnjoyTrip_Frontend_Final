@@ -36,7 +36,6 @@ const getMatch = async () => {
   // 프로필 이미지가 존재하면 업데이트
   if (profileResponse.data) {
     profileImage.value = profileResponse.data;
-    authStore.updateProfileImage(profileResponse.data); // 프로필 이미지 업데이트
   }
 
 };
@@ -112,7 +111,7 @@ const searchByHashtag = (hashtag) => {
           <div class="right-column">
             <div class="match-info-title">성별 제한</div>
             <div class="match-info-content">
-              {{ match.genderType === 0 ? '성별 무관' : (match.genderType === 1 ? '남성만' : '여성만') }}
+              {{ match.genderType == 0 ? '성별 무관' : (match.genderType == 1 ? '남성만' : '여성만') }}
             </div>
           </div>
         </div>
@@ -128,7 +127,7 @@ const searchByHashtag = (hashtag) => {
         </div>
         <div class="match-info-item full-width" id="match-content-container">
           <div class="match-info-title">이런 사람을 원해요</div>
-          <div class="match-info-content">{{ match.content }}</div>
+          <div class="match-info-content" v-html="match.content"></div>
         </div>
       </div>
     </div>
@@ -296,6 +295,7 @@ const searchByHashtag = (hashtag) => {
 
 .match-info-content {
   font-size: 18px;
+  line-height: 1.5;
 }
 
 .match-info-item.full-width {

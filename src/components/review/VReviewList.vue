@@ -80,7 +80,7 @@ const searchReview = async () => {
 <template>
   <div id="review-list-container">
     <div id="review-list-title">
-      <div>여행 후기</div>
+      <div><img src="@/assets/img/note.gif" width="45px"/>여행 후기</div>
       <div>다양한 후기를 참고해보세요</div>
     </div>
 
@@ -120,6 +120,7 @@ const searchReview = async () => {
       @currentPageAdd="currentPageAdd"
     />
   </div>
+  <div v-if="reviews.length == 0" style="text-align: center; font-weight: 700; font-size: 36px; margin-top: 10%;">아직 작성된 여행 후기가 없어요 😢</div>
 </template>
 
 <style scoped>
@@ -139,7 +140,8 @@ const searchReview = async () => {
   font-size: 36px;
   font-weight: bold;
   margin-bottom: 15px;
-  border-bottom: 2px solid var(--brand-color);
+  display: flex;
+  /* border-bottom: 2px solid var(--brand-color); */
 }
 #review-list-title div:last-child {
   font-size: 18px;

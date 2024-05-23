@@ -113,7 +113,7 @@ const textClass = computed(() =>
 <template>
   <div id="match-list-container">
     <div id="match-list-title">
-      <div>여행 메이트 찾기</div>
+      <div><img src="@/assets/img/together.gif" width="45px"/>여행 메이트 찾기</div>
       <div>함께 여행할 메이트를 찾아보세요</div>
     </div>
     <div
@@ -178,6 +178,7 @@ const textClass = computed(() =>
       @currentPageAdd="currentPageAdd"
     />
   </div>
+  <div v-if="matches.length == 0" style="text-align: center; font-weight: 700; font-size: 36px; margin-top: 10%;">아직 여행 매칭이 없어요 😢</div>
 </template>
 
 <style scoped>
@@ -206,7 +207,8 @@ const textClass = computed(() =>
   font-size: 36px;
   font-weight: bold;
   margin-bottom: 15px;
-  border-bottom: 2px solid var(--brand-color);
+  display: flex;
+  /* border-bottom: 2px solid var(--brand-color); */
 }
 #match-list-title div:last-child {
   font-size: 18px;
