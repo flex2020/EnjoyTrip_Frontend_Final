@@ -141,8 +141,7 @@ const kakaoLogin = () => {
 }
 
 .logo {
-  width: 120px; /* Increased logo size */
-  height: 60px;
+  width: 110px; /* Increased logo size */
   margin-bottom: 1.5rem;
 }
 
