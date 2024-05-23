@@ -5,7 +5,7 @@ import { useAuthStore } from "@/stores/auth";
 import { Axios } from "/src/api/http-common";
 import Quill from "quill/core";
 import ImageUploader from "quill-image-uploader";
-import { getMatchesByMemberId, getMatesByMatchId, postMatesScore } from "@/api/match";
+import { getMatchesByMemberId, getMatesByMatchId, getMemberMatchesFinish, postMatesScore } from "@/api/match";
 
 Quill.register("modules/imageUploader", ImageUploader);
 
@@ -105,11 +105,13 @@ const reviewDelete = async () => {
 };
 
 onMounted(async () => {
-  matches.value = await getMatchesByMemberId(authStore.getMemberId);
+  console.log('memberId', authStore.getMemberId)
+  matches.value = await getMemberMatchesFinish(authStore.getMemberId);
+  console.log('matches', matches.value);
 });
 
 const getMates = async () => {
-  mates.value = await getMatesByMatchId(matches.value[0].matchId);
+  mates.value = await getMatesByMatchId(review_article.value.review.matchId);
   console.log(mates.value);
   mates.value = mates.value.filter((e) => e.memberId !== authStore.getMemberId);
 
