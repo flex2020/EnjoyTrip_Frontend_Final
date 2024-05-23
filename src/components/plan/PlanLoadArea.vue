@@ -53,5 +53,6 @@ const courseChangeHandler = async () => {
   border-radius: 5px;
   padding-left: 5px;
   margin-bottom: 5px;
+  font-size: 16px;
 }
 </style>

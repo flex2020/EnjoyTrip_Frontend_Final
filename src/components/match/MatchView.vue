@@ -6,11 +6,12 @@ import { Axios } from "@/api/http-common";
 import VKakaoMapForReview from "@/components/common/VKakaoMapForReview.vue";
 import { postMatchesByMemberId } from "@/api/match";
 import { useMatchStore } from "@/stores/match";
+import { useChatListStore } from "@/stores/chatlist";
 
 const http = Axios();
 const authStore = useAuthStore();
 const matchStore = useMatchStore();
-
+const chatlistStore = useChatListStore();
 const route = useRoute();
 const router = useRouter();
 
@@ -41,6 +42,11 @@ const getMatch = async () => {
 };
 
 const registerMatch = async () => {
+  const matchId = route.params.matchid;
+  if (chatlistStore.checkIncludes(matchId)) {
+    alert('이미 신청한 매칭입니다.');
+    return;
+  }
   try {
     const formData = new FormData();
     formData.append("memberId", authStore.getMemberId);
