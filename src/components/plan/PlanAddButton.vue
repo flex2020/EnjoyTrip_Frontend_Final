@@ -23,7 +23,7 @@ const saveCourse = () => {
   color: var(--brand-color);
   background-color: white;
   padding: 5px 15px;
-  border-radius: 15px;
+  border-radius: 5px;
   cursor: pointer;
   transition: 0.2s;
   font-size: 16px;

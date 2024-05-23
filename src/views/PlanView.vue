@@ -5,6 +5,7 @@ import PlanSearchArea from "@/components/plan/PlanSearchArea.vue";
 import { usePlanStore } from "@/stores/plan";
 import { storeToRefs } from "pinia";
 import { ref, nextTick, watch } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
 
 const planStore = usePlanStore();
 const { nameInputToggle } = storeToRefs(planStore);
@@ -13,6 +14,16 @@ const nameInput = ref(null);
 const nameInputToggleHandler = () => {
   nameInputToggle.value = !nameInputToggle.value;
 }
+
+onBeforeRouteLeave((to, from) => {
+  if (!window.confirm('정말 나가시겠습니까?\n저장 이전의 내용은 복구되지 않습니다.')) return false;
+  planStore.sido = '';
+  planStore.gugun = '';
+  planStore.keyword = '';
+  planStore.searchResults = [];
+  planStore.courseName = ''
+  return true;
+});
 
 watch(nameInputToggle, async (newVal) => {
   console.log(newVal);

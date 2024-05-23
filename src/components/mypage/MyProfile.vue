@@ -342,6 +342,7 @@ watch(() => route.params.memberId, fetchProfileData);
 
 .intro-card {
   background: #f0f8ff;
+  line-height: 1.5;
 }
 
 .review-header h3 {

@@ -28,6 +28,7 @@ onMounted(async () => {
   const memberId = authStore.getMemberId;
   if (memberId) {
     chatlistStore.chatList = await getMatchesByMemberId(memberId);
+    console.log(chatlistStore.chatList)
     const profileResponse = await http.post("/member/profile", {
       memberId: authStore.getMemberId,
     });

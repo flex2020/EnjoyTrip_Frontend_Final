@@ -63,7 +63,7 @@ const changeSidoHandler = async () => {
 }
 
 .plan-search-area select {
-  width: 45%;
+  width: 46%;
   height: 30px;
   border-radius: 5px;
   padding-left: 5px;

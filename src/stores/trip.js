@@ -26,6 +26,10 @@ export const useTripStore = defineStore('tripStore', () => {
   async function searchAttractions() {
     const data = await getAttractionSearchResults(sido.value, gugun.value, keyword.value);
     attractionSearchResults.value = await data.data;
+    if (attractionSearchResults.value.length == 0) {
+      alert('검색 결과가 없습니다.');
+      return;
+    }
     pagination.value = await data.pagination;
     totalPages.value = await data.totalPages;
     page.value = await data.page;

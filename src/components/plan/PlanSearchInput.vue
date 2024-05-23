@@ -41,7 +41,7 @@ const planStore = usePlanStore();
   margin: 7px;
   height: 38px;
   border-radius: 10px;
-  font-size: 20px;
+  font-size: 18px;
   padding-left: 5px;
   padding-right: 45px;  
 }

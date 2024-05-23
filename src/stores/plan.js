@@ -26,6 +26,10 @@ export const usePlanStore = defineStore('planStore', () => {
   async function searchAttractions() {
     const temp = await getAttractionSearchResults(sido.value, gugun.value, keyword.value);
     searchResults.value = await temp.data;
+    if (searchResults.value.length == 0) {
+      alert('검색 결과가 없습니다.');
+      return;
+    }
     console.log(searchResults.value);
     if (searchResults.value.length > 0) {
       setCenter(searchResults.value[0].latitude, searchResults.value[0].longitude)
