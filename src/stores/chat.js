@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import chatApi from '@/api/chat';
 import { useAuthStore } from "./auth";
+import { loadChatLog } from "@/api/chatlog";
 
 export const useChatStore = defineStore('chatStore', () => {
   const chatText = ref('');
@@ -41,6 +42,30 @@ export const useChatStore = defineStore('chatStore', () => {
     console.log('reset messages = ' + messages.value);
   }
 
+  async function loadMessages(matchId) {
+    const logs = await loadChatLog(matchId);
+    for (let i=0; i<logs.length; i++) {
+      console.log(logs[i])
+      // 문자열을 공백을 기준으로 분할
+      const [date, time] = logs[i].sendTime.split(' ');
+
+      // 시간을 ":"를 기준으로 분할
+      const [hour, minute, second] = time.split(':');
+
+      // 초 단위를 제외하고 새로운 문자열을 생성
+      const newDatetime = `${date} ${hour}:${minute}`;
+      const msg = {
+        type: logs[i].type,
+        content: logs[i].content,
+        username: logs[i].sender,
+        matchId: logs[i].matchId,
+        time: newDatetime,
+      };
+
+      messages.value.push(msg);
+    }
+  }
+
   function addChatItem(message) {
     const now = new Date();
     const year = now.getFullYear();
@@ -54,5 +79,5 @@ export const useChatStore = defineStore('chatStore', () => {
     messages.value.push(message);
   }
 
-  return { chatText, messages, sendChat, joinChat, addChatItem, resetMessages }
+  return { chatText, messages, sendChat, joinChat, addChatItem, resetMessages, loadMessages }
 })
