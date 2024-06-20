@@ -11,9 +11,10 @@ const chatStore = useChatStore();
 const chatToggle = ref(false);
 const route = useRoute();
 
-onMounted(() => {
+onMounted(async () => {
   chatStore.resetMessages();
   chatStore.joinChat(route.params.matchId);
+  chatStore.loadMessages(route.params.matchId);
 })
 
 const toggleClick = () => {
